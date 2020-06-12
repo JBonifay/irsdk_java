@@ -8,13 +8,13 @@ import com.sun.jna.platform.win32.WinNT;
  */
 public class Handle {
 
-    private WinNT.HANDLE m_handle;
+    private WinNT.HANDLE handle;
 
     public Handle(WinNT.HANDLE handle) {
-        m_handle = handle;
+        this.handle = handle;
     }
 
     protected WinNT.HANDLE get() {
-        return m_handle;
+        return handle;
     }
 }
