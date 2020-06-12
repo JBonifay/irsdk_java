@@ -1,45 +1,33 @@
 package com.joffrey.iracingapp;
 
+import javax.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+@RequiredArgsConstructor
 @Slf4j
 @SpringBootApplication
 public class IracingAppApplication {
 
+    private final IRacingService iRacingService;
+
     public static void main(String[] args) {
         SpringApplication.run(IracingAppApplication.class, args);
 
-        new IracingAppApplication();
     }
 
-    public IracingAppApplication() {
-        log.info("Starting iracing application.");
-
-        log.info("Waiting game initialization...");
-
-        if (init()) {
-            while (true) {
-                run();
+    @PostConstruct
+    public void startIracingService() throws InterruptedException {
+        new Thread(() -> {
+            try {
+                iRacingService.startup();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        } else {
-            log.error("init failed.");
-            System.exit(1);
-        }
-        log.error("Shutting down...");
-        System.exit(0);
+        }).start();
+        // Kernel32.INSTANCE.OpenFileMapping(WinNT.FILE_ALL_ACCESS, false, IrsdkDefines.IRSDK_MEMMAPFILENAME);
     }
-
-    private void run() {
-
-    }
-
-    private boolean init() {
-        log.info("Setup");
-
-        return true;
-    }
-
 
 }

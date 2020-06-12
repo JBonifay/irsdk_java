@@ -1,6 +1,7 @@
 package com.joffrey.iracingapp.irsdk;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import lombok.Data;
 
 @Data
@@ -30,6 +31,8 @@ public class IrsdkHeader {
 
     public IrsdkHeader(ByteBuffer byteBuffer) {
         this.headerByteBuffer = byteBuffer;
+        this.headerByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+
         this.ver = byteBuffer.getInt(0);
         this.status = byteBuffer.getInt(4);
         this.tickRate = byteBuffer.getInt(8);

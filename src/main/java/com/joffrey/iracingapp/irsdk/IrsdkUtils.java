@@ -3,9 +3,9 @@ package com.joffrey.iracingapp.irsdk;
 
 import com.joffrey.iracingapp.windows.Handle;
 import com.joffrey.iracingapp.windows.Pointer;
-import com.joffrey.iracingapp.windows.WindowsHelper;
-import com.sun.jna.platform.win32.Sspi.TimeStamp;
+import com.joffrey.iracingapp.windows.WindowsService;
 import java.nio.ByteBuffer;
+import java.sql.Timestamp;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class IrsdkUtils {
 
-    private final WindowsHelper windowsHelper;
+    private final WindowsService windowsService;
 
     private int         lastTickCount  = Integer.MAX_VALUE;
     private boolean     isInitialized  = false;
@@ -22,8 +22,8 @@ public class IrsdkUtils {
     private Handle      dataValidEvent = null;
     private Pointer     sharedMemory   = null;
     private IrsdkHeader irsdkHeader    = null;
-    private TimeStamp   lastValidTime  = null;
-
+    private Timestamp   lastValidTime  = new Timestamp(System.currentTimeMillis());
+    private double      timeout        = 30.0; // timeout after 30 seconds with no communication
 
     public boolean waitForDataReady(int timeOut, String data) throws InterruptedException {
         if (isInitialized || startup()) {
@@ -34,7 +34,7 @@ public class IrsdkUtils {
             }
 
             // sleep till signaled
-            windowsHelper.waitForSingleObject(dataValidEvent, timeOut);
+            windowsService.waitForSingleObject(dataValidEvent, timeOut);
 
             // we woke up, so check for data
             if (getNewData(data)) {
@@ -52,17 +52,17 @@ public class IrsdkUtils {
         return false;
     }
 
-    private boolean startup() {
+    public boolean startup() {
 
         // Try to open Memory Mapped File
         if (Objects.isNull(memMapFile)) {
-            memMapFile = windowsHelper.openMemoryMapFile();
+            memMapFile = windowsService.openMemoryMapFile(IrsdkDefines.IRSDK_MEMMAPFILENAME);
             lastTickCount = Integer.MAX_VALUE;
         }
 
         if (Objects.nonNull(memMapFile)) {
             if (Objects.isNull(sharedMemory)) {
-                sharedMemory = windowsHelper.mapViewOfFile(memMapFile);
+                sharedMemory = windowsService.mapViewOfFile(memMapFile);
                 irsdkHeader = new IrsdkHeader(ByteBuffer.wrap(sharedMemory.getByteArray(0, IrsdkHeader.HEADER_SIZE)));
                 lastTickCount = Integer.MAX_VALUE;
             }
@@ -70,7 +70,7 @@ public class IrsdkUtils {
 
         if (Objects.isNull(sharedMemory)) {
             if (Objects.isNull(dataValidEvent)) {
-                dataValidEvent = windowsHelper.openEvent(IrsdkDefines.IRSDK_DATAVALIDEVENTNAME);
+                dataValidEvent = windowsService.openEvent(IrsdkDefines.IRSDK_DATAVALIDEVENTNAME);
                 lastTickCount = Integer.MAX_VALUE;
             }
         }
@@ -84,7 +84,7 @@ public class IrsdkUtils {
         return isInitialized;
     }
 
-    private boolean getNewData(String data) {
+    public boolean getNewData(String data) {
         if (isInitialized || startup()) {
 
             if (irsdkHeader.getStatus() != IrsdkStatusField.IRSDK_STCONNECTED.getValue()) {
@@ -128,4 +128,19 @@ public class IrsdkUtils {
         return false;
     }
 
+    boolean isConnected() {
+        if (isInitialized) {
+            Timestamp elapsedTime = new Timestamp(System.currentTimeMillis() - lastValidTime.getTime());
+            return (irsdkHeader.getStatus() & IrsdkStatusField.IRSDK_STCONNECTED.getValue()) > 0
+                    && elapsedTime.getTime() < timeout;
+        }
+        return false;
+    }
+
+    public IrsdkHeader getHeader() {
+        if (isInitialized) {
+            return irsdkHeader;
+        }
+        return null;
+    }
 }

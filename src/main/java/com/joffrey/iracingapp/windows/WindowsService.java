@@ -1,22 +1,23 @@
 package com.joffrey.iracingapp.windows;
 
-import com.joffrey.iracingapp.irsdk.IrsdkDefines;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.win32.W32APIOptions;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
-public class WindowsHelper {
+@Service
+public class WindowsService {
 
     public int lastError = 0;
 
     public interface Kernel32Impl extends Kernel32 {
 
-        Kernel32Impl instance = (Kernel32Impl) Native.loadLibrary("kernel32", Kernel32Impl.class, W32APIOptions.DEFAULT_OPTIONS);
+        static final Kernel32Impl KERNEL_32 = Native.loadLibrary("kernel32",
+                                                                               Kernel32Impl.class,
+                                                                               W32APIOptions.DEFAULT_OPTIONS);
 
-        HANDLE openFileMapping(int lfProtect, boolean bInherit, String lpName);
+        HANDLE OpenFileMapping(int lfProtect, boolean bInherit, String lpName);
 
         HANDLE OpenEvent(int i, boolean bManualReset, String lpName);
 
@@ -28,11 +29,13 @@ public class WindowsHelper {
 
     }
 
-    public Handle openMemoryMapFile() {
-        WinNT.HANDLE hMemMapFile = Kernel32Impl.instance.openFileMapping(WinNT.SECTION_MAP_READ,
-                                                                         false,
-                                                                         IrsdkDefines.IRSDK_MEMMAPFILENAME);
-        return hMemMapFile == null ? null : new Handle(hMemMapFile);
+    public Handle openMemoryMapFile(String filename) {
+        WinNT.HANDLE memMapFile = Kernel32Impl.KERNEL_32.OpenFileMapping(WinNT.SECTION_MAP_READ,
+                                                                          false,
+                                                                          filename);
+        lastError = Kernel32Impl.KERNEL_32.GetLastError();
+
+        return memMapFile == null ? null : new Handle(memMapFile);
     }
 
     public Pointer mapViewOfFile(Handle handle) {
