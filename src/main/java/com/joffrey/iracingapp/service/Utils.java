@@ -1,8 +1,5 @@
 package com.joffrey.iracingapp.service;
 
-
-import static jdk.internal.misc.Unsafe.makeLong;
-
 import com.joffrey.iracingapp.model.Header;
 import com.joffrey.iracingapp.model.VarHeader;
 import com.joffrey.iracingapp.model.defines.BroadcastMsg;
