@@ -4,6 +4,7 @@ package com.joffrey.iracingapp.service;
 import static jdk.internal.misc.Unsafe.makeLong;
 
 import com.joffrey.iracingapp.model.Header;
+import com.joffrey.iracingapp.model.VarHeader;
 import com.joffrey.iracingapp.model.defines.BroadcastMsg;
 import com.joffrey.iracingapp.model.defines.Constant;
 import com.joffrey.iracingapp.model.defines.StatusField;
@@ -23,14 +24,17 @@ public class Utils {
 
     private final WindowsService windowsService;
 
-    private int       lastTickCount  = Integer.MAX_VALUE;
-    private boolean   isInitialized  = false;
-    private Handle    memMapFile     = null;
-    private Handle    dataValidEvent = null;
-    private Pointer   sharedMemory   = null;
-    private Header    header         = null;
-    private Timestamp lastValidTime  = new Timestamp(System.currentTimeMillis());
-    private double    timeout        = 30.0; // timeout after 30 seconds with no communication
+    private Handle memMapFile     = null;
+    private Handle dataValidEvent = null;
+
+    private Pointer sharedMemory = null;
+    private Header  header       = null;
+
+    private int     lastTickCount = Integer.MAX_VALUE;
+    private boolean isInitialized = false;
+
+    private double    timeout       = 30.0; // timeout after 30 seconds with no communication
+    private Timestamp lastValidTime = new Timestamp(System.currentTimeMillis());
 
     public boolean startup() {
 
@@ -62,6 +66,10 @@ public class Utils {
 
         isInitialized = false;
         return isInitialized;
+    }
+
+    public void shutdown() throws NotImplementedException {
+        throw new NotImplementedException("Not Impl");
     }
 
     public boolean getNewData(String data) {
@@ -148,6 +156,34 @@ public class Utils {
             return header;
         }
         return null;
+    }
+
+    public String getData(int index) throws NotImplementedException {
+        throw new NotImplementedException("Not Impl");
+    }
+
+    public String getSessionInfoStr() throws NotImplementedException {
+        throw new NotImplementedException("Not Impl");
+    }
+
+    public String getSessionInfoStrUpdate() throws NotImplementedException {
+        throw new NotImplementedException("Not Impl");
+    }
+
+    public VarHeader getVarHeaderPtr() throws NotImplementedException {
+        throw new NotImplementedException("Not Impl");
+    }
+
+    public VarHeader getVarHeaderEntry(int index) throws NotImplementedException {
+        throw new NotImplementedException("Not Impl");
+    }
+
+    public int varNameToIndex(String name) throws NotImplementedException {
+        throw new NotImplementedException("Not Impl");
+    }
+
+    public int varNameToOffset(String name) throws NotImplementedException {
+        throw new NotImplementedException("Not Impl");
     }
 
     public int getBroadcastMsgID() {
