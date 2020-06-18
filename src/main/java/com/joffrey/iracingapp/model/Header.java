@@ -1,11 +1,12 @@
-package com.joffrey.iracingapp.irsdk;
+package com.joffrey.iracingapp.model;
 
+import com.joffrey.iracingapp.model.defines.Constant;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import lombok.Data;
 
 @Data
-public class IrsdkHeader {
+public class Header {
 
     public static final int HEADER_SIZE = (12 * 4) + ((4 * 4) * 4); // 112
 
@@ -24,12 +25,12 @@ public class IrsdkHeader {
     private int numVars;                                                                  // length of arra pointed to by varHeaderOffset
     private int varHeaderOffset;                                                          // offset to irsdk_varHeader[numVars] array, Describes the variables received in varBuf
 
-    private int           numBuf;                                                         // <= IRSDK_MAX_BUFS (3 for now)
-    private int           bufLen;                                                         // length in bytes for one line
-    private int[]         pad1   = new int[2];                                            // (16 byte align)
-    private IrsdkVarBuf[] varBuf = new IrsdkVarBuf[IrsdkDefines.IRSDK_MAX_BUFS];          // buffers of data being written to
+    private int      numBuf;                                                         // <= IRSDK_MAX_BUFS (3 for now)
+    private int      bufLen;                                                         // length in bytes for one line
+    private int[]    pad1   = new int[2];                                                 // (16 byte align)
+    private VarBuf[] varBuf = new VarBuf[Constant.IRSDK_MAX_BUFS];                        // buffers of data being written to
 
-    public IrsdkHeader(ByteBuffer byteBuffer) {
+    public Header(ByteBuffer byteBuffer) {
         this.headerByteBuffer = byteBuffer;
         this.headerByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
 

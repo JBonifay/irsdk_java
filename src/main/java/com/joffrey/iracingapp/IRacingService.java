@@ -1,6 +1,6 @@
 package com.joffrey.iracingapp;
 
-import com.joffrey.iracingapp.irsdk.IrsdkClient;
+import com.joffrey.iracingapp.service.Client;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -10,14 +10,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class IRacingService {
 
-    private final IrsdkClient irsdkClient;
+    private final Client client;
 
     private static final int TIMEOUT = 3000;
     private int lastSetupCount = -1;
 
-    public void startup() throws InterruptedException {
-        log.info("Starting iRacing server.");
-
+    public void main() throws InterruptedException {
+        log.info("Starting IRacing connector.");
         log.info("Initialization ...");
 
         if (init()) {
@@ -46,7 +45,7 @@ public class IRacingService {
     private void run() throws InterruptedException {
 
         // wait up to 16 ms for start of session or new data
-        if (irsdkClient.waitForData(TIMEOUT)) {
+        if (client.waitForData(TIMEOUT)) {
 
         }
 
@@ -57,7 +56,7 @@ public class IRacingService {
 
     private void monitorConnectionStatus() {
 
-        boolean isConnected = irsdkClient.isConnected();
+        boolean isConnected = client.isConnected();
         boolean wasConnected = false;
 
         if (wasConnected != isConnected) {

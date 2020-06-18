@@ -1,9 +1,11 @@
-package com.joffrey.iracingapp.windows;
+package com.joffrey.iracingapp.service.windows;
 
-import com.sun.jna.Native;
+import com.joffrey.iracingapp.model.windows.Handle;
+import com.joffrey.iracingapp.model.windows.Pointer;
 import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.Win32Exception;
 import com.sun.jna.platform.win32.WinNT;
-import com.sun.jna.win32.W32APIOptions;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,28 +13,8 @@ public class WindowsService {
 
     public int lastError = 0;
 
-    public interface Kernel32Impl extends Kernel32 {
-
-        static final Kernel32Impl KERNEL_32 = Native.loadLibrary("kernel32",
-                                                                               Kernel32Impl.class,
-                                                                               W32APIOptions.DEFAULT_OPTIONS);
-
-        HANDLE OpenFileMapping(int lfProtect, boolean bInherit, String lpName);
-
-        HANDLE OpenEvent(int i, boolean bManualReset, String lpName);
-
-        boolean SetConsoleTitle(String lpTitle);
-
-        boolean PurgeComm(HANDLE hFile, WinNT.DWORD dwFlags);
-
-        boolean EscapeCommFunction(HANDLE hFile, WinNT.DWORD dwFunc);
-
-    }
-
     public Handle openMemoryMapFile(String filename) {
-        WinNT.HANDLE memMapFile = Kernel32Impl.KERNEL_32.OpenFileMapping(WinNT.SECTION_MAP_READ,
-                                                                          false,
-                                                                          filename);
+        WinNT.HANDLE memMapFile = Kernel32Impl.KERNEL_32.OpenFileMapping(WinNT.SECTION_MAP_READ, false, filename);
         lastError = Kernel32Impl.KERNEL_32.GetLastError();
 
         return memMapFile == null ? null : new Handle(memMapFile);
@@ -61,5 +43,11 @@ public class WindowsService {
         return h == null ? null : new Handle(h);
     }
 
+    public int registerWindowMessage(final String lpString) {
+        final int messageId = User32.INSTANCE.RegisterWindowMessage(lpString);
+        if (messageId == 0)
+            throw new Win32Exception(Kernel32.INSTANCE.GetLastError());
+        return messageId;
+    }
 
 }

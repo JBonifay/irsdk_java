@@ -1,4 +1,4 @@
-package com.joffrey.iracingapp.windows;
+package com.joffrey.iracingapp.model.windows;
 
 import java.nio.ByteBuffer;
 import java.util.function.Function;

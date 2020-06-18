@@ -1,4 +1,4 @@
-package com.joffrey.iracingapp.windows;
+package com.joffrey.iracingapp.model.windows;
 
 
 import com.sun.jna.platform.win32.WinNT;
@@ -14,7 +14,7 @@ public class Handle {
         this.handle = handle;
     }
 
-    protected WinNT.HANDLE get() {
+    public WinNT.HANDLE get() {
         return handle;
     }
 }

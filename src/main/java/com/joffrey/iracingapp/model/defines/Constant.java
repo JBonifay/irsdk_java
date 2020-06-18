@@ -1,6 +1,6 @@
-package com.joffrey.iracingapp.irsdk;
+package com.joffrey.iracingapp.model.defines;
 
-public class IrsdkDefines {
+public class Constant {
 
     public static final String IRSDK_DATAVALIDEVENTNAME = "Local\\IRSDKDataValidEvent";
     public static final String IRSDK_MEMMAPFILENAME     = "Local\\IRSDKMemMapFileName";
@@ -14,6 +14,8 @@ public class IrsdkDefines {
     public static final int   IRSDK_UNLIMITED_LAPS = 32767;
     public static final float IRSDK_UNLIMITED_TIME = 604800.0f;
 
+    // latest version of our telemetry headers
     public static final int IRSDK_VER = 2;
+
 
 }

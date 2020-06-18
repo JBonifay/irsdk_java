@@ -1,9 +1,9 @@
-package com.joffrey.iracingapp.irsdk;
+package com.joffrey.iracingapp.model;
 
 import lombok.Data;
 
 @Data
-public class IrsdkVarBuf {
+public class VarBuf {
 
     private int   tickCount;           // used to detect changes in data
     private int   bufOffset;           // offset from header
