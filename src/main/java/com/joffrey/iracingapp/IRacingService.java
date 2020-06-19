@@ -1,6 +1,6 @@
 package com.joffrey.iracingapp;
 
-import com.joffrey.iracingapp.service.Client;
+import com.joffrey.iracingapp.service.iracing.Client;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
