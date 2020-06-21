@@ -1,5 +1,7 @@
 package com.joffrey.iracingapp;
 
+import com.joffrey.iracingapp.service.iracing.Client;
+import com.sun.tools.javac.Main;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -11,7 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class IracingAppApplication implements CommandLineRunner {
 
-    private final IRacingService iRacingService;
+    private final Client client;
 
     public static void main(String[] args) {
         SpringApplication.run(IracingAppApplication.class, args);
@@ -19,6 +21,25 @@ public class IracingAppApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        iRacingService.main();
+
+        while (true) {
+
+            startSdk();
+
+        }
+
+
+    }
+
+    private void startSdk() throws InterruptedException {
+
+        if (client.waitForData(16)) {
+
+            log.info("oui");
+
+
+        }
+
+
     }
 }

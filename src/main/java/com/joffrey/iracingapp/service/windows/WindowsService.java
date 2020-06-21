@@ -6,12 +6,14 @@ import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.Win32Exception;
 import com.sun.jna.platform.win32.WinNT;
+import lombok.Data;
 import org.springframework.stereotype.Service;
 
+@Data
 @Service
 public class WindowsService {
 
-    public int lastError = 0;
+    private int lastError = 0;
 
     public Handle openMemoryMapFile(String filename) {
         WinNT.HANDLE memMapFile = Kernel32Impl.KERNEL_32.OpenFileMapping(WinNT.SECTION_MAP_READ, false, filename);
@@ -38,7 +40,7 @@ public class WindowsService {
     }
 
     public Handle openEvent(String eventName) {
-        WinNT.HANDLE h = Kernel32.INSTANCE.OpenEvent(WinNT.SYNCHRONIZE, false, eventName);
+        WinNT.HANDLE h = Kernel32Impl.KERNEL_32.OpenEvent(WinNT.SYNCHRONIZE, false, eventName);
         lastError = Kernel32.INSTANCE.GetLastError();
         return h == null ? null : new Handle(h);
     }

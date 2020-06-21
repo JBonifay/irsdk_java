@@ -36,29 +36,30 @@ public class Utils {
     public boolean startup() {
 
         // Try to open Memory Mapped File
-        if (Objects.isNull(memMapFile)) {
+        if (memMapFile == null) {
             memMapFile = windowsService.openMemoryMapFile(Constant.IRSDK_MEMMAPFILENAME);
             lastTickCount = Integer.MAX_VALUE;
         }
 
-        if (Objects.nonNull(memMapFile)) {
-            if (Objects.isNull(sharedMemory)) {
+        if (memMapFile != null) {
+            if (sharedMemory == null) {
                 sharedMemory = windowsService.mapViewOfFile(memMapFile);
                 header = new Header(ByteBuffer.wrap(sharedMemory.getByteArray(0, Header.HEADER_SIZE)));
                 lastTickCount = Integer.MAX_VALUE;
             }
-        }
 
-        if (Objects.isNull(sharedMemory)) {
-            if (Objects.isNull(dataValidEvent)) {
-                dataValidEvent = windowsService.openEvent(Constant.IRSDK_DATAVALIDEVENTNAME);
-                lastTickCount = Integer.MAX_VALUE;
+            if (sharedMemory != null) {
+                if (dataValidEvent == null) {
+                    dataValidEvent = windowsService.openEvent(Constant.IRSDK_DATAVALIDEVENTNAME);
+                    lastTickCount = Integer.MAX_VALUE;
+                }
             }
-        }
 
-        if (Objects.nonNull(dataValidEvent)) {
-            isInitialized = true;
-            return isInitialized;
+            if (dataValidEvent != null) {
+                isInitialized = true;
+                return isInitialized;
+            }
+
         }
 
         isInitialized = false;
@@ -79,18 +80,18 @@ public class Utils {
 
             int latest = 0;
             for (int i = 1; i < header.getNumBuf(); i++) {
-                if (header.getVarBuf()[latest].getTickCount() < header.getVarBuf()[i].getTickCount()) {
+                if (header.getVarBuf_TickCount(latest) < header.getVarBuf_TickCount(i)) {
                     latest = i;
                 }
             }
 
-            if (lastTickCount < header.getVarBuf()[latest].getTickCount()) {
+            if (lastTickCount < header.getVarBuf_TickCount(latest)) {
                 if (Objects.nonNull(data)) {
                     for (int count = 0; count < 2; count++) {
 
-                        int curTickCount = header.getVarBuf()[latest].getTickCount();
+                        int curTickCount = header.getVarBuf_TickCount(latest);
                         // memcpy(data, pSharedMem + pHeader->varBuf[latest].bufOffset, pHeader->bufLen)
-                        if (curTickCount == header.getVarBuf()[latest].getTickCount()) {
+                        if (curTickCount == header.getVarBuf_TickCount(latest)) {
                             lastTickCount = curTickCount;
                             lastValidTime = null;
                             return true;
@@ -100,13 +101,13 @@ public class Utils {
                     return false;
 
                 } else {
-                    lastTickCount = header.getVarBuf()[latest].getTickCount();
+                    lastTickCount = header.getVarBuf_TickCount(latest);
                     lastValidTime = null;
                     return true;
                 }
 
-            } else if (lastTickCount > header.getVarBuf()[latest].getTickCount()) {
-                lastTickCount = header.getVarBuf()[latest].getTickCount();
+            } else if (lastTickCount > header.getVarBuf_TickCount(latest)) {
+                lastTickCount = header.getVarBuf_TickCount(latest);
                 return false;
             }
         }
