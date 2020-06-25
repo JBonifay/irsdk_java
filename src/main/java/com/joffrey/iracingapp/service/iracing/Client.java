@@ -59,4 +59,8 @@ public class Client {
         }
         return false;
     }
+
+    public boolean wasSessionStrUpdated() {
+        return false;
+    }
 }
