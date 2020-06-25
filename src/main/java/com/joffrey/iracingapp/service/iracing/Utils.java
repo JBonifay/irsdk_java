@@ -10,6 +10,9 @@ import com.joffrey.iracingapp.model.windows.Pointer;
 import com.joffrey.iracingapp.service.windows.WindowsService;
 import java.nio.ByteBuffer;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import jdk.jshell.spi.ExecutionControl.NotImplementedException;
 import lombok.RequiredArgsConstructor;
@@ -21,16 +24,17 @@ public class Utils {
 
     private final WindowsService windowsService;
 
-    private Handle memMapFile     = null;
-    private Handle dataValidEvent = null;
+    private Handle  memMapFile     = null;
+    private Handle  dataValidEvent = null;
+    private Pointer sharedMemory   = null;
 
-    private Pointer sharedMemory = null;
-    private Header  header       = null;
+    private Header                 header        = null;
+    private Map<String, VarHeader> varHeaderList = null;
 
     private int     lastTickCount = Integer.MAX_VALUE;
     private boolean isInitialized = false;
 
-    private double    timeout       = 30.0; // timeout after 30 seconds with no communication
+    private double    timeout = 30.0; // timeout after 30 seconds with no communication
     private Timestamp lastValidTime = new Timestamp(System.currentTimeMillis());
 
     public boolean startup() {
@@ -44,7 +48,8 @@ public class Utils {
         if (memMapFile != null) {
             if (sharedMemory == null) {
                 sharedMemory = windowsService.mapViewOfFile(memMapFile);
-                header = new Header(ByteBuffer.wrap(sharedMemory.getByteArray(0, Header.HEADER_SIZE)));
+                // header = new Header(ByteBuffer.wrap(sharedMemory.getByteArray(0, Header.HEADER_SIZE)));
+                header = new Header(sharedMemory);
                 lastTickCount = Integer.MAX_VALUE;
             }
 
@@ -70,7 +75,7 @@ public class Utils {
         throw new NotImplementedException("Not Impl");
     }
 
-    public boolean getNewData(String data) {
+    public boolean getNewData(ByteBuffer data) {
         if (isInitialized || startup()) {
 
             if (header.getStatus() != StatusField.IRSDK_STCONNECTED.getValue()) {
@@ -80,20 +85,26 @@ public class Utils {
 
             int latest = 0;
             for (int i = 1; i < header.getNumBuf(); i++) {
-                if (header.getVarBuf_TickCount(latest) < header.getVarBuf_TickCount(i)) {
+                if (header.getVarBufTickCount(latest) < header.getVarBufTickCount(i)) {
                     latest = i;
                 }
             }
 
-            if (lastTickCount < header.getVarBuf_TickCount(latest)) {
+            if (lastTickCount < header.getVarBufTickCount(latest)) {
                 if (Objects.nonNull(data)) {
                     for (int count = 0; count < 2; count++) {
 
-                        int curTickCount = header.getVarBuf_TickCount(latest);
+                        int curTickCount = header.getVarBufTickCount(latest);
+
                         // memcpy(data, pSharedMem + pHeader->varBuf[latest].bufOffset, pHeader->bufLen)
-                        if (curTickCount == header.getVarBuf_TickCount(latest)) {
+                        data = ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarHeaderOffset(),
+                                                                         header.getNumVars() * VarHeader.SIZEOF_varHeader));
+
+                        varHeaderList = VarHeader.getVarheaderList(header.getNumVars(), data);
+
+                        if (curTickCount == header.getVarBufTickCount(latest)) {
                             lastTickCount = curTickCount;
-                            lastValidTime = null;
+                            lastValidTime = new Timestamp(System.currentTimeMillis());
                             return true;
                         }
                     }
@@ -101,20 +112,20 @@ public class Utils {
                     return false;
 
                 } else {
-                    lastTickCount = header.getVarBuf_TickCount(latest);
-                    lastValidTime = null;
+                    lastTickCount = header.getVarBufTickCount(latest);
+                    lastValidTime = new Timestamp(System.currentTimeMillis());
                     return true;
                 }
 
-            } else if (lastTickCount > header.getVarBuf_TickCount(latest)) {
-                lastTickCount = header.getVarBuf_TickCount(latest);
+            } else if (lastTickCount > header.getVarBufTickCount(latest)) {
+                lastTickCount = header.getVarBufTickCount(latest);
                 return false;
             }
         }
         return false;
     }
 
-    public boolean waitForDataReady(int timeOut, String data) throws InterruptedException {
+    public boolean waitForDataReady(int timeOut, ByteBuffer data) throws InterruptedException {
         if (isInitialized || startup()) {
 
             // just to be sure, check before we sleep

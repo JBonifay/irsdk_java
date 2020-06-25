@@ -1,5 +1,6 @@
 package com.joffrey.iracingapp.service.iracing;
 
+import java.nio.ByteBuffer;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -10,10 +11,10 @@ public class Client {
 
     private final Utils utils;
 
-    private String data          = "";
-    private int    nData;
-    private int    statudID      = 0;
-    private int    lastSessionCt = -1;
+    private ByteBuffer data;
+    private int        nData;
+    private int        statudID      = 0;
+    private int        lastSessionCt = -1;
 
     public boolean isConnected() {
         return data != null && utils.isConnected();
@@ -25,15 +26,15 @@ public class Client {
         if (utils.waitForDataReady(timeoutMS, data) && Objects.nonNull(utils.getHeader())) {
 
             // if new connection, or data changed lenght then init
-            if (Objects.nonNull(data) || nData != utils.getHeader().getBufLen()) {
+            if (data != null || nData != utils.getHeader().getBufLen()) {
 
                 // allocate memory to hold incoming data from sim
-                if (Objects.nonNull(data)) {
+                if (data != null) {
                     data = null;
                 }
 
                 nData = utils.getHeader().getBufLen();
-                // data = new String(nData);
+                data = ByteBuffer.allocate(nData);
 
                 // indicate a new connection
                 statudID++;
@@ -45,13 +46,13 @@ public class Client {
                     return true;
                 }
 
-            } else if (!data.isEmpty()) {
+            } else if (data != null) {
                 // else we are already initialized, and data is ready for processing
                 return true;
             }
 
         } else if (!isConnected()) {
-            if (!data.isEmpty()) {
+            if (data != null) {
                 data = null;
                 lastSessionCt = -1;
             }

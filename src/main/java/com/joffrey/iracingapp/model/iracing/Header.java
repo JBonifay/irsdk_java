@@ -1,9 +1,9 @@
 package com.joffrey.iracingapp.model.iracing;
 
 import com.joffrey.iracingapp.model.iracing.defines.Constant;
+import com.joffrey.iracingapp.model.windows.Pointer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import lombok.Data;
 
 public class Header {
 
@@ -12,8 +12,8 @@ public class Header {
     public static final int ALIGNMENT               = 4;
     public static final int SIZEOF_VARBUF           = NUMBER_OF_VARBUF_FIELDS * ALIGNMENT;
 
-    private ByteBuffer headerByteBuffer;
-
+    private Pointer sharedMemory; 
+    
     private int ver;                                                                      // this api header version, see IRSDK_VER
     private int status;                                                                   // bitfield using irsdk_StatusField
     private int tickRate;                                                                 // ticks per second (60 or 360 etc)
@@ -32,56 +32,74 @@ public class Header {
     private int[]    pad1   = new int[2];                                                 // (16 byte align)
     private VarBuf[] varBuf = new VarBuf[Constant.IRSDK_MAX_BUFS];                        // buffers of data being written to
 
-    public Header(ByteBuffer byteBuffer) {
-        headerByteBuffer = ByteBuffer.allocate(HEADER_SIZE);
-        headerByteBuffer.position(0);
-        byteBuffer.position(0);
-        headerByteBuffer.put(byteBuffer);
-        headerByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+    // public Header(ByteBuffer byteBuffer) {
+    //     getHeaderByteBuffer() = ByteBuffer.allocate(HEADER_SIZE);
+    //     getHeaderByteBuffer().position(0);
+    //     byteBuffer.position(0);
+    //     getHeaderByteBuffer().put(byteBuffer);
+    //     getHeaderByteBuffer().order(ByteOrder.LITTLE_ENDIAN);
+    // }
+
+    public Header(Pointer sharedMemory) {
+        this.sharedMemory = sharedMemory;
     }
 
-    public int getVarBuf_TickCount(int varBuf) {
-        return headerByteBuffer.getInt((varBuf * SIZEOF_VARBUF) + 48);
+    private ByteBuffer getHeaderByteBuffer() {
+        ByteBuffer headerByteBuffer = ByteBuffer.allocate(HEADER_SIZE);
+        headerByteBuffer.position(0);
+        headerByteBuffer.position(0);
+        headerByteBuffer.put(ByteBuffer.wrap(sharedMemory.getByteArray(0, Header.HEADER_SIZE)));
+        headerByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        return headerByteBuffer;
     }
+
+    public int getVarBufTickCount(int varBuf) {
+        return getHeaderByteBuffer().getInt((varBuf * SIZEOF_VARBUF) + 48);
+    }
+
+    public int getVarBufOffset(int varBuf) {
+        return getHeaderByteBuffer().getInt((varBuf * SIZEOF_VARBUF) + 52);
+    }
+
 
     public int getVer() {
-        return headerByteBuffer.getInt(0);
+        return getHeaderByteBuffer().getInt(0);
     }
 
     public int getStatus() {
-        return headerByteBuffer.getInt(4);
+        return getHeaderByteBuffer().getInt(4);
     }
 
     public int getTickRate() {
-        return headerByteBuffer.getInt(8);
+        return getHeaderByteBuffer().getInt(8);
     }
 
     public int getSessionInfoUpdate() {
-        return headerByteBuffer.getInt(12);
+        return getHeaderByteBuffer().getInt(12);
     }
 
     public int getSessionInfoLen() {
-        return headerByteBuffer.getInt(16);
+        return getHeaderByteBuffer().getInt(16);
     }
 
     public int getSessionInfoOffset() {
-        return headerByteBuffer.getInt(20);
+        return getHeaderByteBuffer().getInt(20);
     }
 
     public int getNumVars() {
-        return headerByteBuffer.getInt(24);
+        return getHeaderByteBuffer().getInt(24);
     }
 
     public int getVarHeaderOffset() {
-        return headerByteBuffer.getInt(28);
+        return getHeaderByteBuffer().getInt(28);
     }
 
     public int getNumBuf() {
-        return headerByteBuffer.getInt(32);
+        return getHeaderByteBuffer().getInt(32);
     }
 
     public int getBufLen() {
-        return headerByteBuffer.getInt(36);
+        return getHeaderByteBuffer().getInt(36);
     }
 
 
