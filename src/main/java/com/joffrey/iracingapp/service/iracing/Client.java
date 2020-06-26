@@ -1,9 +1,9 @@
 package com.joffrey.iracingapp.service.iracing;
 
-import com.joffrey.iracingapp.CVar;
 import com.joffrey.iracingapp.model.iracing.VarHeader;
+import com.joffrey.iracingapp.model.iracing.defines.VarType;
+import com.joffrey.iracingapp.model.iracing.defines.VarTypeBytes;
 import java.nio.ByteBuffer;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +17,7 @@ public class Client {
     private int        nData;
     private int        statusID      = 0;
     private int        lastSessionCt = -1;
+    private int        test          = 1;
 
     public boolean isConnected() {
         return data != null && utils.isConnected();
@@ -25,7 +26,7 @@ public class Client {
     public boolean waitForData(int timeoutMS) throws InterruptedException {
 
         // wait for start of session or new data
-        if (utils.waitForDataReady(timeoutMS, data) && Objects.nonNull(utils.getHeader())) {
+        if (utils.waitForDataReady(timeoutMS, data) && utils.getHeader() != null) {
 
             // if new connection, or data changed lenght then init
             if (data != null || nData != utils.getHeader().getBufLen()) {
@@ -34,17 +35,18 @@ public class Client {
                 if (data != null) {
                     data = null;
                 }
-
                 nData = utils.getHeader().getBufLen();
                 data = ByteBuffer.allocate(nData);
 
                 // indicate a new connection
                 statusID++;
+
                 // reset session info str status
                 lastSessionCt = -1;
 
                 // and try to fill in the data
                 if (utils.getNewData(data)) {
+                    data = utils.getDataBuffer();
                     return true;
                 }
 
@@ -78,30 +80,55 @@ public class Client {
         return utils.getSessionInfoStrUpdate();
     }
 
-    public double getVarHeaderDouble(CVar cVar) {
+    private boolean checkIdx() {
+        return true;
+    }
 
-            VarHeader vh = utils.getVarHeaderEntry(0);
-        // if (checkIdx(cVar)) {
-        //
-        //     if (vh != null) {
-        //
-        //     }
-        //
-        //
-        // }
+    public double getVarDouble(int idx, int entry) {
 
+        if (checkIdx()) {
+
+            if (isConnected()) {
+                final VarHeader vh = utils.getVarHeaderEntry(idx);
+                if (vh != null) {
+                    if (entry >= 0 && entry < vh.getCount()) {
+
+                        byte buffer = data.get(vh.getOffset());
+
+                        VarType vhType = VarType.get(vh.getType());
+                        switch (vhType) {
+                            case irsdk_double:
+                                return data.getDouble(vh.getOffset() + (VarTypeBytes.IRSDK_DOUBLE.getValue() * idx));
+                        }
+
+                    }
+                }
+            }
+        }
         return 0.0;
 
     }
 
-    // private boolean checkIdx(CVar cVar) {
-    //     if (isConnected()) {
-    //         if (statusID != cVar.getStatusID()) {
-    //             statusID = getStatusID();
-    //             idx = getVarIdx(name);
-    //         }
-    //     }
-    //
-    // }
+    public int getVarInt(int idx, int entry) {
+
+        if (checkIdx()) {
+
+            if (isConnected()) {
+                VarHeader vh = utils.getVarHeaderEntry(idx);
+                if (vh != null) {
+                    if (entry >= 0 && entry < vh.getCount()) {
+                        VarType vhType = VarType.get(vh.getType());
+                        switch (vhType) {
+                            case irsdk_int :
+                                return data.getInt(vh.getOffset() + (VarTypeBytes.IRSDK_INT.getValue() * idx));
+                        }
+
+                    }
+                }
+
+            }
+        }
+        return 0;
+    }
 
 }

@@ -5,13 +5,15 @@ import com.joffrey.iracingapp.model.iracing.VarHeader;
 import com.joffrey.iracingapp.model.iracing.defines.BroadcastMsg;
 import com.joffrey.iracingapp.model.iracing.defines.Constant;
 import com.joffrey.iracingapp.model.iracing.defines.StatusField;
-import com.joffrey.iracingapp.model.windows.Handle;
-import com.joffrey.iracingapp.model.windows.Pointer;
 import com.joffrey.iracingapp.service.windows.WindowsService;
+import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.WinNT;
 import java.nio.ByteBuffer;
 import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
-import java.util.Objects;
+import java.util.TreeMap;
 import jdk.jshell.spi.ExecutionControl.NotImplementedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -22,9 +24,10 @@ public class Utils {
 
     private final WindowsService windowsService;
 
-    private Handle  memMapFile     = null;
-    private Handle  dataValidEvent = null;
-    private Pointer sharedMemory   = null;
+    private WinNT.HANDLE memMapFile     = null;
+    private WinNT.HANDLE dataValidEvent = null;
+    private Pointer      sharedMemory   = null;
+    private ByteBuffer   dataBuffer;
 
     private Header                 header        = null;
     private Map<String, VarHeader> varHeaderList = null;
@@ -76,6 +79,7 @@ public class Utils {
     public boolean getNewData(ByteBuffer data) {
         if (isInitialized || startup()) {
 
+            // if sim is not active, then no new data
             if (header.getStatus() != StatusField.IRSDK_STCONNECTED.getValue()) {
                 lastTickCount = Integer.MAX_VALUE;
                 return false;
@@ -88,17 +92,22 @@ public class Utils {
                 }
             }
 
+            // if newer than last recieved, than report new data
             if (lastTickCount < header.getVarBufTickCount(latest)) {
-                if (Objects.nonNull(data)) {
+
+                // if asked to retrieve the data
+                if (data != null) {
+
+                    // try twice to get the data out
                     for (int count = 0; count < 2; count++) {
 
                         int curTickCount = header.getVarBufTickCount(latest);
 
                         // memcpy(data, pSharedMem + pHeader->varBuf[latest].bufOffset, pHeader->bufLen)
-                        data = ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarHeaderOffset(),
-                                                                         header.getNumVars() * VarHeader.SIZEOF_VAR_HEADER));
+                        dataBuffer = ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarHeaderOffset(), header.getNumVars()
+                                                                                                            * VarHeader.SIZEOF_VAR_HEADER));
 
-                        varHeaderList = VarHeader.getVarheaderList(header.getNumVars(), data);
+                        varHeaderList = getVarheaderList(header.getNumVars(), dataBuffer);
 
                         if (curTickCount == header.getVarBufTickCount(latest)) {
                             lastTickCount = curTickCount;
@@ -107,6 +116,7 @@ public class Utils {
                         }
                     }
 
+                    // if here, the data changed out from under us
                     return false;
 
                 } else {
@@ -115,12 +125,27 @@ public class Utils {
                     return true;
                 }
 
+                // if older than last recieved, than reset, we probably disconnected
             } else if (lastTickCount > header.getVarBufTickCount(latest)) {
                 lastTickCount = header.getVarBufTickCount(latest);
                 return false;
             }
+            // else the same, and nothing changed this tick
         }
+
         return false;
+    }
+
+    public Map<String, VarHeader> getVarheaderList(int numberOfVar, ByteBuffer buffer) {
+        Map<String, VarHeader> varHeaderMap = new TreeMap<>();
+
+        for (int i = 0; i < numberOfVar; i++) {
+            int varOffset = i * VarHeader.SIZEOF_VAR_HEADER;
+            VarHeader varHeader = new VarHeader(buffer, varOffset);
+            //now put it in the cache
+            varHeaderMap.put(varHeader.getName(), varHeader);
+        }
+        return varHeaderMap;
     }
 
     public boolean waitForDataReady(int timeOut, ByteBuffer data) throws InterruptedException {
@@ -152,8 +177,8 @@ public class Utils {
 
     public boolean isConnected() {
         if (isInitialized) {
-            Timestamp elapsedTime = new Timestamp(System.currentTimeMillis() - lastValidTime.getTime());
-            return (header.getStatus() & StatusField.IRSDK_STCONNECTED.getValue()) > 0 && elapsedTime.getTime() < timeout;
+            long elapsedTime = Duration.between(lastValidTime.toInstant(), Instant.now()).getSeconds();
+            return (header.getStatus() & StatusField.IRSDK_STCONNECTED.getValue()) > 0 && elapsedTime < timeout;
         }
         return false;
     }
@@ -191,10 +216,9 @@ public class Utils {
         if (isInitialized) {
             if (index >= 0 && index < header.getNumVars()) {
                 // header.getVarHeaderOffset()
-                return new VarHeader(ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarHeaderOffset() + index,
-                                                                               header.getVarHeaderOffset()
-                                                                               + index
-                                                                               + VarHeader.SIZEOF_VAR_HEADER)));
+                return new VarHeader(ByteBuffer.wrap(
+                        sharedMemory.getByteArray(header.getVarHeaderOffset() + (VarHeader.SIZEOF_VAR_HEADER * index),
+                                                  VarHeader.SIZEOF_VAR_HEADER)));
             }
         }
         return null;
@@ -242,4 +266,7 @@ public class Utils {
         return retVal;
     }
 
+    public ByteBuffer getDataBuffer() {
+        return dataBuffer;
+    }
 }

@@ -1,7 +1,7 @@
 package com.joffrey.iracingapp.model.iracing;
 
 import com.joffrey.iracingapp.model.iracing.defines.Constant;
-import com.joffrey.iracingapp.model.windows.Pointer;
+import com.sun.jna.Pointer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -12,7 +12,7 @@ public class Header {
     public static final int ALIGNMENT               = 4;
     public static final int SIZEOF_VARBUF           = NUMBER_OF_VARBUF_FIELDS * ALIGNMENT;
 
-    private Pointer sharedMemory; 
+    private Pointer sharedMemory;
     
     private int ver;                                                                      // this api header version, see IRSDK_VER
     private int status;                                                                   // bitfield using irsdk_StatusField

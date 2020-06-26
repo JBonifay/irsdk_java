@@ -1,7 +1,6 @@
 package com.joffrey.iracingapp;
 
 import com.joffrey.iracingapp.service.iracing.Client;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -134,7 +133,8 @@ public class LapTimingSample implements CommandLineRunner {
 
     private void processLapInfo() {
 
-        double currentTime = client.getVarHeaderDouble(sessionTime);
+        double currentTime = client.getVarDouble(0,0);
+        int i = client.getVarInt(105, 0);
 
     }
 

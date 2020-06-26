@@ -1,7 +1,6 @@
 package com.joffrey.iracingapp.service.windows;
 
-import com.joffrey.iracingapp.model.windows.Handle;
-import com.joffrey.iracingapp.model.windows.Pointer;
+import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.Win32Exception;
@@ -15,34 +14,31 @@ public class WindowsService {
 
     private int lastError = 0;
 
-    public Handle openMemoryMapFile(String filename) {
+    public WinNT.HANDLE openMemoryMapFile(String filename) {
         WinNT.HANDLE memMapFile = Kernel32Impl.KERNEL_32.OpenFileMapping(WinNT.SECTION_MAP_READ, false, filename);
         lastError = Kernel32Impl.KERNEL_32.GetLastError();
 
-        return memMapFile == null ? null : new Handle(memMapFile);
+        return memMapFile;
     }
 
-    public Pointer mapViewOfFile(Handle handle) {
+    public Pointer mapViewOfFile(WinNT.HANDLE handle) {
         if (handle == null) {
             return null;
         }
-
-        com.sun.jna.Pointer pointer = Kernel32.INSTANCE.MapViewOfFile(handle.get(), WinNT.SECTION_MAP_READ, 0, 0, 0);
-
-        return pointer == null ? null : new Pointer(pointer);
+        return Kernel32.INSTANCE.MapViewOfFile(handle, WinNT.SECTION_MAP_READ, 0, 0, 0);
     }
 
-    public void waitForSingleObject(Handle h, int timeout) {
-        if (h != null) {
-            Kernel32.INSTANCE.WaitForSingleObject(h.get(), timeout);
+    public void waitForSingleObject(WinNT.HANDLE handle, int timeout) {
+        if (handle != null) {
+            Kernel32.INSTANCE.WaitForSingleObject(handle, timeout);
             lastError = Kernel32.INSTANCE.GetLastError();
         }
     }
 
-    public Handle openEvent(String eventName) {
-        WinNT.HANDLE h = Kernel32Impl.KERNEL_32.OpenEvent(WinNT.SYNCHRONIZE, false, eventName);
+    public WinNT.HANDLE openEvent(String eventName) {
+        WinNT.HANDLE handle = Kernel32Impl.KERNEL_32.OpenEvent(WinNT.SYNCHRONIZE, false, eventName);
         lastError = Kernel32.INSTANCE.GetLastError();
-        return h == null ? null : new Handle(h);
+        return handle;
     }
 
     public int registerWindowMessage(final String lpString) {
