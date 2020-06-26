@@ -13,8 +13,10 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import jdk.jshell.spi.ExecutionControl.NotImplementedException;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -27,10 +29,12 @@ public class Utils {
     private WinNT.HANDLE memMapFile     = null;
     private WinNT.HANDLE dataValidEvent = null;
     private Pointer      sharedMemory   = null;
-    private ByteBuffer   dataBuffer;
 
-    private Header                 header        = null;
+    @Getter
+    private ByteBuffer             dataBuffer;
+    @Getter
     private Map<String, VarHeader> varHeaderList = null;
+    private Header                 header        = null;
 
     private int     lastTickCount = Integer.MAX_VALUE;
     private boolean isInitialized = false;
@@ -136,7 +140,7 @@ public class Utils {
         return false;
     }
 
-    public Map<String, VarHeader> getVarheaderList(int numberOfVar, ByteBuffer buffer) {
+    private Map<String, VarHeader> getVarheaderList(int numberOfVar, ByteBuffer buffer) {
         Map<String, VarHeader> varHeaderMap = new TreeMap<>();
 
         for (int i = 0; i < numberOfVar; i++) {
@@ -224,8 +228,19 @@ public class Utils {
         return null;
     }
 
-    public int varNameToIndex(String name) throws NotImplementedException {
-        throw new NotImplementedException("Not Impl");
+    public int varNameToIndex(String name) {
+        VarHeader vh;
+
+        if (!name.isEmpty()) {
+            for (int index = 0; index < header.getNumVars(); index++) {
+                vh = getVarHeaderEntry(index);
+                if (vh != null && vh.getName().equals(name)) {
+                    return index;
+                }
+            }
+        }
+
+        return -1;
     }
 
     public int varNameToOffset(String name) throws NotImplementedException {
@@ -266,7 +281,4 @@ public class Utils {
         return retVal;
     }
 
-    public ByteBuffer getDataBuffer() {
-        return dataBuffer;
-    }
 }

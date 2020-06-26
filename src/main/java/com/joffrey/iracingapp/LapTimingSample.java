@@ -33,7 +33,7 @@ public class LapTimingSample implements CommandLineRunner {
     CVar airPressure                = new CVar("AirPressure"); // (float) Hg, Pressure of air at start/finish line
     CVar airTemp                    = new CVar("AirTemp"); // (float) C, Temperature of air at start/finish line
     CVar fogLevel                   = new CVar("FogLevel"); // (float) %, Fog level
-    CVar relativeHumidity         = new CVar("RelativeHumidity"); // (float) %, Relative Humidity
+    CVar relativeHumidity           = new CVar("RelativeHumidity"); // (float) %, Relative Humidity
     CVar skies                      = new CVar("Skies"); // (int) Skies (0=clear/1=p cloudy/2=m cloudy/3=overcast)
     CVar trackTempCrew              = new CVar("TrackTempCrew"); // (float) C, Temperature of track measured by crew around track
     CVar weatherType                = new CVar("WeatherType"); // (int) Weather type (0=constant 1=dynamic)
@@ -43,16 +43,16 @@ public class LapTimingSample implements CommandLineRunner {
     CVar pitsOpen                   = new CVar(
             "PitsOpen"); // (bool) True if pit stop is allowed, basically true if caution lights not out
     CVar raceLaps                   = new CVar("RaceLaps"); // (int) Laps completed in race
-    CVar sessionFlags             = new CVar("SessionFlags"); // (int) irsdk_Flags, bitfield
+    CVar sessionFlags               = new CVar("SessionFlags"); // (int) irsdk_Flags, bitfield
     CVar sessionLapsRemain          = new CVar("SessionLapsRemain"); // (int) Laps left till session ends
     CVar sessionLapsRemainEx        = new CVar("SessionLapsRemainEx"); // (int) New improved laps left till session ends
-    CVar sessionNum               = new CVar("SessionNum"); // (int) Session number
+    CVar sessionNum                 = new CVar("SessionNum"); // (int) Session number
     CVar sessionState               = new CVar("SessionState"); // (int) irsdk_SessionState, Session state
-    CVar sessionTick              = new CVar("SessionTick"); // (int) Current update number
-    CVar sessionTime              = new CVar("SessionTime"); // (double), s, Seconds since session start
+    CVar sessionTick                = new CVar("SessionTick"); // (int) Current update number
+    CVar sessionTime                = new CVar("SessionTime"); // (double), s, Seconds since session start
     CVar sessionTimeOfDay           = new CVar("SessionTimeOfDay"); // (float) s, Time of day in seconds
     CVar sessionTimeRemain          = new CVar("SessionTimeRemain"); // (double) s, Seconds left till session ends
-    CVar sessionUniqueID          = new CVar("SessionUniqueID"); // (int) Session ID
+    CVar sessionUniqueID            = new CVar("SessionUniqueID"); // (int) Session ID
     // competitor information, array of up to 64 cars
     CVar carIdxEstTime              = new CVar("CarIdxEstTime"); // (float) s, Estimated time to reach current location on track
     CVar carIdxClassPosition        = new CVar("CarIdxClassPosition"); // (int) Cars class position in race by car index
@@ -132,10 +132,63 @@ public class LapTimingSample implements CommandLineRunner {
     }
 
     private void processLapInfo() {
+        // work out lap times for all cars
 
-        double currentTime = client.getVarDouble(0,0);
-        int i = client.getVarInt(105, 0);
+        double currentTime = client.getVarDouble(sessionTime);
 
+        // if time moves backwards were in a new session!
+        if (lastTime > currentTime) {
+            resetState(false);
+        }
+
+        for (int i = 0; i < maxCars; i++) {
+            carIdxLapDistPct.setEntry(i);
+            float curDistPct = client.getVarFloat(carIdxLapDistPct);
+            // reject if the car blinked out of the world
+            if (curDistPct != -1) {
+
+                // did we cross the lap?
+                if (lastDistPct[i] > 0.9f && curDistPct < 0.1f) {
+                    // calculate exact time of lap crossing
+                    double curLapStartTime = interpolateTimeAcressPoint(lastTime, currentTime, lastDistPct[i], curDistPct, 0);
+
+                    // calculate lap time, if already crossed start/finish
+                    if (lapStartTime[i] != -1) {
+                        lapTime[i] = (float) (curLapStartTime - lapStartTime[i]);
+                    }
+
+                    // and store start/finish crossing time for next lap
+                    lapStartTime[i] = curLapStartTime;
+                }
+
+                lastDistPct[i] = curDistPct;
+            }
+
+        }
+        lastTime = currentTime;
+    }
+
+    /**
+     * helper function to handle interpolation across a checkpoint
+     *
+     * @param p1    position and time before checkpoint
+     * @param p2    position and time after checkpoint
+     * @param t1    position and time before checkpoint
+     * @param t2    position and time after checkpoint
+     * @param check position of checkpoint
+     */
+    private double interpolateTimeAcressPoint(double t1, double t2, float p1, float p2, int check) {
+        // unwrap if crossing start/finish line
+        //****Note, assumes p1 is a percent from 0 to 1
+        // if that is not true then unwrap the numbers before calling this function
+        if (p1 > p2) {
+            p1 -= 1;
+        }
+
+        // calculate where line is between points
+        float pct = (check - p1) / (p2 - p1);
+
+        return t1 + (t2 - t1) * pct;
     }
 
     private int generateLiveYAMLString() {

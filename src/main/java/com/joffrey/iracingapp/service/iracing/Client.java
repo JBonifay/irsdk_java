@@ -1,5 +1,6 @@
 package com.joffrey.iracingapp.service.iracing;
 
+import com.joffrey.iracingapp.CVar;
 import com.joffrey.iracingapp.model.iracing.VarHeader;
 import com.joffrey.iracingapp.model.iracing.defines.VarType;
 import com.joffrey.iracingapp.model.iracing.defines.VarTypeBytes;
@@ -17,7 +18,6 @@ public class Client {
     private int        nData;
     private int        statusID      = 0;
     private int        lastSessionCt = -1;
-    private int        test          = 1;
 
     public boolean isConnected() {
         return data != null && utils.isConnected();
@@ -80,28 +80,188 @@ public class Client {
         return utils.getSessionInfoStrUpdate();
     }
 
-    private boolean checkIdx() {
-        return true;
+    private boolean checkIdx(CVar cvar) {
+        if (isConnected()) {
+            if (cvar.getStatusID() != this.statusID) {
+                cvar.setIdx(getVarIdx(cvar.getName()));
+            }
+            return true;
+        }
+        return false;
     }
 
-    public double getVarDouble(int idx, int entry) {
+    public int getVarIdx(String varName) {
+        if (isConnected()) {
+            return utils.varNameToIndex(varName);
+        }
+        return -1;
+    }
 
-        if (checkIdx()) {
+    public int getVarType(int idx) {
+        if (isConnected()) {
+            VarHeader vh = utils.getVarHeaderEntry(idx);
+            if (vh != null) {
+                return vh.getType();
+            } else {
+                // invalid variable index
+            }
+        }
+        return 0;
+    }
+
+    public int getVarCount(int idx) {
+        if (isConnected()) {
+            VarHeader vh = utils.getVarHeaderEntry(idx);
+            if (vh != null) {
+                return vh.getCount();
+            } else {
+                // invalid variable index
+            }
+        }
+        return 0;
+    }
+
+    public boolean getVarBoolean(CVar cVar) {
+
+        if (checkIdx(cVar)) {
 
             if (isConnected()) {
-                final VarHeader vh = utils.getVarHeaderEntry(idx);
+                VarHeader vh = utils.getVarHeaderEntry(cVar.getIdx());
                 if (vh != null) {
-                    if (entry >= 0 && entry < vh.getCount()) {
-
-                        byte buffer = data.get(vh.getOffset());
-
+                    if (cVar.getEntry() >= 0 && cVar.getEntry() < vh.getCount()) {
                         VarType vhType = VarType.get(vh.getType());
                         switch (vhType) {
-                            case irsdk_double:
-                                return data.getDouble(vh.getOffset() + (VarTypeBytes.IRSDK_DOUBLE.getValue() * idx));
-                        }
+                            // 1 byte
+                            case irsdk_char:
+                            case irsdk_bool:
+                                return (data.getChar(
+                                        VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (cVar.getIdx()
+                                                                                                            + cVar.getEntry()))))
+                                       != 0;
 
+                            // 4 bytes
+                            case irsdk_int:
+                            case irsdk_bitField:
+                                return (data.getInt(
+                                        VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (cVar.getIdx()
+                                                                                                            + cVar.getEntry()))))
+                                       != 0;
+
+                            case irsdk_float:
+                                return (data.getFloat(
+                                        VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (cVar.getIdx()
+                                                                                                            + cVar.getEntry()))))
+                                       != 0;
+
+                            // 8 bytes
+                            case irsdk_double:
+                                return (data.getDouble(
+                                        VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (cVar.getIdx()
+                                                                                                            + cVar.getEntry()))))
+                                       != 0;
+
+                        }
+                    } else {
+                        // invalid offset
                     }
+                } else {
+                    //invalid variable index
+                }
+            }
+        }
+        return false;
+
+    }
+
+    public float getVarFloat(CVar cVar) {
+
+        if (checkIdx(cVar)) {
+
+            if (isConnected()) {
+                VarHeader vh = utils.getVarHeaderEntry(cVar.getIdx());
+                if (vh != null) {
+                    if (cVar.getEntry() >= 0 && cVar.getEntry() < vh.getCount()) {
+                        VarType vhType = VarType.get(vh.getType());
+                        switch (vhType) {
+                            // 1 byte
+                            case irsdk_char:
+                            case irsdk_bool:
+                                return (float) data.getChar(VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (
+                                        cVar.getIdx()
+                                        + cVar.getEntry())));
+
+                            // 4 bytes
+                            case irsdk_int:
+                            case irsdk_bitField:
+                                return (float) data.getInt(VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (
+                                        cVar.getIdx()
+                                        + cVar.getEntry())));
+
+                            case irsdk_float:
+                                return (float) data.getFloat(VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (
+                                        cVar.getIdx()
+                                        + cVar.getEntry())));
+
+                            // 8 bytes
+                            case irsdk_double:
+                                return (float) data.getDouble(VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (
+                                        cVar.getIdx()
+                                        + cVar.getEntry())));
+
+                        }
+                    } else {
+                        // invalid offset
+                    }
+                } else {
+                    //invalid variable index
+                }
+            }
+        }
+        return 0.0F;
+
+    }
+
+    public double getVarDouble(CVar cVar) {
+
+        if (checkIdx(cVar)) {
+
+            if (isConnected()) {
+                VarHeader vh = utils.getVarHeaderEntry(cVar.getIdx());
+                if (vh != null) {
+                    if (cVar.getEntry() >= 0 && cVar.getEntry() < vh.getCount()) {
+                        VarType vhType = VarType.get(vh.getType());
+                        switch (vhType) {
+                            // 1 byte
+                            case irsdk_char:
+                            case irsdk_bool:
+                                return (double) data.getChar(VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (
+                                        cVar.getIdx()
+                                        + cVar.getEntry())));
+
+                            // 4 bytes
+                            case irsdk_int:
+                            case irsdk_bitField:
+                                return (double) data.getInt(VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (
+                                        cVar.getIdx()
+                                        + cVar.getEntry())));
+
+                            case irsdk_float:
+                                return (double) data.getFloat(VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (
+                                        cVar.getIdx()
+                                        + cVar.getEntry())));
+
+                            // 8 bytes
+                            case irsdk_double:
+                                return (double) data.getDouble(
+                                        VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (cVar.getIdx()
+                                                                                                            + cVar.getEntry())));
+
+                        }
+                    } else {
+                        // invalid offset
+                    }
+                } else {
+                    //invalid variable index
                 }
             }
         }
@@ -109,23 +269,48 @@ public class Client {
 
     }
 
-    public int getVarInt(int idx, int entry) {
+    public int getVarInt(CVar cVar) {
 
-        if (checkIdx()) {
+        if (checkIdx(cVar)) {
 
             if (isConnected()) {
-                VarHeader vh = utils.getVarHeaderEntry(idx);
+                VarHeader vh = utils.getVarHeaderEntry(cVar.getIdx());
                 if (vh != null) {
-                    if (entry >= 0 && entry < vh.getCount()) {
+                    if (cVar.getEntry() >= 0 && cVar.getEntry() < vh.getCount()) {
                         VarType vhType = VarType.get(vh.getType());
                         switch (vhType) {
-                            case irsdk_int :
-                                return data.getInt(vh.getOffset() + (VarTypeBytes.IRSDK_INT.getValue() * idx));
+                            // 1 byte
+                            case irsdk_char:
+                            case irsdk_bool:
+                                return (int) data.getChar(
+                                        VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (cVar.getIdx()
+                                                                                                            + cVar.getEntry())));
+
+                            // 4 bytes
+                            case irsdk_int:
+                            case irsdk_bitField:
+                                return (int) data.getInt(
+                                        VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (cVar.getIdx()
+                                                                                                            + cVar.getEntry())));
+
+                            case irsdk_float:
+                                return (int) data.getFloat(VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (
+                                        cVar.getIdx()
+                                        + cVar.getEntry())));
+
+                            // 8 bytes
+                            case irsdk_double:
+                                return (int) data.getDouble(VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (
+                                        cVar.getIdx()
+                                        + cVar.getEntry())));
+
                         }
-
+                    } else {
+                        // invalid offset
                     }
+                } else {
+                    //invalid variable index
                 }
-
             }
         }
         return 0;
