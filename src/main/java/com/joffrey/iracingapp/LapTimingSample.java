@@ -115,7 +115,7 @@ public class LapTimingSample implements CommandLineRunner {
 
             // only process session string if it changed
             if (client.wasSessionStrUpdated()) {
-                processYAMLSessionString(client.getSessionStr());
+                processYAMLSessionString("null");
             }
 
             // update the display as well
@@ -191,11 +191,59 @@ public class LapTimingSample implements CommandLineRunner {
         return t1 + (t2 - t1) * pct;
     }
 
-    private int generateLiveYAMLString() {
-        return 0;
+    private String generateLiveYAMLString() {
+
+        //****Warning, shared static memory!
+        final int yamlLen = 50000;
+        final StringBuilder tstr = new StringBuilder(yamlLen);
+        int len = 0;
+
+        // Start of YAML file
+        tstr.append("---\n");
+
+        // Live weather info, may change as session progresses
+        tstr.append("WeatherStatus:\n");
+        tstr.append(" AirDensity: " + client.getVarFloat(airDensity));                          // kg/m^3, Density of air at start/finish line
+        tstr.append(" AirPressure: " + client.getVarFloat(airPressure));                        // Hg, Pressure of air at start/finish line
+        tstr.append(" AirTemp: " + client.getVarFloat(airTemp));                                // C, Temperature of air at start/finish line
+        tstr.append(" FogLevel: " + client.getVarFloat(fogLevel));                              // %, Fog level
+        tstr.append(" RelativeHumidity: " + client.getVarFloat(relativeHumidity));              // %, Relative Humidity
+        tstr.append(" Skies: " + client.getVarInt(skies));                                      // Skies (0=clear/1=p cloudy/2=m cloudy/3=overcast)
+        tstr.append(" TrackTempCrew: " + client.getVarFloat(trackTempCrew));                    // C, Temperature of track measured by crew around track
+        tstr.append(" WeatherType: " + client.getVarInt(weatherType));                          // Weather type (0=constant 1=dynamic)
+        tstr.append(" WindDir: " + client.getVarFloat(windDir));                                // rad, Wind direction at start/finish line
+        tstr.append(" WindVel: " + client.getVarFloat(windVel));                                // m/s, Wind velocity at start/finish line
+        tstr.append("\n");
+
+        // session status
+        tstr.append("SessionStatus:\n");
+        tstr.append(" PitsOpen: "+client.getVarBoolean(pitsOpen)+"\n");                         // True if pit stop is allowed, basically true if caution lights not out
+        tstr.append(" RaceLaps: " + client.getVarInt(raceLaps)+ "\n");                          // Laps completed in race
+        tstr.append(" SessionFlags: "+client.getVarInt(sessionTime)+"\n");                      // irsdk_Flags, bitfield
+        tstr.append(" SessionLapsRemain: "+ client.getVarInt(sessionLapsRemain) + "\n");        // Laps left till session ends
+        tstr.append(" SessionLapsRemainEx: "+ client.getVarInt(sessionLapsRemainEx)+"\n");      // New improved laps left till session ends
+        tstr.append(" SessionNum: "+client.getVarInt(sessionNum)+"\n");                         // Session number
+        tstr.append(" SessionState: "+client.getVarInt(sessionState) + "\n");                   // irsdk_SessionState, Session state
+        tstr.append(" SessionTick: "+client.getVarInt(sessionTick)+"\n");                       // Current update number
+        tstr.append(" SessionTime: "+client.getVarDouble(sessionTime)+"\n");                    // s, Seconds since session start
+        tstr.append(" SessionTimeOfDay: " + client.getVarFloat(sessionTimeOfDay) +"\n");       // s, Time of day in seconds
+        tstr.append(" SessionTimeRemain: "+ client.getVarDouble(sessionTimeRemain)+"\n");       // s, Seconds left till session ends
+        tstr.append(" SessionUniqueID: "+client.getVarInt(sessionUniqueID)+"\n");               // Session ID
+        tstr.append("\n");
+
+
+        return tstr.toString();
     }
 
-    private void processYAMLSessionString(int sessionStr) {
+    private void processYAMLSessionString(String yamlString) {
+
+        log.info(yamlString);
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 

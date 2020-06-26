@@ -12,9 +12,13 @@ import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import jdk.jshell.spi.ExecutionControl.NotImplementedException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +37,7 @@ public class Utils {
     @Getter
     private ByteBuffer             dataBuffer;
     @Getter
-    private Map<String, VarHeader> varHeaderList = null;
+    private Map<Integer, VarHeader> varHeaderList = null;
     private Header                 header        = null;
 
     private int     lastTickCount = Integer.MAX_VALUE;
@@ -41,6 +45,10 @@ public class Utils {
 
     private double    timeout       = 30.0; // timeout after 30 seconds with no communication
     private Timestamp lastValidTime = new Timestamp(System.currentTimeMillis());
+    private ByteBuffer sessioninfo_bytebuffer;
+    private ByteBuffer header_bytebuffer;
+    private ByteBuffer varheader_bytebuffer;
+    private ByteBuffer var_bytebuffer;
 
     public boolean startup() {
 
@@ -56,6 +64,7 @@ public class Utils {
                 // header = new Header(ByteBuffer.wrap(sharedMemory.getByteArray(0, Header.HEADER_SIZE)));
                 header = new Header(sharedMemory);
                 lastTickCount = Integer.MAX_VALUE;
+                read();
             }
 
             if (sharedMemory != null) {
@@ -74,6 +83,27 @@ public class Utils {
 
         isInitialized = false;
         return isInitialized;
+    }
+
+    private void read() {
+        header_bytebuffer = null;
+        sessioninfo_bytebuffer = null;
+        varheader_bytebuffer = null;
+        var_bytebuffer = null;
+
+        header_bytebuffer = ByteBuffer.wrap(sharedMemory.getByteArray(0, Header.HEADER_SIZE));
+
+        HeaderC header = new HeaderC(header_bytebuffer);
+
+        sessioninfo_bytebuffer = ByteBuffer.wrap(sharedMemory.getByteArray(header.getSessionInfoOffset(), header.getSessionInfoLen()));
+
+        varheader_bytebuffer = ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarHeaderOffset(), header.getNumVars() * VarHeader.SIZEOF_VAR_HEADER));
+
+        var_bytebuffer = ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarBuf_BufOffset(header.getLatest_VarBuf()), header.getBufLen()));
+
+        header_bytebuffer = ByteBuffer.wrap(sharedMemory.getByteArray(0, Header.HEADER_SIZE));
+
+        ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarHeaderOffset(), header.getNumVars() * VarHeader.SIZEOF_VAR_HEADER));
     }
 
     public void shutdown() throws NotImplementedException {
@@ -113,6 +143,9 @@ public class Utils {
 
                         varHeaderList = getVarheaderList(header.getNumVars(), dataBuffer);
 
+
+
+
                         if (curTickCount == header.getVarBufTickCount(latest)) {
                             lastTickCount = curTickCount;
                             lastValidTime = new Timestamp(System.currentTimeMillis());
@@ -140,14 +173,14 @@ public class Utils {
         return false;
     }
 
-    private Map<String, VarHeader> getVarheaderList(int numberOfVar, ByteBuffer buffer) {
-        Map<String, VarHeader> varHeaderMap = new TreeMap<>();
+    private Map<Integer, VarHeader> getVarheaderList(int numberOfVar, ByteBuffer buffer) {
+        Map<Integer, VarHeader> varHeaderMap = new TreeMap<>();
 
         for (int i = 0; i < numberOfVar; i++) {
             int varOffset = i * VarHeader.SIZEOF_VAR_HEADER;
             VarHeader varHeader = new VarHeader(buffer, varOffset);
             //now put it in the cache
-            varHeaderMap.put(varHeader.getName(), varHeader);
+            varHeaderMap.put(varHeader.getOffset(), varHeader);
         }
         return varHeaderMap;
     }
