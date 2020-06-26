@@ -1,5 +1,7 @@
 package com.joffrey.iracingapp.service.iracing;
 
+import com.joffrey.iracingapp.CVar;
+import com.joffrey.iracingapp.model.iracing.VarHeader;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +15,7 @@ public class Client {
 
     private ByteBuffer data;
     private int        nData;
-    private int        statudID      = 0;
+    private int        statusID      = 0;
     private int        lastSessionCt = -1;
 
     public boolean isConnected() {
@@ -37,7 +39,7 @@ public class Client {
                 data = ByteBuffer.allocate(nData);
 
                 // indicate a new connection
-                statudID++;
+                statusID++;
                 // reset session info str status
                 lastSessionCt = -1;
 
@@ -61,6 +63,45 @@ public class Client {
     }
 
     public boolean wasSessionStrUpdated() {
-        return false;
+        return lastSessionCt != utils.getSessionInfoStrUpdate();
     }
+
+    public int getSessionStr() {
+        if (isConnected()) {
+            lastSessionCt = getSessionCt();
+            return utils.getSessionInfoStr();
+        }
+        return -1;
+    }
+
+    private int getSessionCt() {
+        return utils.getSessionInfoStrUpdate();
+    }
+
+    public double getVarHeaderDouble(CVar cVar) {
+
+            VarHeader vh = utils.getVarHeaderEntry(0);
+        // if (checkIdx(cVar)) {
+        //
+        //     if (vh != null) {
+        //
+        //     }
+        //
+        //
+        // }
+
+        return 0.0;
+
+    }
+
+    // private boolean checkIdx(CVar cVar) {
+    //     if (isConnected()) {
+    //         if (statusID != cVar.getStatusID()) {
+    //             statusID = getStatusID();
+    //             idx = getVarIdx(name);
+    //         }
+    //     }
+    //
+    // }
+
 }

@@ -10,8 +10,6 @@ import com.joffrey.iracingapp.model.windows.Pointer;
 import com.joffrey.iracingapp.service.windows.WindowsService;
 import java.nio.ByteBuffer;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import jdk.jshell.spi.ExecutionControl.NotImplementedException;
@@ -34,7 +32,7 @@ public class Utils {
     private int     lastTickCount = Integer.MAX_VALUE;
     private boolean isInitialized = false;
 
-    private double    timeout = 30.0; // timeout after 30 seconds with no communication
+    private double    timeout       = 30.0; // timeout after 30 seconds with no communication
     private Timestamp lastValidTime = new Timestamp(System.currentTimeMillis());
 
     public boolean startup() {
@@ -98,7 +96,7 @@ public class Utils {
 
                         // memcpy(data, pSharedMem + pHeader->varBuf[latest].bufOffset, pHeader->bufLen)
                         data = ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarHeaderOffset(),
-                                                                         header.getNumVars() * VarHeader.SIZEOF_varHeader));
+                                                                         header.getNumVars() * VarHeader.SIZEOF_VAR_HEADER));
 
                         varHeaderList = VarHeader.getVarheaderList(header.getNumVars(), data);
 
@@ -171,20 +169,35 @@ public class Utils {
         throw new NotImplementedException("Not Impl");
     }
 
-    public String getSessionInfoStr() throws NotImplementedException {
-        throw new NotImplementedException("Not Impl");
+    public int getSessionInfoStr() {
+        if (isInitialized) {
+            return header.getSessionInfoOffset();
+        }
+        return -1;
     }
 
-    public String getSessionInfoStrUpdate() throws NotImplementedException {
-        throw new NotImplementedException("Not Impl");
+    public int getSessionInfoStrUpdate() {
+        if (isInitialized) {
+            return header.getSessionInfoUpdate();
+        }
+        return -1;
     }
 
     public VarHeader getVarHeaderPtr() throws NotImplementedException {
         throw new NotImplementedException("Not Impl");
     }
 
-    public VarHeader getVarHeaderEntry(int index) throws NotImplementedException {
-        throw new NotImplementedException("Not Impl");
+    public VarHeader getVarHeaderEntry(int index) {
+        if (isInitialized) {
+            if (index >= 0 && index < header.getNumVars()) {
+                // header.getVarHeaderOffset()
+                return new VarHeader(ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarHeaderOffset() + index,
+                                                                               header.getVarHeaderOffset()
+                                                                               + index
+                                                                               + VarHeader.SIZEOF_VAR_HEADER)));
+            }
+        }
+        return null;
     }
 
     public int varNameToIndex(String name) throws NotImplementedException {

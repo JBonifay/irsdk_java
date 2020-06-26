@@ -32,21 +32,12 @@ public class Header {
     private int[]    pad1   = new int[2];                                                 // (16 byte align)
     private VarBuf[] varBuf = new VarBuf[Constant.IRSDK_MAX_BUFS];                        // buffers of data being written to
 
-    // public Header(ByteBuffer byteBuffer) {
-    //     getHeaderByteBuffer() = ByteBuffer.allocate(HEADER_SIZE);
-    //     getHeaderByteBuffer().position(0);
-    //     byteBuffer.position(0);
-    //     getHeaderByteBuffer().put(byteBuffer);
-    //     getHeaderByteBuffer().order(ByteOrder.LITTLE_ENDIAN);
-    // }
-
     public Header(Pointer sharedMemory) {
         this.sharedMemory = sharedMemory;
     }
 
     private ByteBuffer getHeaderByteBuffer() {
         ByteBuffer headerByteBuffer = ByteBuffer.allocate(HEADER_SIZE);
-        headerByteBuffer.position(0);
         headerByteBuffer.position(0);
         headerByteBuffer.put(ByteBuffer.wrap(sharedMemory.getByteArray(0, Header.HEADER_SIZE)));
         headerByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -101,6 +92,5 @@ public class Header {
     public int getBufLen() {
         return getHeaderByteBuffer().getInt(36);
     }
-
 
 }
