@@ -1,10 +1,11 @@
 package com.joffrey.iracingapp.model.iracing;
 
 import com.joffrey.iracingapp.model.iracing.defines.Constant;
-import com.sun.jna.Pointer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import lombok.Getter;
 
+@Getter
 public class Header {
 
     public static final int HEADER_SIZE             = (12 * 4) + ((4 * 4) * 4); // 112
@@ -12,85 +13,51 @@ public class Header {
     public static final int ALIGNMENT               = 4;
     public static final int SIZEOF_VARBUF           = NUMBER_OF_VARBUF_FIELDS * ALIGNMENT;
 
-    private Pointer sharedMemory;
-    
-    private int ver;                                                                      // this api header version, see IRSDK_VER
-    private int status;                                                                   // bitfield using irsdk_StatusField
-    private int tickRate;                                                                 // ticks per second (60 or 360 etc)
+    private final int ver;                                                                      // this api header version, see IRSDK_VER
+    private final int status;                                                                   // bitfield using irsdk_StatusField
+    private final int tickRate;                                                                 // ticks per second (60 or 360 etc)
 
     // session information, updated periodicaly
-    private int sessionInfoUpdate;                                                        // Incremented when session info changes
-    private int sessionInfoLen;                                                           // Length in bytes of session info string
-    private int sessionInfoOffset;                                                        // Session info, encoded in YAML format
+    private final int sessionInfoUpdate;                                                        // Incremented when session info changes
+    private final int sessionInfoLen;                                                           // Length in bytes of session info string
+    private final int sessionInfoOffset;                                                        // Session info, encoded in YAML format
 
     // State data, output at tickRate
-    private int numVars;                                                                  // length of arra pointed to by varHeaderOffset
-    private int varHeaderOffset;                                                          // offset to irsdk_varHeader[numVars] array, Describes the variables received in varBuf
+    private final int numVars;                                                                  // length of arra pointed to by varHeaderOffset
+    private final int varHeaderOffset;                                                          // offset to irsdk_varHeader[numVars] array, Describes the variables received in varBuf
 
-    private int      numBuf;                                                              // <= IRSDK_MAX_BUFS (3 for now)
-    private int      bufLen;                                                              // length in bytes for one line
-    private int[]    pad1   = new int[2];                                                 // (16 byte align)
-    private VarBuf[] varBuf = new VarBuf[Constant.IRSDK_MAX_BUFS];                        // buffers of data being written to
+    private final int      numBuf;                                                              // <= IRSDK_MAX_BUFS (3 for now)
+    private final int      bufLen;                                                              // length in bytes for one line
+    private final int[]    pad1   = new int[2];                                                 // (16 byte align)
+    private final VarBuf[] varBuf = new VarBuf[]{new VarBuf(), new VarBuf(), new VarBuf(), new VarBuf()};
+    // buffers of data being written to
 
-    public Header(Pointer sharedMemory) {
-        this.sharedMemory = sharedMemory;
-    }
-
-    private ByteBuffer getHeaderByteBuffer() {
-        ByteBuffer headerByteBuffer = ByteBuffer.allocate(HEADER_SIZE);
-        headerByteBuffer.position(0);
-        headerByteBuffer.put(ByteBuffer.wrap(sharedMemory.getByteArray(0, Header.HEADER_SIZE)));
+    public Header(ByteBuffer headerByteBuffer) {
         headerByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        return headerByteBuffer;
+        this.ver = headerByteBuffer.getInt(0);
+        this.status = headerByteBuffer.getInt(4);
+        this.tickRate = headerByteBuffer.getInt(8);
+        this.sessionInfoUpdate = headerByteBuffer.getInt(12);
+        this.sessionInfoLen = headerByteBuffer.getInt(16);
+        this.sessionInfoOffset = headerByteBuffer.getInt(20);
+        this.numVars = headerByteBuffer.getInt(24);
+        this.varHeaderOffset = headerByteBuffer.getInt(28);
+        this.numBuf = headerByteBuffer.getInt(32);
+        this.bufLen = headerByteBuffer.getInt(36);
+        this.pad1[0] = headerByteBuffer.getInt(40);
+        this.pad1[1] = headerByteBuffer.getInt(44);
+        this.varBuf[0].setTickCount(headerByteBuffer.getInt(48));
+        this.varBuf[0].setBufOffset(headerByteBuffer.getInt(52));
+
+        this.varBuf[1].setTickCount(headerByteBuffer.getInt(64));
+        this.varBuf[1].setBufOffset(headerByteBuffer.getInt(68));
+
+        this.varBuf[2].setTickCount(headerByteBuffer.getInt(80));
+        this.varBuf[2].setBufOffset(headerByteBuffer.getInt(84));
+
+        this.varBuf[3].setTickCount(headerByteBuffer.getInt(96));
+        this.varBuf[3].setBufOffset(headerByteBuffer.getInt(100));
     }
 
-    public int getVarBufTickCount(int varBuf) {
-        return getHeaderByteBuffer().getInt((varBuf * SIZEOF_VARBUF) + 48);
-    }
-
-    public int getVarBufOffset(int varBuf) {
-        return getHeaderByteBuffer().getInt((varBuf * SIZEOF_VARBUF) + 52);
-    }
-
-
-    public int getVer() {
-        return getHeaderByteBuffer().getInt(0);
-    }
-
-    public int getStatus() {
-        return getHeaderByteBuffer().getInt(4);
-    }
-
-    public int getTickRate() {
-        return getHeaderByteBuffer().getInt(8);
-    }
-
-    public int getSessionInfoUpdate() {
-        return getHeaderByteBuffer().getInt(12);
-    }
-
-    public int getSessionInfoLen() {
-        return getHeaderByteBuffer().getInt(16);
-    }
-
-    public int getSessionInfoOffset() {
-        return getHeaderByteBuffer().getInt(20);
-    }
-
-    public int getNumVars() {
-        return getHeaderByteBuffer().getInt(24);
-    }
-
-    public int getVarHeaderOffset() {
-        return getHeaderByteBuffer().getInt(28);
-    }
-
-    public int getNumBuf() {
-        return getHeaderByteBuffer().getInt(32);
-    }
-
-    public int getBufLen() {
-        return getHeaderByteBuffer().getInt(36);
-    }
 
 }

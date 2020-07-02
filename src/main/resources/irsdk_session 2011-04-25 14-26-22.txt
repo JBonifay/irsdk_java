@@ -1,0 +1,203 @@
+---
+WeekendInfo:
+ TrackName: southboston
+ TrackID: 14
+ TrackLength: 0.59 km
+ SeriesID: 0
+ SeasonID: 0
+ SessionID: 0
+ SubSessionID: 0
+ Official: 0
+ RaceWeek: 0
+ EventType: Test
+ Category: Oval
+ WeekendOptions:
+  NumStarters: 0
+  StartingGrid: single file
+  QualifyScoring: best lap
+  CourseCautions: off
+  StandingStart: 0
+  Restarts: single file
+  WindDirection: N
+  WindSpeed: 3.22 km/h
+  WeatherTemp: 25.56 C
+  RelativeHumidity: 55 %
+  Unofficial: 0
+  CommercialMode: consumer
+  NightMode: 0
+  IsFixedSetup: 0
+  StrictLapsChecking: default
+  HasOpenRegistration: 0
+
+SessionInfo:
+ Sessions:
+ - SessionNum: 0
+   SessionLaps: unlimited
+   SessionTime: unlimited
+   SessionNumLapsToAvg: 0
+   SessionType: Offline Testing
+   ResultsPositions:
+   - Position: 1
+     CarIdx: 0
+     Lap: 5
+     Time: 18.554
+     FastestLap: 5
+     FastestTime: 18.554
+     LastTime: 29.341
+     LapsLed: 0
+     LapsComplete: 14
+     LapsDriven: 0.000
+     Incidents: 0
+     ReasonOutId: 0
+     ReasonOutStr: Running
+   ResultsFastestLap:
+   - CarIdx: 0
+     FastestLap: 5
+     FastestTime: 18.554
+   ResultsAverageLapTime: -1.000
+   ResultsNumCautionFlags: 0
+   ResultsNumCautionLaps: 0
+   ResultsNumLeadChanges: 0
+   ResultsLapsComplete: -1
+   ResultsOfficial: 0
+
+CameraInfo:
+ Groups:
+ - GroupNum: 1
+   GroupName: Nose
+   Cameras:
+   - CameraNum: 1
+     CameraName: CamNose
+ - GroupNum: 2
+   GroupName: Gearbox
+   Cameras:
+   - CameraNum: 1
+     CameraName: CamGearbox
+ - GroupNum: 3
+   GroupName: Roll Bar
+   Cameras:
+   - CameraNum: 1
+     CameraName: CamRoll Bar
+ - GroupNum: 4
+   GroupName: F Susp
+   Cameras:
+   - CameraNum: 1
+     CameraName: CamF Susp
+ - GroupNum: 5
+   GroupName: R Susp
+   Cameras:
+   - CameraNum: 1
+     CameraName: CamR Susp
+ - GroupNum: 6
+   GroupName: Cockpit
+   Cameras:
+   - CameraNum: 1
+     CameraName: CamCockpit
+ - GroupNum: 7
+   GroupName: Scenic
+   IsScenic: true
+   Cameras:
+   - CameraNum: 1
+     CameraName: Scenic_00
+   - CameraNum: 2
+     CameraName: Scenic_01
+   - CameraNum: 3
+     CameraName: Scenic_02
+   - CameraNum: 4
+     CameraName: Scenic_03
+   - CameraNum: 5
+     CameraName: Scenic_04
+   - CameraNum: 6
+     CameraName: Scenic_05
+ - GroupNum: 8
+   GroupName: TV1
+   Cameras:
+   - CameraNum: 1
+     CameraName: CamTV1_00
+   - CameraNum: 2
+     CameraName: CamTV1_01
+   - CameraNum: 3
+     CameraName: CamTV1_02
+   - CameraNum: 4
+     CameraName: CamTV1_03
+ - GroupNum: 9
+   GroupName: TV2
+   Cameras:
+   - CameraNum: 1
+     CameraName: CamTV2_00
+   - CameraNum: 2
+     CameraName: CamTV2_01
+   - CameraNum: 3
+     CameraName: CamTV2_02
+   - CameraNum: 4
+     CameraName: CamTV2_03
+ - GroupNum: 10
+   GroupName: TV3
+   Cameras:
+   - CameraNum: 1
+     CameraName: CamTV3_00
+   - CameraNum: 2
+     CameraName: CamTV3_01
+ - GroupNum: 11
+   GroupName: Pit Lane
+   Cameras:
+   - CameraNum: 1
+     CameraName: CamPit Lane
+ - GroupNum: 12
+   GroupName: Pit Lane 2
+   Cameras:
+   - CameraNum: 1
+     CameraName: CamPit Lane 2
+ - GroupNum: 13
+   GroupName: Chopper
+   Cameras:
+   - CameraNum: 1
+     CameraName: CamChopper
+ - GroupNum: 14
+   GroupName: Blimp
+   Cameras:
+   - CameraNum: 1
+     CameraName: CamBlimp
+ - GroupNum: 15
+   GroupName: Chase
+   Cameras:
+   - CameraNum: 1
+     CameraName: CamChase
+ - GroupNum: 16
+   GroupName: Far Chase
+   Cameras:
+   - CameraNum: 1
+     CameraName: CamFar Chase
+ - GroupNum: 17
+   GroupName: Rear Chase
+   Cameras:
+   - CameraNum: 1
+     CameraName: CamRear Chase
+
+DriverInfo:
+ DriverCarIdx: 0
+ Drivers:
+ - CarIdx: 0
+   UserName: David Tucker
+   AbbrevName: 
+   Initials: 
+   UserID: 15737
+   CarNumber: 64
+   CarPath: jettatdi
+   CarClassID: 0
+   CarID: 27
+   CarClassShortName: 
+   CarClassRelSpeed: 0
+   IRating: 0
+   LicLevel: 0
+   LicSubLevel: 0
+   LicColor: 0xfc0706
+
+SplitTimeInfo:
+ Sectors:
+ - SectorNum: 0
+   SectorStartPct: 0.000
+ - SectorNum: 1
+   SectorStartPct: 0.500
+
+...

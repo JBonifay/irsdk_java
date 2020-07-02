@@ -61,8 +61,8 @@ public class Utils {
         if (memMapFile != null) {
             if (sharedMemory == null) {
                 sharedMemory = windowsService.mapViewOfFile(memMapFile);
-                // header = new Header(ByteBuffer.wrap(sharedMemory.getByteArray(0, Header.HEADER_SIZE)));
-                header = new Header(sharedMemory);
+                header = new Header(ByteBuffer.wrap(sharedMemory.getByteArray(0, Header.HEADER_SIZE)));
+                // header = new Header(sharedMemory);
                 lastTickCount = Integer.MAX_VALUE;
                 read();
             }
