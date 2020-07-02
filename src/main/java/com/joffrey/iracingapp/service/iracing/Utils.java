@@ -12,13 +12,8 @@ import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Comparator;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import jdk.jshell.spi.ExecutionControl.NotImplementedException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,22 +28,16 @@ public class Utils {
     private WinNT.HANDLE memMapFile     = null;
     private WinNT.HANDLE dataValidEvent = null;
     private Pointer      sharedMemory   = null;
+    private Header header;
 
     @Getter
-    private ByteBuffer             dataBuffer;
-    @Getter
-    private Map<Integer, VarHeader> varHeaderList = null;
-    private Header                 header        = null;
+    private ByteBuffer dataBuffer;
 
     private int     lastTickCount = Integer.MAX_VALUE;
     private boolean isInitialized = false;
 
-    private double    timeout       = 30.0; // timeout after 30 seconds with no communication
-    private Timestamp lastValidTime = new Timestamp(System.currentTimeMillis());
-    private ByteBuffer sessioninfo_bytebuffer;
-    private ByteBuffer header_bytebuffer;
-    private ByteBuffer varheader_bytebuffer;
-    private ByteBuffer var_bytebuffer;
+    private final double    timeout       = 30.0;                // timeout after 30 seconds with no communication
+    private       Timestamp lastValidTime = new Timestamp(System.currentTimeMillis());
 
     public boolean startup() {
 
@@ -62,9 +51,7 @@ public class Utils {
             if (sharedMemory == null) {
                 sharedMemory = windowsService.mapViewOfFile(memMapFile);
                 header = new Header(ByteBuffer.wrap(sharedMemory.getByteArray(0, Header.HEADER_SIZE)));
-                // header = new Header(sharedMemory);
                 lastTickCount = Integer.MAX_VALUE;
-                read();
             }
 
             if (sharedMemory != null) {
@@ -85,27 +72,6 @@ public class Utils {
         return isInitialized;
     }
 
-    private void read() {
-        header_bytebuffer = null;
-        sessioninfo_bytebuffer = null;
-        varheader_bytebuffer = null;
-        var_bytebuffer = null;
-
-        header_bytebuffer = ByteBuffer.wrap(sharedMemory.getByteArray(0, Header.HEADER_SIZE));
-
-        HeaderC header = new HeaderC(header_bytebuffer);
-
-        sessioninfo_bytebuffer = ByteBuffer.wrap(sharedMemory.getByteArray(header.getSessionInfoOffset(), header.getSessionInfoLen()));
-
-        varheader_bytebuffer = ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarHeaderOffset(), header.getNumVars() * VarHeader.SIZEOF_VAR_HEADER));
-
-        var_bytebuffer = ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarBuf_BufOffset(header.getLatest_VarBuf()), header.getBufLen()));
-
-        header_bytebuffer = ByteBuffer.wrap(sharedMemory.getByteArray(0, Header.HEADER_SIZE));
-
-        ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarHeaderOffset(), header.getNumVars() * VarHeader.SIZEOF_VAR_HEADER));
-    }
-
     public void shutdown() throws NotImplementedException {
         throw new NotImplementedException("Not Impl");
     }
@@ -121,13 +87,13 @@ public class Utils {
 
             int latest = 0;
             for (int i = 1; i < header.getNumBuf(); i++) {
-                if (header.getVarBufTickCount(latest) < header.getVarBufTickCount(i)) {
+                if (header.getVarBuf()[latest].getTickCount() < header.getVarBuf()[i].getTickCount()) {
                     latest = i;
                 }
             }
 
             // if newer than last recieved, than report new data
-            if (lastTickCount < header.getVarBufTickCount(latest)) {
+            if (lastTickCount < header.getVarBuf()[latest].getTickCount()) {
 
                 // if asked to retrieve the data
                 if (data != null) {
@@ -135,18 +101,14 @@ public class Utils {
                     // try twice to get the data out
                     for (int count = 0; count < 2; count++) {
 
-                        int curTickCount = header.getVarBufTickCount(latest);
+                        int curTickCount = header.getVarBuf()[latest].getTickCount();
 
-                        // memcpy(data, pSharedMem + pHeader->varBuf[latest].bufOffset, pHeader->bufLen)
-                        dataBuffer = ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarHeaderOffset(), header.getNumVars()
-                                                                                                            * VarHeader.SIZEOF_VAR_HEADER));
+                        // memcpy(data, pSharedMem + pHeader -> varBuf[latest].bufOffset, pHeader -> bufLen);
+                        data = ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarBuf()[latest].getBufOffset(), header.getBufLen()));
 
-                        varHeaderList = getVarheaderList(header.getNumVars(), dataBuffer);
+                        dataBuffer = data;
 
-
-
-
-                        if (curTickCount == header.getVarBufTickCount(latest)) {
+                        if (curTickCount == header.getVarBuf()[latest].getTickCount()) {
                             lastTickCount = curTickCount;
                             lastValidTime = new Timestamp(System.currentTimeMillis());
                             return true;
@@ -157,14 +119,14 @@ public class Utils {
                     return false;
 
                 } else {
-                    lastTickCount = header.getVarBufTickCount(latest);
+                    lastTickCount = header.getVarBuf()[latest].getTickCount();
                     lastValidTime = new Timestamp(System.currentTimeMillis());
                     return true;
                 }
 
                 // if older than last recieved, than reset, we probably disconnected
-            } else if (lastTickCount > header.getVarBufTickCount(latest)) {
-                lastTickCount = header.getVarBufTickCount(latest);
+            } else if (lastTickCount > header.getVarBuf()[latest].getTickCount()) {
+                lastTickCount = header.getVarBuf()[latest].getTickCount();
                 return false;
             }
             // else the same, and nothing changed this tick

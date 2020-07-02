@@ -1,6 +1,5 @@
 package com.joffrey.iracingapp.model.iracing;
 
-import com.joffrey.iracingapp.model.iracing.defines.Constant;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import lombok.Getter;
@@ -8,10 +7,7 @@ import lombok.Getter;
 @Getter
 public class Header {
 
-    public static final int HEADER_SIZE             = (12 * 4) + ((4 * 4) * 4); // 112
-    public static final int NUMBER_OF_VARBUF_FIELDS = 4;
-    public static final int ALIGNMENT               = 4;
-    public static final int SIZEOF_VARBUF           = NUMBER_OF_VARBUF_FIELDS * ALIGNMENT;
+    public static final int HEADER_SIZE = 112; // All fields are int (4 bytes), there are 28 fields (28 * 4) = 112
 
     private final int ver;                                                                      // this api header version, see IRSDK_VER
     private final int status;                                                                   // bitfield using irsdk_StatusField
