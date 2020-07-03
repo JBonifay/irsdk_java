@@ -20,10 +20,6 @@ public class Client {
     private int        statusID      = 0;
     private int        lastSessionCt = -1;
 
-    public boolean isConnected() {
-        return data != null && utils.isConnected();
-    }
-
     public boolean waitForData(int timeoutMS) throws InterruptedException {
 
         // wait for start of session or new data
@@ -66,30 +62,8 @@ public class Client {
         return false;
     }
 
-    public boolean wasSessionStrUpdated() {
-        return lastSessionCt != utils.getSessionInfoStrUpdate();
-    }
-
-    public int getSessionStr() {
-        if (isConnected()) {
-            lastSessionCt = getSessionCt();
-            return utils.getSessionInfoStr();
-        }
-        return -1;
-    }
-
-    private int getSessionCt() {
-        return utils.getSessionInfoStrUpdate();
-    }
-
-    private boolean checkIdx(CVar cvar) {
-        if (isConnected()) {
-            if (cvar.getStatusID() != this.statusID) {
-                cvar.setIdx(getVarIdx(cvar.getName()));
-            }
-            return true;
-        }
-        return false;
+    public boolean isConnected() {
+        return data != null && utils.isConnected();
     }
 
     public int getVarIdx(String varName) {
@@ -137,10 +111,10 @@ public class Client {
                         // 8 bytes
                         return switch (vhType) {
                             case irsdk_char,
-                                 irsdk_bool -> (data.getChar(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_BOOL.getValue()))) != 0;
+                                    irsdk_bool -> (data.getChar(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_BOOL.getValue()))) != 0;
 
                             case irsdk_int,
-                                 irsdk_bitField -> (data.getInt(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_BOOL.getValue()))) != 0;
+                                    irsdk_bitField -> (data.getInt(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_BOOL.getValue()))) != 0;
 
                             case irsdk_float -> (data.getFloat(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_BOOL.getValue()))) != 0;
 
@@ -160,6 +134,42 @@ public class Client {
 
     }
 
+    public int getVarInt(CVar cVar) {
+
+        if (checkIdx(cVar)) {
+
+            if (isConnected()) {
+                VarHeader vh = utils.getVarHeaderEntry(cVar.getIdx());
+                if (vh != null) {
+                    if (cVar.getEntry() >= 0 && cVar.getEntry() < vh.getCount()) {
+                        VarType vhType = VarType.get(vh.getType());
+                        // 1 byte
+                        // 4 bytes
+                        // 8 bytes
+                        return switch (vhType) {
+                            case irsdk_char,
+                                    irsdk_bool -> (int) data.getChar(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_INT.getValue()));
+
+                            case irsdk_int,
+                                    irsdk_bitField -> (int) data.getInt(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_INT.getValue()));
+
+                            case irsdk_float -> (int) data.getFloat(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_INT.getValue()));
+
+                            case irsdk_double -> (int) data.getDouble(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_INT.getValue()));
+
+                            default -> throw new IllegalStateException("Unexpected value: " + vhType);
+                        };
+                    } else {
+                        // invalid offset
+                    }
+                } else {
+                    //invalid variable index
+                }
+            }
+        }
+        return 0;
+    }
+
     public float getVarFloat(CVar cVar) {
 
         if (checkIdx(cVar)) {
@@ -174,10 +184,10 @@ public class Client {
                         // 8 bytes
                         return switch (vhType) {
                             case irsdk_char,
-                                 irsdk_bool -> (float) data.getChar(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_FLOAT.getValue()));
+                                    irsdk_bool -> (float) data.getChar(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_FLOAT.getValue()));
 
                             case irsdk_int,
-                                 irsdk_bitField -> (float) data.getInt(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_FLOAT.getValue()));
+                                    irsdk_bitField -> (float) data.getInt(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_FLOAT.getValue()));
 
                             case irsdk_float -> (float) data.getFloat(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_FLOAT.getValue()));
 
@@ -211,10 +221,10 @@ public class Client {
                         // 8 bytes
                         return switch (vhType) {
                             case irsdk_char,
-                                 irsdk_bool -> (double) data.getChar(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_DOUBLE.getValue()));
+                                    irsdk_bool -> (double) data.getChar(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_DOUBLE.getValue()));
 
                             case irsdk_int,
-                                 irsdk_bitField -> (double) data.getInt(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_DOUBLE.getValue()));
+                                    irsdk_bitField -> (double) data.getInt(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_DOUBLE.getValue()));
 
                             case irsdk_float -> (double) data.getFloat(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_DOUBLE.getValue()));
 
@@ -234,40 +244,41 @@ public class Client {
 
     }
 
-    public int getVarInt(CVar cVar) {
-
-        if (checkIdx(cVar)) {
-
-            if (isConnected()) {
-                VarHeader vh = utils.getVarHeaderEntry(cVar.getIdx());
-                if (vh != null) {
-                    if (cVar.getEntry() >= 0 && cVar.getEntry() < vh.getCount()) {
-                        VarType vhType = VarType.get(vh.getType());
-                        // 1 byte
-                        // 4 bytes
-                        // 8 bytes
-                        return switch (vhType) {
-                            case irsdk_char,
-                                 irsdk_bool -> (int) data.getChar(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_INT.getValue()));
-
-                            case irsdk_int,
-                                 irsdk_bitField -> (int) data.getInt(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_INT.getValue()));
-
-                            case irsdk_float -> (int) data.getFloat(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_INT.getValue()));
-
-                            case irsdk_double -> (int) data.getDouble(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_INT.getValue()));
-
-                            default -> throw new IllegalStateException("Unexpected value: " + vhType);
-                        };
-                    } else {
-                        // invalid offset
-                    }
-                } else {
-                    //invalid variable index
-                }
-            }
-        }
-        return 0;
+    //path is in the form of "DriverInfo:Drivers:CarIdx:{%d}UserName:"
+    public int getSessionStrVal() {
+        return -1;
     }
 
+    public int getSessionStr() {
+        if (isConnected()) {
+            lastSessionCt = getSessionCt();
+            return utils.getSessionInfoStr();
+        }
+        return -1;
+    }
+
+    public boolean wasSessionStrUpdated() {
+        return lastSessionCt != utils.getSessionInfoStrUpdate();
+    }
+
+    private int getSessionCt() {
+        return utils.getSessionInfoStrUpdate();
+    }
+
+    // ---------------------------
+    // CVar
+    private boolean checkIdx(CVar cvar) {
+        if (isConnected()) {
+            if (cvar.getStatusID() != this.statusID) {
+                cvar.setIdx(getVarIdx(cvar.getName()));
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isCVarValid(CVar cVar) {
+        checkIdx(cVar);
+        return cVar.getIdx() > -1;
+    }
 }

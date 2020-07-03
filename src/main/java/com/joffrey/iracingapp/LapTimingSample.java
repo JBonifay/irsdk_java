@@ -1,5 +1,6 @@
 package com.joffrey.iracingapp;
 
+import com.joffrey.iracingapp.model.iracing.defines.PaceMode;
 import com.joffrey.iracingapp.service.iracing.Client;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -165,7 +166,7 @@ public class LapTimingSample implements CommandLineRunner {
             }
 
         }
-       lastTime = currentTime;
+        lastTime = currentTime;
     }
 
     /**
@@ -196,40 +197,174 @@ public class LapTimingSample implements CommandLineRunner {
         //****Warning, shared static memory!
         final int yamlLen = 50000;
         final StringBuilder tstr = new StringBuilder(yamlLen);
-        int len = 0;
 
         // Start of YAML file
         tstr.append("---\n");
 
         // Live weather info, may change as session progresses
         tstr.append("WeatherStatus:\n");
-        tstr.append(" AirDensity: " + client.getVarFloat(airDensity));                          // kg/m^3, Density of air at start/finish line
-        tstr.append(" AirPressure: " + client.getVarFloat(airPressure));                        // Hg, Pressure of air at start/finish line
-        tstr.append(" AirTemp: " + client.getVarFloat(airTemp));                                // C, Temperature of air at start/finish line
+        tstr.append(" AirDensity: " + client.getVarFloat(
+                airDensity));                          // kg/m^3, Density of air at start/finish line
+        tstr.append(" AirPressure: " + client.getVarFloat(
+                airPressure));                        // Hg, Pressure of air at start/finish line
+        tstr.append(" AirTemp: " + client.getVarFloat(
+                airTemp));                                // C, Temperature of air at start/finish line
         tstr.append(" FogLevel: " + client.getVarFloat(fogLevel));                              // %, Fog level
         tstr.append(" RelativeHumidity: " + client.getVarFloat(relativeHumidity));              // %, Relative Humidity
-        tstr.append(" Skies: " + client.getVarInt(skies));                                      // Skies (0=clear/1=p cloudy/2=m cloudy/3=overcast)
-        tstr.append(" TrackTempCrew: " + client.getVarFloat(trackTempCrew));                    // C, Temperature of track measured by crew around track
-        tstr.append(" WeatherType: " + client.getVarInt(weatherType));                          // Weather type (0=constant 1=dynamic)
-        tstr.append(" WindDir: " + client.getVarFloat(windDir));                                // rad, Wind direction at start/finish line
-        tstr.append(" WindVel: " + client.getVarFloat(windVel));                                // m/s, Wind velocity at start/finish line
+        tstr.append(" Skies: " + client.getVarInt(
+                skies));                                      // Skies (0=clear/1=p cloudy/2=m cloudy/3=overcast)
+        tstr.append(" TrackTempCrew: " + client.getVarFloat(
+                trackTempCrew));                    // C, Temperature of track measured by crew around track
+        tstr.append(
+                " WeatherType: " + client.getVarInt(weatherType));                          // Weather type (0=constant 1=dynamic)
+        tstr.append(" WindDir: " + client.getVarFloat(
+                windDir));                                // rad, Wind direction at start/finish line
+        tstr.append(" WindVel: " + client.getVarFloat(
+                windVel));                                // m/s, Wind velocity at start/finish line
         tstr.append("\n");
 
         // session status
         tstr.append("SessionStatus:\n");
-        tstr.append(" PitsOpen: "+client.getVarBoolean(pitsOpen)+"\n");                         // True if pit stop is allowed, basically true if caution lights not out
-        tstr.append(" RaceLaps: " + client.getVarInt(raceLaps)+ "\n");                          // Laps completed in race
-        tstr.append(" SessionFlags: "+client.getVarInt(sessionTime)+"\n");                      // irsdk_Flags, bitfield
-        tstr.append(" SessionLapsRemain: "+ client.getVarInt(sessionLapsRemain) + "\n");        // Laps left till session ends
-        tstr.append(" SessionLapsRemainEx: "+ client.getVarInt(sessionLapsRemainEx)+"\n");      // New improved laps left till session ends
-        tstr.append(" SessionNum: "+client.getVarInt(sessionNum)+"\n");                         // Session number
-        tstr.append(" SessionState: "+client.getVarInt(sessionState) + "\n");                   // irsdk_SessionState, Session state
-        tstr.append(" SessionTick: "+client.getVarInt(sessionTick)+"\n");                       // Current update number
-        tstr.append(" SessionTime: "+client.getVarDouble(sessionTime)+"\n");                    // s, Seconds since session start
-        tstr.append(" SessionTimeOfDay: " + client.getVarFloat(sessionTimeOfDay) +"\n");       // s, Time of day in seconds
-        tstr.append(" SessionTimeRemain: "+ client.getVarDouble(sessionTimeRemain)+"\n");       // s, Seconds left till session ends
-        tstr.append(" SessionUniqueID: "+client.getVarInt(sessionUniqueID)+"\n");               // Session ID
+        tstr.append(" PitsOpen: "
+                    + client.getVarBoolean(pitsOpen)
+                    + "\n");                         // True if pit stop is allowed, basically true if caution lights not out
+        tstr.append(" RaceLaps: " + client.getVarInt(raceLaps) + "\n");                          // Laps completed in race
+        tstr.append(" SessionFlags: " + client.getVarInt(sessionTime) + "\n");                      // irsdk_Flags, bitfield
+        tstr.append(" SessionLapsRemain: " + client.getVarInt(sessionLapsRemain) + "\n");        // Laps left till session ends
+        tstr.append(" SessionLapsRemainEx: "
+                    + client.getVarInt(sessionLapsRemainEx)
+                    + "\n");      // New improved laps left till session ends
+        tstr.append(" SessionNum: " + client.getVarInt(sessionNum) + "\n");                         // Session number
+        tstr.append(
+                " SessionState: " + client.getVarInt(sessionState) + "\n");                   // irsdk_SessionState, Session state
+        tstr.append(" SessionTick: " + client.getVarInt(sessionTick) + "\n");                       // Current update number
+        tstr.append(
+                " SessionTime: " + client.getVarDouble(sessionTime) + "\n");                    // s, Seconds since session start
+        tstr.append(" SessionTimeOfDay: " + client.getVarFloat(sessionTimeOfDay) + "\n");       // s, Time of day in seconds
+        tstr.append(" SessionTimeRemain: "
+                    + client.getVarDouble(sessionTimeRemain)
+                    + "\n");       // s, Seconds left till session ends
+        tstr.append(" SessionUniqueID: " + client.getVarInt(sessionUniqueID) + "\n");               // Session ID
         tstr.append("\n");
+
+        // competitor information, array of up to 64 cars
+        tstr.append("CarStatus:\n");
+        if (client.isCVarValid(paceMode)) {
+            // irsdk_PaceMode, Are we pacing or not
+            tstr.append(" PaceMode: " + client.getVarInt(paceMode) + "\n");
+        }
+        tstr.append(" Cars:\n");
+        for (int entry = 0; entry < maxCars; entry++) {
+            tstr.append(" - CarIdx: " + entry + "\n"); // for convenience, the index into the array is the carIdx
+            carIdxEstTime.setEntry(entry);
+            tstr.append("   CarIdxEstTime: "
+                        + client.getVarFloat(carIdxEstTime)
+                        + "\n"); // s, Estimated time to reach current location on track
+            carIdxClassPosition.setEntry(entry);
+            tstr.append("   CarIdxClassPosition: "
+                        + client.getVarInt(carIdxClassPosition)
+                        + "\n"); // Cars class position in race by car index
+            carIdxF2Time.setEntry(entry);
+            tstr.append("   CarIdxF2Time: "
+                        + client.getVarFloat(carIdxF2Time)
+                        + "\n"); // s, Race time behind leader or fastest lap time otherwise
+
+            carIdxGear.setEntry(entry);
+            tstr.append("   CarIdxGear: "
+                        + client.getVarInt(carIdxGear)
+                        + "\n"); // -1=reverse 0=neutral 1..n=current gear by car index
+
+            carIdxLap.setEntry(entry);
+            tstr.append("   CarIdxLap: " + client.getVarInt(carIdxLap) + "\n"); // Lap count by car index
+
+            carIdxLapCompleted.setEntry(entry);
+            tstr.append("   CarIdxLapCompleted: " + client.getVarInt(carIdxLapCompleted) + "\n"); // Laps completed by car index
+
+            carIdxLapDistPct.setEntry(entry);
+            tstr.append("   CarIdxLapDistPct: "
+                        + client.getVarFloat(carIdxLapDistPct)
+                        + "\n"); // %, Percentage distance around lap by car index
+
+            carIdxOnPitRoad.setEntry(entry);
+            tstr.append("   CarIdxOnPitRoad: "
+                        + client.getVarBoolean(carIdxOnPitRoad)
+                        + "\n"); // On pit road between the cones by car index
+
+            carIdxPosition.setEntry(entry);
+            tstr.append("   CarIdxPosition: " + client.getVarInt(carIdxPosition) + "\n"); // Cars position in race by car index
+
+            carIdxRPM.setEntry(entry);
+            tstr.append("   CarIdxRPM: " + client.getVarFloat(carIdxRPM) + "\n"); // revs/min, Engine rpm by car index
+
+            carIdxSteer.setEntry(entry);
+            tstr.append("   CarIdxSteer: " + client.getVarFloat(carIdxSteer) + "\n"); // rad, Steering wheel angle by car index
+
+            carIdxTrackSurface.setEntry(entry);
+            tstr.append("   CarIdxTrackSurface: "
+                        + client.getVarInt(carIdxTrackSurface)
+                        + "\n"); // irsdk_TrkLoc, Track surface type by car index
+
+            carIdxTrackSurfaceMaterial.setEntry(entry);
+            tstr.append("   CarIdxTrackSurfaceMaterial: "
+                        + client.getVarInt(carIdxTrackSurfaceMaterial)
+                        + "\n"); // irsdk_TrkSurf, Track surface material type by car index
+            //****Note, don't use this one any more, it is replaced by CarIdxLastLapTime
+            tstr.append("   CarIdxLapTime: " + lapTime[entry] + "\n"); // s, last lap time or -1 if not yet crossed s/f
+            // new variables, check if they exist on members
+            if (client.isCVarValid(carIdxLastLapTime)) {
+                carIdxLastLapTime.setEntry(entry);
+                tstr.append("   CarIdxLastLapTime: " + client.getVarFloat(carIdxLastLapTime) + "\n"); // s, Cars last lap time
+            }
+            if (client.isCVarValid(carIdxBestLapTime)) {
+                carIdxBestLapTime.setEntry(entry);
+                tstr.append("   CarIdxBestLapTime: " + client.getVarFloat(carIdxBestLapTime) + "\n"); // s, Cars best lap time
+            }
+            if (client.isCVarValid(carIdxBestLapNum)) {
+                carIdxBestLapNum.setEntry(entry);
+                tstr.append("   CarIdxBestLapNum: " + client.getVarInt(carIdxBestLapNum) + "\n"); // Cars best lap number}
+            }
+            if (client.isCVarValid(carIdxP2P_Status)) {
+                carIdxP2P_Status.setEntry(entry);
+                tstr.append("   CarIdxP2P_Status: " + client.getVarBoolean(carIdxP2P_Status) + "\n"); // Push2Pass active or not}
+            }
+            if (client.isCVarValid(carIdxP2P_Count)) {
+                carIdxP2P_Count.setEntry(entry);
+                tstr.append("   CarIdxP2P_Count: "
+                            + client.getVarInt(carIdxP2P_Count)
+                            + "\n"); // Push2Pass count of usage (or remaining in Race)
+            }
+            if (client.isCVarValid(carIdxPaceLine)) {
+                carIdxPaceLine.setEntry(entry);
+                tstr.append("   CarIdxPaceLine: "
+                            + client.getVarInt(carIdxPaceLine)
+                            + "\n"); // What line cars are pacing in, or -1 if not pacing}
+            }
+            if (client.isCVarValid(carIdxPaceRow)) {
+                carIdxPaceRow.setEntry(entry);
+                tstr.append("   CarIdxPaceRow: "
+                            + client.getVarInt(carIdxPaceRow)
+                            + "\n"); // What row cars are pacing in, or -1 if not pacing}
+            }
+            if (client.isCVarValid(carIdxPaceFlags)) {
+                carIdxPaceFlags.setEntry(entry);
+                tstr.append("   CarIdxPaceFlags: "
+                            + client.getVarInt(carIdxPaceFlags)
+                            + "\n"); // irsdk_PaceFlags, Pacing status flags for each car}
+            }
+
+        }
+
+        tstr.append("\n");
+
+        // End of YAML file
+        tstr.append("...\n");
+
+        // terminate string in case we blew off the end of the array.
+        tstr.append('\0');
+
+        // make sure we are not close to running out of room
+        // if this triggers then double m_len
+        // assert (len < (m_len - 256));
 
 
         return tstr.toString();
