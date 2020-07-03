@@ -39,4 +39,7 @@ public enum Flags {
         this.value = value;
     }
 
+    public int getValue() {
+        return value;
+    }
 }

@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 import jdk.jshell.spi.ExecutionControl.NotImplementedException;
@@ -199,11 +200,11 @@ public class Utils {
         throw new NotImplementedException("Not Impl");
     }
 
-    public int getSessionInfoStr() {
+    public String getSessionInfoStr() {
         if (isInitialized) {
-            return header.getSessionInfoOffset();
+            return new String(sharedMemory.getByteArray(header.getSessionInfoOffset(), header.getSessionInfoLen()));
         }
-        return -1;
+        return "";
     }
 
     public int getSessionInfoStrUpdate() {

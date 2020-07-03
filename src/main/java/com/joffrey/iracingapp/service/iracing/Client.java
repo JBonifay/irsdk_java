@@ -249,12 +249,12 @@ public class Client {
         return -1;
     }
 
-    public int getSessionStr() {
+    public String getSessionStr() {
         if (isConnected()) {
             lastSessionCt = getSessionCt();
             return utils.getSessionInfoStr();
         }
-        return -1;
+        return "";
     }
 
     public boolean wasSessionStrUpdated() {

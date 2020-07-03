@@ -1,7 +1,16 @@
 package com.joffrey.iracingapp;
 
+import com.joffrey.iracingapp.model.iracing.defines.Flags;
 import com.joffrey.iracingapp.model.iracing.defines.PaceMode;
+import com.joffrey.iracingapp.model.iracing.defines.SessionState;
 import com.joffrey.iracingapp.service.iracing.Client;
+import com.joffrey.iracingapp.service.iracing.YamlParser;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,12 +20,14 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+
 @RequiredArgsConstructor
 @Slf4j
 @SpringBootApplication
 public class LapTimingSample implements CommandLineRunner {
 
-    private final Client client;
+    private final Client     client;
+    private final YamlParser yamlParser;
 
     private static       double   lastTime     = -1;
     private static final int      maxCars      = 64;
@@ -25,8 +36,10 @@ public class LapTimingSample implements CommandLineRunner {
     // lap time for last lap, or -1 if not yet completed a lap
     private static final float[]  lapTime      = new float[maxCars];
 
-    private static final List<DriverEntry> driverEntryList = new ArrayList<>(maxCars);
-    private              boolean           wasConnected    = false;
+    private static final List<DriverEntry> driverTableTable = new ArrayList<>(maxCars);
+    private              boolean           wasConnected     = false;
+    private static final boolean           updateDisplay    = true;
+
 
     // 'live' session info
     // Live weather info, may change as session progresses
@@ -116,11 +129,13 @@ public class LapTimingSample implements CommandLineRunner {
 
             // only process session string if it changed
             if (client.wasSessionStrUpdated()) {
-                processYAMLSessionString("null");
+                processYAMLSessionString(client.getSessionStr());
             }
 
             // update the display as well
-            updateDisplay();
+            if (updateDisplay) {
+                updateDisplay();
+            }
         }
         // else we did not grab data, do nothing
 
@@ -366,20 +381,77 @@ public class LapTimingSample implements CommandLineRunner {
         // if this triggers then double m_len
         // assert (len < (m_len - 256));
 
-
         return tstr.toString();
     }
 
     private void processYAMLSessionString(String yamlString) {
 
-        log.info(yamlString);
+        long lastTime = 0;
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        // validate string
+        if (!yamlString.isEmpty() && yamlString.charAt(0) != ' ') {
+            //****Note, your code goes here
+            // can write to disk, parse, etc
+
+            // output file once every 5 seconds
+            long minTime = (long) 5.0f * 1000;
+            long curTime = System.currentTimeMillis();
+
+            if (Math.abs((curTime - lastTime)) > minTime) {
+
+                lastTime = curTime;
+
+                File file = new File("liveStr.txt");
+                try {
+                    file.createNewFile();
+                    if (file.exists()) {
+                        FileWriter fileWriter = new FileWriter(file);
+                        PrintWriter printWriter = new PrintWriter(fileWriter);
+                        printWriter.print(yamlString);
+                        printWriter.flush();
+                        printWriter.close();
+
+                        file = null;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //---
+
+            // TODO: 3 Jul 2020 YamlParser is not currently working
+            // Pull some driver info into a local array
+            String[] tstr = new String[256];
+            // for (int i = 0; i < maxCars; i++) {
+            //     // skip the rest if carIdx not found
+            //     log.info("DriverInfo:Drivers:CarIdx: " + i);
+            //     if (parceYamlInt(yamlString, tstr, (driverTableTable.get(i).getCarIdx()))) {
+            //         log.info("DriverInfo:Drivers:CarIdx:" + i + " CarClassID:");
+            //         parceYamlInt(yamlString, tstr, (driverTableTable.get(i).getCarClassId()));
+            //
+            //         log.info("DriverInfo:Drivers:CarIdx:" + i + "UserName:");
+            //         parceYamlStr(yamlString, tstr, driverTableTable.get(i).getDriverName(),
+            //                      driverTableTable.get(i).getDriverName().length() - 1);
+            //
+            //         log.info("DriverInfo:Drivers:CarIdx:" + i + "TeamName:");
+            //         parceYamlStr(yamlString, tstr, driverTableTable.get(i).getTeamName(),
+            //                      driverTableTable.get(i).getTeamName().length() - 1);
+            //
+            //         log.info("DriverInfo:Drivers:CarIdx:" + i + "CarNumber:");
+            //         parceYamlStr(yamlString, tstr, driverTableTable.get(i).getCarNumStr(),
+            //                      driverTableTable.get(i).getCarNumStr().length() - 1);
+            //
+            //         // TeamID
+            //     }
+            // }
+
+            //---
+
+            //****Note, your code goes here
+            // can write to disk, parse, etc
+
         }
-
     }
 
     private void monitorConnectionStatus() {
@@ -401,9 +473,31 @@ public class LapTimingSample implements CommandLineRunner {
 
     }
 
+    private boolean parceYamlInt(String yamlStr, String[] path, int dest) {
+        if (dest != 0) {
+            dest = 0;
+
+            if (!(yamlStr.isEmpty() && path != null)) {
+                int count = 0;
+                String strPtr = "";
+                // TODO: 3 Jul 2020 YamlParser is not currently working
+                if (yamlParser.parseYaml(yamlStr, path, strPtr, count)) {
+                    // dest = atoi(strPtr);
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private void parceYamlStr(String yamlString, String[] tstr, String driverName, int i) {
+
+    }
+
     private void resetState(boolean isNewConnection) {
         if (isNewConnection) {
-            Collections.fill(driverEntryList, new DriverEntry());
+            Collections.fill(driverTableTable, new DriverEntry());
         }
 
         for (int i = 0; i < maxCars; i++) {
@@ -414,12 +508,249 @@ public class LapTimingSample implements CommandLineRunner {
         }
     }
 
+    public void printTime(double time_s) {
+        int minutes = (int) (time_s / 60);
+        float seconds = (float) (time_s - (60 * minutes));
+        log.info(String.format("%03d:%05.2f", minutes, seconds));
+    }
+
+    private void printFlags(int flags) {
+
+        // global flags
+        if (flags == Flags.irsdk_checkered.getValue()) {
+            log.info("checkered ");
+        }
+        if (flags == Flags.irsdk_white.getValue()) {
+            log.info("white ");
+        }
+        if (flags == Flags.irsdk_green.getValue()) {
+            log.info("green ");
+        }
+        if (flags == Flags.irsdk_yellow.getValue()) {
+            log.info("yellow ");
+        }
+        if (flags == Flags.irsdk_red.getValue()) {
+            log.info("red ");
+        }
+        if (flags == Flags.irsdk_blue.getValue()) {
+            log.info("blue ");
+        }
+        if (flags == Flags.irsdk_debris.getValue()) {
+            log.info("debris ");
+        }
+        if (flags == Flags.irsdk_crossed.getValue()) {
+            log.info("crossed ");
+        }
+        if (flags == Flags.irsdk_yellowWaving.getValue()) {
+            log.info("yellowWaving ");
+        }
+        if (flags == Flags.irsdk_oneLapToGreen.getValue()) {
+            log.info("oneLapToGreen ");
+        }
+        if (flags == Flags.irsdk_greenHeld.getValue()) {
+            log.info("greenHeld ");
+        }
+        if (flags == Flags.irsdk_tenToGo.getValue()) {
+            log.info("tenToGo ");
+        }
+        if (flags == Flags.irsdk_fiveToGo.getValue()) {
+            log.info("fiveToGo ");
+        }
+        if (flags == Flags.irsdk_randomWaving.getValue()) {
+            log.info("randomWaving ");
+        }
+        if (flags == Flags.irsdk_caution.getValue()) {
+            log.info("caution ");
+        }
+        if (flags == Flags.irsdk_cautionWaving.getValue()) {
+            log.info("cautionWaving ");
+        }
+
+        // drivers black flags
+        if (flags == Flags.irsdk_black.getValue()) {
+            log.info("black ");
+        }
+        if (flags == Flags.irsdk_disqualify.getValue()) {
+            log.info("disqualify ");
+        }
+        if (flags == Flags.irsdk_servicible.getValue()) {
+            log.info("servicible ");
+        }
+        if (flags == Flags.irsdk_furled.getValue()) {
+            log.info("furled ");
+        }
+        if (flags == Flags.irsdk_repair.getValue()) {
+            log.info("repair ");
+        }
+
+        // start lights
+        if (flags == Flags.irsdk_startHidden.getValue()) {
+            log.info("startHidden ");
+        }
+        if (flags == Flags.irsdk_startReady.getValue()) {
+            log.info("startReady ");
+        }
+        if (flags == Flags.irsdk_startSet.getValue()) {
+            log.info("startSet ");
+        }
+        if (flags == Flags.irsdk_startGo.getValue()) {
+            log.info("startGo ");
+        }
+    }
+
+    private void printSessionState(int state) {
+        switch (SessionState.get(state)) {
+            case irsdk_StateInvalid -> log.info("Invalid");
+            case irsdk_StateGetInCar -> log.info("GetInCar");
+            case irsdk_StateWarmup -> log.info("Warmup");
+            case irsdk_StateParadeLaps -> log.info("ParadeLap");
+            case irsdk_StateRacing -> log.info("Racing");
+            case irsdk_StateCheckered -> log.info("Checkered");
+            case irsdk_StateCoolDown -> log.info("CoolDown");
+        }
+    }
+
+    private void printPaceMode(int mode) {
+        switch (PaceMode.get(mode)) {
+            case irsdk_PaceModeSingleFileStart:
+                log.info("SingleFileStart");
+                break;
+            case irsdk_PaceModeDoubleFileStart:
+                log.info("DoubleFileStart");
+                break;
+            case irsdk_PaceModeSingleFileRestart:
+                log.info("SingleFileRestart");
+                break;
+            case irsdk_PaceModeDoubleFileRestart:
+                log.info("DoubleFileRestart:");
+                break;
+            case irsdk_PaceModeNotPacing:
+                log.info("NotPacing");
+                break;
+        }
+    }
+
     private void updateDisplay() {
+        // Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        // int height = (int) screenSize.getHeight();
+        // int width = (int) screenSize.getWidth();
+
+        int height = 1000;
+        int width = 100;
+
+        int statusOffset = 3;
+        int carsOffset = 6;
+        int maxCarLines = height - carsOffset;
+
+        // print race status line
         System.out.println("\33[H\033[2J");
         System.out.flush();
 
+        log.info("Time: ");
+        printTime(client.getVarDouble(sessionTime));
 
+        log.info(String.format(" Session: %d", client.getVarInt(sessionNum)));
+
+        log.info(String.format(" LapsComplete: %03d", client.getVarInt(raceLaps)));
+
+        if (client.getVarInt(sessionLapsRemainEx) < 32767) {
+            log.info(String.format(" LapsRemain: %03d", client.getVarInt(sessionLapsRemainEx)));
+        } else {
+            log.info(" LapsRemain: Unlimited");
+        }
+
+        log.info(" TimeRemain: ");
+        if (client.getVarDouble(sessionTimeRemain) < 604800.0f) {
+            printTime(client.getVarDouble(sessionTimeRemain));
+        } else {
+            log.info("Unlimited");
+        }
+
+        // print flag status
+        log.info(" flags: ");
+        printFlags(client.getVarInt(sessionFlags));
+
+        log.info(String.format(" PitsOpen: %s", client.getVarBoolean(pitsOpen)));
+
+        log.info(" State: ");
+        printSessionState(client.getVarInt(sessionState));
+
+        // new variables check if on members
+        if (client.isCVarValid(paceMode)) {
+            log.info(" PaceMode: ");
+            printPaceMode(client.getVarInt(paceMode));
+        }
+
+        // print car info
+        // don't scroll off the end of the buffer
+        int linesUsed = 0;
+        int maxLines = Math.min(maxCars, maxCarLines);
+        for (int entry = 0; entry < maxCars; entry++) {
+            if (linesUsed < maxLines) {
+                // is the car in the world, or did we at least collect data on it when it was?
+                if (client.getVarInt(carIdxTrackSurface) != -1
+                    || client.getVarInt(carIdxLap) != -1
+                    || client.getVarInt(carIdxPosition) != 0) {
+
+                    carIdxEstTime.setEntry(entry);
+                    carIdxGear.setEntry(entry);
+                    carIdxLap.setEntry(entry);
+                    carIdxLapCompleted.setEntry(entry);
+                    carIdxLapDistPct.setEntry(entry);
+                    carIdxOnPitRoad.setEntry(entry);
+                    carIdxRPM.setEntry(entry);
+                    carIdxSteer.setEntry(entry);
+                    carIdxTrackSurface.setEntry(entry);
+                    carIdxTrackSurfaceMaterial.setEntry(entry);
+                    carIdxPosition.setEntry(entry);
+                    carIdxClassPosition.setEntry(entry);
+                    carIdxF2Time.setEntry(entry);
+                    carIdxLastLapTime.setEntry(entry);
+                    carIdxBestLapTime.setEntry(entry);
+                    carIdxBestLapNum.setEntry(entry);
+                    carIdxP2P_Status.setEntry(entry);
+                    carIdxP2P_Count.setEntry(entry);
+                    carIdxPaceLine.setEntry(entry);
+                    carIdxPaceRow.setEntry(entry);
+                    carIdxPaceFlags.setEntry(entry);
+
+                    log.info(String.format(
+                            " %2d %3s %7.3f %2d %2d %2d %6.3f %s %8.2f %5.2f %2d %2d %2d %2d %7.3f %7.3f %7.3f %7.3f %2d %s %2d %2d %2d 0x%02x \n",
+                            entry,
+                            driverTableTable.get(entry).getCarNumStr(),
+                            client.getVarFloat(carIdxEstTime),
+                            client.getVarInt(carIdxGear),
+                            client.getVarInt(carIdxLap),
+                            client.getVarInt(carIdxLapCompleted),
+                            client.getVarFloat(carIdxLapDistPct),
+                            client.getVarBoolean(carIdxOnPitRoad),
+                            client.getVarFloat(carIdxRPM),
+                            client.getVarFloat(carIdxSteer),
+                            client.getVarInt(carIdxTrackSurface),
+                            client.getVarInt(carIdxTrackSurfaceMaterial),
+                            client.getVarInt(carIdxPosition),
+                            client.getVarInt(carIdxClassPosition),
+                            client.getVarFloat(carIdxF2Time),
+                            //****Note, don't use this one any more, it is replaced by CarIdxLastLapTime
+                            lapTime[entry],
+                            // new variables, check if they exist on members
+                            (client.isCVarValid(carIdxLastLapTime)) ? client.getVarFloat(carIdxLastLapTime) : -1,
+                            (client.isCVarValid(carIdxBestLapTime)) ? client.getVarFloat(carIdxBestLapTime) : -1,
+                            (client.isCVarValid(carIdxBestLapNum)) ? client.getVarInt(carIdxBestLapNum) : -1,
+                            (client.isCVarValid(carIdxP2P_Status)) ? client.getVarBoolean(carIdxP2P_Status) : -1,
+                            (client.isCVarValid(carIdxP2P_Count)) ? client.getVarInt(carIdxP2P_Count) : -1,
+                            (client.isCVarValid(carIdxPaceLine)) ? client.getVarInt(carIdxPaceLine) : -1,
+                            (client.isCVarValid(carIdxPaceRow)) ? client.getVarInt(carIdxPaceRow) : -1,
+                            (client.isCVarValid(carIdxPaceFlags)) ? client.getVarInt(carIdxPaceFlags) : -1));
+                    linesUsed++;
+                }
+            }
+        }
+
+        // clear remaining lines
+        for (int i = linesUsed; i < maxLines; i++) {
+            log.info(" ");
+        }
     }
-
 
 }
