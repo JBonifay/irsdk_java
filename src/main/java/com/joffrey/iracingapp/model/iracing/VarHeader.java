@@ -2,6 +2,7 @@ package com.joffrey.iracingapp.model.iracing;
 
 import com.joffrey.iracingapp.model.iracing.defines.Constant;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -33,10 +34,11 @@ public class VarHeader {
     }
 
     public VarHeader(ByteBuffer buffer, int varOffset) {
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
         byte[] localBuffer;
-        type = buffer.get(varOffset);
-        offset = buffer.get(varOffset + 4);
-        count = buffer.get(varOffset + 8);
+        type = buffer.getInt(varOffset + 0);
+        offset = buffer.getInt(varOffset + 4);
+        count = buffer.getInt(varOffset + 8);
 
         localBuffer = new byte[Constant.IRSDK_MAX_STRING];
         buffer.position(varOffset + 16);

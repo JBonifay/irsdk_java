@@ -28,7 +28,7 @@ public class Utils {
     private WinNT.HANDLE memMapFile     = null;
     private WinNT.HANDLE dataValidEvent = null;
     private Pointer      sharedMemory   = null;
-    private Header header;
+    private Header       header;
 
     @Getter
     private ByteBuffer dataBuffer;
@@ -50,7 +50,7 @@ public class Utils {
         if (memMapFile != null) {
             if (sharedMemory == null) {
                 sharedMemory = windowsService.mapViewOfFile(memMapFile);
-                header = new Header(ByteBuffer.wrap(sharedMemory.getByteArray(0, Header.HEADER_SIZE)));
+                header = new Header(sharedMemory);
                 lastTickCount = Integer.MAX_VALUE;
             }
 
@@ -87,13 +87,13 @@ public class Utils {
 
             int latest = 0;
             for (int i = 1; i < header.getNumBuf(); i++) {
-                if (header.getVarBuf()[latest].getTickCount() < header.getVarBuf()[i].getTickCount()) {
+                if (header.getVarBuf(latest).getTickCount() < header.getVarBuf(i).getTickCount()) {
                     latest = i;
                 }
             }
 
             // if newer than last recieved, than report new data
-            if (lastTickCount < header.getVarBuf()[latest].getTickCount()) {
+            if (lastTickCount < header.getVarBuf(latest).getTickCount()) {
 
                 // if asked to retrieve the data
                 if (data != null) {
@@ -101,14 +101,15 @@ public class Utils {
                     // try twice to get the data out
                     for (int count = 0; count < 2; count++) {
 
-                        int curTickCount = header.getVarBuf()[latest].getTickCount();
+                        int curTickCount = header.getVarBuf(latest).getTickCount();
 
                         // memcpy(data, pSharedMem + pHeader -> varBuf[latest].bufOffset, pHeader -> bufLen);
-                        data = ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarBuf()[latest].getBufOffset(), header.getBufLen()));
+                        data = ByteBuffer.wrap(
+                                sharedMemory.getByteArray(header.getVarBuf(latest).getBufOffset(), header.getBufLen()));
 
                         dataBuffer = data;
 
-                        if (curTickCount == header.getVarBuf()[latest].getTickCount()) {
+                        if (curTickCount == header.getVarBuf(latest).getTickCount()) {
                             lastTickCount = curTickCount;
                             lastValidTime = new Timestamp(System.currentTimeMillis());
                             return true;
@@ -119,14 +120,14 @@ public class Utils {
                     return false;
 
                 } else {
-                    lastTickCount = header.getVarBuf()[latest].getTickCount();
+                    lastTickCount = header.getVarBuf(latest).getTickCount();
                     lastValidTime = new Timestamp(System.currentTimeMillis());
                     return true;
                 }
 
                 // if older than last recieved, than reset, we probably disconnected
-            } else if (lastTickCount > header.getVarBuf()[latest].getTickCount()) {
-                lastTickCount = header.getVarBuf()[latest].getTickCount();
+            } else if (lastTickCount > header.getVarBuf(latest).getTickCount()) {
+                lastTickCount = header.getVarBuf(latest).getTickCount();
                 return false;
             }
             // else the same, and nothing changed this tick
@@ -157,6 +158,11 @@ public class Utils {
 
             // sleep till signaled
             windowsService.waitForSingleObject(dataValidEvent, timeOut);
+
+            // sleep if error
+            if (timeOut > 0) {
+                Thread.sleep(timeOut);
+            }
 
             // we woke up, so check for data
             if (getNewData(data)) {
@@ -214,9 +220,8 @@ public class Utils {
     public VarHeader getVarHeaderEntry(int index) {
         if (isInitialized) {
             if (index >= 0 && index < header.getNumVars()) {
-                // header.getVarHeaderOffset()
                 return new VarHeader(ByteBuffer.wrap(
-                        sharedMemory.getByteArray(header.getVarHeaderOffset() + (VarHeader.SIZEOF_VAR_HEADER * index),
+                        sharedMemory.getByteArray(header.getHeaderOffset() + (VarHeader.SIZEOF_VAR_HEADER * index),
                                                   VarHeader.SIZEOF_VAR_HEADER)));
             }
         }

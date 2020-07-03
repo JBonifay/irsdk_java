@@ -5,6 +5,7 @@ import com.joffrey.iracingapp.model.iracing.VarHeader;
 import com.joffrey.iracingapp.model.iracing.defines.VarType;
 import com.joffrey.iracingapp.model.iracing.defines.VarTypeBytes;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -47,6 +48,7 @@ public class Client {
                 // and try to fill in the data
                 if (utils.getNewData(data)) {
                     data = utils.getDataBuffer();
+                    data.order(ByteOrder.LITTLE_ENDIAN);
                     return true;
                 }
 
@@ -130,37 +132,22 @@ public class Client {
                 if (vh != null) {
                     if (cVar.getEntry() >= 0 && cVar.getEntry() < vh.getCount()) {
                         VarType vhType = VarType.get(vh.getType());
-                        switch (vhType) {
-                            // 1 byte
-                            case irsdk_char:
-                            case irsdk_bool:
-                                return (data.getChar(
-                                        VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (cVar.getIdx()
-                                                                                                            + cVar.getEntry()))))
-                                       != 0;
+                        // 1 byte
+                        // 4 bytes
+                        // 8 bytes
+                        return switch (vhType) {
+                            case irsdk_char,
+                                 irsdk_bool -> (data.getChar(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_BOOL.getValue()))) != 0;
 
-                            // 4 bytes
-                            case irsdk_int:
-                            case irsdk_bitField:
-                                return (data.getInt(
-                                        VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (cVar.getIdx()
-                                                                                                            + cVar.getEntry()))))
-                                       != 0;
+                            case irsdk_int,
+                                 irsdk_bitField -> (data.getInt(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_BOOL.getValue()))) != 0;
 
-                            case irsdk_float:
-                                return (data.getFloat(
-                                        VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (cVar.getIdx()
-                                                                                                            + cVar.getEntry()))))
-                                       != 0;
+                            case irsdk_float -> (data.getFloat(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_BOOL.getValue()))) != 0;
 
-                            // 8 bytes
-                            case irsdk_double:
-                                return (data.getDouble(
-                                        VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (cVar.getIdx()
-                                                                                                            + cVar.getEntry()))))
-                                       != 0;
+                            case irsdk_double -> (data.getDouble(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_BOOL.getValue()))) != 0;
 
-                        }
+                            default -> throw new IllegalStateException("Unexpected value: " + vhType);
+                        };
                     } else {
                         // invalid offset
                     }
@@ -182,33 +169,22 @@ public class Client {
                 if (vh != null) {
                     if (cVar.getEntry() >= 0 && cVar.getEntry() < vh.getCount()) {
                         VarType vhType = VarType.get(vh.getType());
-                        switch (vhType) {
-                            // 1 byte
-                            case irsdk_char:
-                            case irsdk_bool:
-                                return (float) data.getChar(VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (
-                                        cVar.getIdx()
-                                        + cVar.getEntry())));
+                        // 1 byte
+                        // 4 bytes
+                        // 8 bytes
+                        return switch (vhType) {
+                            case irsdk_char,
+                                 irsdk_bool -> (float) data.getChar(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_FLOAT.getValue()));
 
-                            // 4 bytes
-                            case irsdk_int:
-                            case irsdk_bitField:
-                                return (float) data.getInt(VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (
-                                        cVar.getIdx()
-                                        + cVar.getEntry())));
+                            case irsdk_int,
+                                 irsdk_bitField -> (float) data.getInt(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_FLOAT.getValue()));
 
-                            case irsdk_float:
-                                return (float) data.getFloat(VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (
-                                        cVar.getIdx()
-                                        + cVar.getEntry())));
+                            case irsdk_float -> (float) data.getFloat(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_FLOAT.getValue()));
 
-                            // 8 bytes
-                            case irsdk_double:
-                                return (float) data.getDouble(VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (
-                                        cVar.getIdx()
-                                        + cVar.getEntry())));
+                            case irsdk_double -> (float) data.getDouble(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_FLOAT.getValue()));
 
-                        }
+                            default -> throw new IllegalStateException("Unexpected value: " + vhType);
+                        };
                     } else {
                         // invalid offset
                     }
@@ -230,33 +206,22 @@ public class Client {
                 if (vh != null) {
                     if (cVar.getEntry() >= 0 && cVar.getEntry() < vh.getCount()) {
                         VarType vhType = VarType.get(vh.getType());
-                        switch (vhType) {
-                            // 1 byte
-                            case irsdk_char:
-                            case irsdk_bool:
-                                return (double) data.getChar(VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (
-                                        cVar.getIdx()
-                                        + cVar.getEntry())));
+                        // 1 byte
+                        // 4 bytes
+                        // 8 bytes
+                        return switch (vhType) {
+                            case irsdk_char,
+                                 irsdk_bool -> (double) data.getChar(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_DOUBLE.getValue()));
 
-                            // 4 bytes
-                            case irsdk_int:
-                            case irsdk_bitField:
-                                return (double) data.getInt(VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (
-                                        cVar.getIdx()
-                                        + cVar.getEntry())));
+                            case irsdk_int,
+                                 irsdk_bitField -> (double) data.getInt(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_DOUBLE.getValue()));
 
-                            case irsdk_float:
-                                return (double) data.getFloat(VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (
-                                        cVar.getIdx()
-                                        + cVar.getEntry())));
+                            case irsdk_float -> (double) data.getFloat(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_DOUBLE.getValue()));
 
-                            // 8 bytes
-                            case irsdk_double:
-                                return (double) data.getDouble(
-                                        VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (cVar.getIdx()
-                                                                                                            + cVar.getEntry())));
+                            case irsdk_double -> (double) data.getDouble(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_DOUBLE.getValue()));
 
-                        }
+                            default -> throw new IllegalStateException("Unexpected value: " + vhType);
+                        };
                     } else {
                         // invalid offset
                     }
@@ -278,33 +243,22 @@ public class Client {
                 if (vh != null) {
                     if (cVar.getEntry() >= 0 && cVar.getEntry() < vh.getCount()) {
                         VarType vhType = VarType.get(vh.getType());
-                        switch (vhType) {
-                            // 1 byte
-                            case irsdk_char:
-                            case irsdk_bool:
-                                return (int) data.getChar(
-                                        VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (cVar.getIdx()
-                                                                                                            + cVar.getEntry())));
+                        // 1 byte
+                        // 4 bytes
+                        // 8 bytes
+                        return switch (vhType) {
+                            case irsdk_char,
+                                 irsdk_bool -> (int) data.getChar(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_INT.getValue()));
 
-                            // 4 bytes
-                            case irsdk_int:
-                            case irsdk_bitField:
-                                return (int) data.getInt(
-                                        VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (cVar.getIdx()
-                                                                                                            + cVar.getEntry())));
+                            case irsdk_int,
+                                 irsdk_bitField -> (int) data.getInt(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_INT.getValue()));
 
-                            case irsdk_float:
-                                return (int) data.getFloat(VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (
-                                        cVar.getIdx()
-                                        + cVar.getEntry())));
+                            case irsdk_float -> (int) data.getFloat(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_INT.getValue()));
 
-                            // 8 bytes
-                            case irsdk_double:
-                                return (int) data.getDouble(VarHeader.SIZEOF_VAR_HEADER + (VarTypeBytes.IRSDK_INT.getValue() * (
-                                        cVar.getIdx()
-                                        + cVar.getEntry())));
+                            case irsdk_double -> (int) data.getDouble(vh.getOffset() + (cVar.getEntry() * VarTypeBytes.IRSDK_INT.getValue()));
 
-                        }
+                            default -> throw new IllegalStateException("Unexpected value: " + vhType);
+                        };
                     } else {
                         // invalid offset
                     }

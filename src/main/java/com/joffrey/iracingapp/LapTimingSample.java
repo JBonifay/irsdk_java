@@ -165,7 +165,7 @@ public class LapTimingSample implements CommandLineRunner {
             }
 
         }
-        lastTime = currentTime;
+       lastTime = currentTime;
     }
 
     /**
