@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.yaml.snakeyaml.Yaml;
 
 
 @RequiredArgsConstructor
@@ -84,7 +86,14 @@ public class LapTimingSample implements CommandLineRunner {
     private CVar carIdxPaceFlags;
 
 
-    private void initCVar() {
+    private void initVar() {
+
+        for (int i = 0; i < MAX_CARS; i++) {
+            DriverEntry driverEntry = new DriverEntry();
+            driverEntry.setCarIdx(i);
+            driverTableTable.add(driverEntry);
+        }
+
         // 'live' session info
         // Live weather info, may change as session progresses
         // (float) kg/m^3, Density of air at start/finish line
@@ -199,7 +208,7 @@ public class LapTimingSample implements CommandLineRunner {
         // bump priority up so we get time from the sim
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 
-        initCVar();
+        initVar();
 
         //****Note, put your init logic here
 
@@ -212,7 +221,7 @@ public class LapTimingSample implements CommandLineRunner {
 
             // and grab the data here
             processLapInfo();
-            processYAMLSessionString(generateLiveYAMLString());
+            // processYAMLSessionString(generateLiveYAMLString());
 
             // only process session string if it changed
             if (client.wasSessionStrUpdated()) {
@@ -479,38 +488,36 @@ public class LapTimingSample implements CommandLineRunner {
 
             //---
 
-            // TODO: 3 Jul 2020 YamlParser is not currently working
             // Pull some driver info into a local array
-            String[] tstr = new String[256];
-            // for (int i = 0; i < maxCars; i++) {
-            //     // skip the rest if carIdx not found
-            //     log.info("DriverInfo:Drivers:CarIdx: " + i);
-            //     if (parceYamlInt(yamlString, tstr, (driverTableTable.get(i).getCarIdx()))) {
-            //         log.info("DriverInfo:Drivers:CarIdx:" + i + " CarClassID:");
-            //         parceYamlInt(yamlString, tstr, (driverTableTable.get(i).getCarClassId()));
-            //
-            //         log.info("DriverInfo:Drivers:CarIdx:" + i + "UserName:");
-            //         parceYamlStr(yamlString, tstr, driverTableTable.get(i).getDriverName(),
-            //                      driverTableTable.get(i).getDriverName().length() - 1);
-            //
-            //         log.info("DriverInfo:Drivers:CarIdx:" + i + "TeamName:");
-            //         parceYamlStr(yamlString, tstr, driverTableTable.get(i).getTeamName(),
-            //                      driverTableTable.get(i).getTeamName().length() - 1);
-            //
-            //         log.info("DriverInfo:Drivers:CarIdx:" + i + "CarNumber:");
-            //         parceYamlStr(yamlString, tstr, driverTableTable.get(i).getCarNumStr(),
-            //                      driverTableTable.get(i).getCarNumStr().length() - 1);
-            //
-            //         // TeamID
-            //     }
-            // }
+            String tstr;
+            for (int i = 0; i < MAX_CARS; i++) {
 
-            //---
+                // skip the rest if carIdx not found
 
-            //****Note, your code goes here
-            // can write to disk, parse, etc
+                tstr = String.format("DriverInfo:Drivers:CarIdx:{%d}", i);
+                driverTableTable.get(i).setCarIdx(parceYamlInt(yamlString, tstr));
 
+                tstr = String.format("DriverInfo:Drivers:CarIdx:{%d}CarClassID", i);
+                driverTableTable.get(i).setCarClassId(parceYamlInt(yamlString, tstr));
+
+                tstr = String.format("DriverInfo:Drivers:CarIdx:{%d}UserName:", i);
+                driverTableTable.get(i).setDriverName(parceYamlStr(yamlString, tstr));
+
+                tstr = String.format("DriverInfo:Drivers:CarIdx:{%d}TeamName:", i);
+                driverTableTable.get(i).setTeamName(parceYamlStr(yamlString, tstr));
+
+                tstr = String.format("DriverInfo:Drivers:CarIdx:{%d}CarNumber:", i);
+                driverTableTable.get(i).setCarNumStr(parceYamlStr(yamlString, tstr));
+
+                // TeamID
+            }
         }
+
+        //---
+
+        //****Note, your code goes here
+        // can write to disk, parse, etc
+
     }
 
     private void monitorConnectionStatus() {
@@ -532,26 +539,22 @@ public class LapTimingSample implements CommandLineRunner {
 
     }
 
-    private boolean parceYamlInt(String yamlStr, String path, int dest) {
-        if (dest != 0) {
-            dest = 0;
-
-            if (!(yamlStr.isEmpty() && path != null)) {
-                int count = 0;
-                String strPtr = "";
-                // TODO: 3 Jul 2020 YamlParser is not currently working
-                if (yamlParser.parseYaml(yamlStr, path, strPtr, count)) {
-                    // dest = atoi(strPtr);
-                    return true;
-                }
+    private int parceYamlInt(String yamlStr, String path) {
+        if (!(yamlStr.isEmpty() && !path.isEmpty())) {
+            int count = path.length();
+            String result = yamlParser.parseYaml(yamlStr, path, count);
+            if (!result.isEmpty()) {
+                return Integer.parseInt(result);
+            } else {
+                return 0;
             }
         }
-
-        return false;
+        return 0;
     }
 
-    private void parceYamlStr(String yamlString, String[] tstr, String driverName, int i) {
-
+    private String parceYamlStr(String yamlString, String path) {
+        int count = path.length();
+        return yamlParser.parseYaml(yamlString, path,count);
     }
 
     private void resetState(boolean isNewConnection) {
