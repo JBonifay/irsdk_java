@@ -28,70 +28,157 @@ public class LapTimingSample implements CommandLineRunner {
     private final YamlParser yamlParser;
 
     private static       double   lastTime     = -1;
-    private static final int      maxCars      = 64;
-    private static final float[]  lastDistPct  = new float[maxCars];
-    private static final double[] lapStartTime = new double[maxCars];
+    private static final int      MAX_CARS     = 64;
+    private static final float[]  lastDistPct  = new float[MAX_CARS];
+    private static final double[] lapStartTime = new double[MAX_CARS];
     // lap time for last lap, or -1 if not yet completed a lap
-    private static final float[]  lapTime      = new float[maxCars];
+    private static final float[]  lapTime      = new float[MAX_CARS];
 
-    private static final List<DriverEntry> driverTableTable = new ArrayList<>(maxCars);
+    private static final List<DriverEntry> driverTableTable = new ArrayList<>(MAX_CARS);
     private              boolean           wasConnected     = false;
-    private static final boolean           updateDisplay    = true;
+    private static final boolean           UPDATE_DISPLAY   = true;
+
+    private CVar airDensity;
+    private CVar airPressure;
+    private CVar airTemp;
+    private CVar fogLevel;
+    private CVar relativeHumidity;
+    private CVar skies;
+    private CVar trackTempCrew;
+    private CVar weatherType;
+    private CVar windDir;
+    private CVar windVel;
+    private CVar pitsOpen;
+    private CVar raceLaps;
+    private CVar sessionFlags;
+    private CVar sessionLapsRemain;
+    private CVar sessionLapsRemainEx;
+    private CVar sessionNum;
+    private CVar sessionState;
+    private CVar sessionTick;
+    private CVar sessionTime;
+    private CVar sessionTimeOfDay;
+    private CVar sessionTimeRemain;
+    private CVar sessionUniqueID;
+    private CVar carIdxEstTime;
+    private CVar carIdxClassPosition;
+    private CVar carIdxF2Time;
+    private CVar carIdxGear;
+    private CVar carIdxLap;
+    private CVar carIdxLapCompleted;
+    private CVar carIdxLapDistPct;
+    private CVar carIdxOnPitRoad;
+    private CVar carIdxPosition;
+    private CVar carIdxRPM;
+    private CVar carIdxSteer;
+    private CVar carIdxTrackSurface;
+    private CVar carIdxTrackSurfaceMaterial;
+    private CVar carIdxLastLapTime;
+    private CVar carIdxBestLapTime;
+    private CVar carIdxBestLapNum;
+    private CVar carIdxP2P_status;
+    private CVar carIdxP2P_count;
+    private CVar paceMode;
+    private CVar carIdxPaceLine;
+    private CVar carIdxPaceRow;
+    private CVar carIdxPaceFlags;
 
 
-    // 'live' session info
-    // Live weather info, may change as session progresses
-    CVar airDensity                 = new CVar("AirDensity"); // (float) kg/m^3, Density of air at start/finish line
-    CVar airPressure                = new CVar("AirPressure"); // (float) Hg, Pressure of air at start/finish line
-    CVar airTemp                    = new CVar("AirTemp"); // (float) C, Temperature of air at start/finish line
-    CVar fogLevel                   = new CVar("FogLevel"); // (float) %, Fog level
-    CVar relativeHumidity           = new CVar("RelativeHumidity"); // (float) %, Relative Humidity
-    CVar skies                      = new CVar("Skies"); // (int) Skies (0=clear/1=p cloudy/2=m cloudy/3=overcast)
-    CVar trackTempCrew              = new CVar("TrackTempCrew"); // (float) C, Temperature of track measured by crew around track
-    CVar weatherType                = new CVar("WeatherType"); // (int) Weather type (0=constant 1=dynamic)
-    CVar windDir                    = new CVar("WindDir"); // (float) rad, Wind direction at start/finish line
-    CVar windVel                    = new CVar("WindVel"); // (float) m/s, Wind velocity at start/finish line
-    // session status
-    CVar pitsOpen                   = new CVar(
-            "PitsOpen"); // (bool) True if pit stop is allowed, basically true if caution lights not out
-    CVar raceLaps                   = new CVar("RaceLaps"); // (int) Laps completed in race
-    CVar sessionFlags               = new CVar("SessionFlags"); // (int) irsdk_Flags, bitfield
-    CVar sessionLapsRemain          = new CVar("SessionLapsRemain"); // (int) Laps left till session ends
-    CVar sessionLapsRemainEx        = new CVar("SessionLapsRemainEx"); // (int) New improved laps left till session ends
-    CVar sessionNum                 = new CVar("SessionNum"); // (int) Session number
-    CVar sessionState               = new CVar("SessionState"); // (int) irsdk_SessionState, Session state
-    CVar sessionTick                = new CVar("SessionTick"); // (int) Current update number
-    CVar sessionTime                = new CVar("SessionTime"); // (double), s, Seconds since session start
-    CVar sessionTimeOfDay           = new CVar("SessionTimeOfDay"); // (float) s, Time of day in seconds
-    CVar sessionTimeRemain          = new CVar("SessionTimeRemain"); // (double) s, Seconds left till session ends
-    CVar sessionUniqueID            = new CVar("SessionUniqueID"); // (int) Session ID
-    // competitor information, array of up to 64 cars
-    CVar carIdxEstTime              = new CVar("CarIdxEstTime"); // (float) s, Estimated time to reach current location on track
-    CVar carIdxClassPosition        = new CVar("CarIdxClassPosition"); // (int) Cars class position in race by car index
-    CVar carIdxF2Time               = new CVar(
-            "CarIdxF2Time"); // (float) s, Race time behind leader or fastest lap time otherwise
-    CVar carIdxGear                 = new CVar("CarIdxGear"); // (int) -1=reverse 0=neutral 1..n=current gear by car index
-    CVar carIdxLap                  = new CVar("CarIdxLap"); // (int) Lap count by car index
-    CVar carIdxLapCompleted         = new CVar("CarIdxLapCompleted"); // (int) Laps completed by car index
-    CVar carIdxLapDistPct           = new CVar("CarIdxLapDistPct"); // (float) %, Percentage distance around lap by car index
-    CVar carIdxOnPitRoad            = new CVar("CarIdxOnPitRoad"); // (bool) On pit road between the cones by car index
-    CVar carIdxPosition             = new CVar("CarIdxPosition"); // (int) Cars position in race by car index
-    CVar carIdxRPM                  = new CVar("CarIdxRPM"); // (float) revs/min, Engine rpm by car index
-    CVar carIdxSteer                = new CVar("CarIdxSteer"); // (float) rad, Steering wheel angle by car index
-    CVar carIdxTrackSurface         = new CVar("CarIdxTrackSurface"); // (int) irsdk_TrkLoc, Track surface type by car index
-    CVar carIdxTrackSurfaceMaterial = new CVar(
-            "CarIdxTrackSurfaceMaterial"); // (int) irsdk_TrkSurf, Track surface material type by car index
-    // new variables
-    CVar carIdxLastLapTime          = new CVar("CarIdxLastLapTime"); // (float) s, Cars last lap time
-    CVar carIdxBestLapTime          = new CVar("CarIdxBestLapTime"); // (float) s, Cars best lap time
-    CVar carIdxBestLapNum           = new CVar("CarIdxBestLapNum"); // (int) Cars best lap number
-    CVar carIdxP2P_Status           = new CVar("CarIdxP2P_Status"); // (bool) Push2Pass active or not
-    CVar carIdxP2P_Count            = new CVar("CarIdxP2P_Count"); // (int) Push2Pass count of usage (or remaining in Race)
-    CVar paceMode                   = new CVar("PaceMode"); // (int) irsdk_PaceMode, Are we pacing or not
-    CVar carIdxPaceLine             = new CVar("CarIdxPaceLine"); // (int) What line cars are pacing in, or -1 if not pacing
-    CVar carIdxPaceRow              = new CVar("CarIdxPaceRow"); // (int) What row cars are pacing in, or -1 if not pacing
-    CVar carIdxPaceFlags            = new CVar("CarIdxPaceFlags"); // (int) irsdk_PaceFlags, Pacing status flags for each car
-
+    private void initCVar() {
+        // 'live' session info
+        // Live weather info, may change as session progresses
+        // (float) kg/m^3, Density of air at start/finish line
+        airDensity = new CVar(client, "AirDensity");
+        // (float) Hg, Pressure of air at start/finish line
+        airPressure = new CVar(client, "AirPressure");
+        // (float) C, Temperature of air at start/finish line
+        airTemp = new CVar(client, "AirTemp");
+        // (float) %, Fog level
+        fogLevel = new CVar(client, "FogLevel");
+        // (float) %, Relative Humidity
+        relativeHumidity = new CVar(client, "RelativeHumidity");
+        // (int) Skies (0=clear/1=p cloudy/2=m cloudy/3=overcast)
+        skies = new CVar(client, "Skies");
+        // (float) C, Temperature of track measured by crew around track
+        trackTempCrew = new CVar(client, "TrackTempCrew");
+        // (int) Weather type (0=constant 1=dynamic)
+        weatherType = new CVar(client, "WeatherType");
+        // (float) rad, Wind direction at start/finish line
+        windDir = new CVar(client, "WindDir");
+        // (float) m/s, Wind velocity at start/finish line
+        windVel = new CVar(client, "WindVel");
+        // session status
+        // (bool) True if pit stop is allowed, basically true if caution lights not out
+        pitsOpen = new CVar(client, "PitsOpen");
+        // (int) Laps completed in race
+        raceLaps = new CVar(client, "RaceLaps");
+        // (int) irsdk_Flags, bitfield
+        sessionFlags = new CVar(client, "SessionFlags");
+        // (int) Laps left till session ends
+        sessionLapsRemain = new CVar(client, "SessionLapsRemain");
+        // (int) New improved laps left till session ends
+        sessionLapsRemainEx = new CVar(client, "SessionLapsRemainEx");
+        // (int) Session number
+        sessionNum = new CVar(client, "SessionNum");
+        // (int) irsdk_SessionState, Session state
+        sessionState = new CVar(client, "SessionState");
+        // (int) Current update number
+        sessionTick = new CVar(client, "SessionTick");
+        // (double), s, Seconds since session start
+        sessionTime = new CVar(client, "SessionTime");
+        // (float) s, Time of day in seconds
+        sessionTimeOfDay = new CVar(client, "SessionTimeOfDay");
+        // (double) s, Seconds left till session ends
+        sessionTimeRemain = new CVar(client, "SessionTimeRemain");
+        // (int) Session ID
+        sessionUniqueID = new CVar(client, "SessionUniqueID");
+        // competitor information, array of up to 64 cars
+        // (float) s, Estimated time to reach current location on track
+        carIdxEstTime = new CVar(client, "CarIdxEstTime");
+        // (int) Cars class position in race by car index
+        carIdxClassPosition = new CVar(client, "CarIdxClassPosition");
+        // (float) s, Race time behind leader or fastest lap time otherwise
+        carIdxF2Time = new CVar(client, "CarIdxF2Time");
+        // (int) -1=reverse 0=neutral 1..n=current gear by car index
+        carIdxGear = new CVar(client, "CarIdxGear");
+        // (int) Lap count by car index
+        carIdxLap = new CVar(client, "CarIdxLap");
+        // (int) Laps completed by car index
+        carIdxLapCompleted = new CVar(client, "CarIdxLapCompleted");
+        // (float) %, Percentage distance around lap by car index
+        carIdxLapDistPct = new CVar(client, "CarIdxLapDistPct");
+        // (bool) On pit road between the cones by car index
+        carIdxOnPitRoad = new CVar(client, "CarIdxOnPitRoad");
+        // (int) Cars position in race by car index
+        carIdxPosition = new CVar(client, "CarIdxPosition");
+        // (float) revs/min, Engine rpm by car index
+        carIdxRPM = new CVar(client, "CarIdxRPM");
+        // (float) rad, Steering wheel angle by car index
+        carIdxSteer = new CVar(client, "CarIdxSteer");
+        // (int) irsdk_TrkLoc, Track surface type by car index
+        carIdxTrackSurface = new CVar(client, "CarIdxTrackSurface");
+        // (int) irsdk_TrkSurf, Track surface material type by car index
+        carIdxTrackSurfaceMaterial = new CVar(client, "CarIdxTrackSurfaceMaterial");
+        // new variables
+        // (float) s, Cars last lap time
+        carIdxLastLapTime = new CVar(client, "CarIdxLastLapTime");
+        // (float) s, Cars best lap time
+        carIdxBestLapTime = new CVar(client, "CarIdxBestLapTime");
+        // (int) Cars best lap number
+        carIdxBestLapNum = new CVar(client, "CarIdxBestLapNum");
+        // (bool) Push2Pass active or not
+        carIdxP2P_status = new CVar(client, "CarIdxP2P_Status");
+        // (int) Push2Pass count of usage (or remaining in Race)
+        carIdxP2P_count = new CVar(client, "CarIdxP2P_Count");
+        // (int) irsdk_PaceMode, Are we pacing or not
+        paceMode = new CVar(client, "PaceMode");
+        // (int) What line cars are pacing in, or -1 if not pacing
+        carIdxPaceLine = new CVar(client, "CarIdxPaceLine");
+        // (int) What row cars are pacing in, or -1 if not pacing
+        carIdxPaceRow = new CVar(client, "CarIdxPaceRow");
+        // (int) irsdk_PaceFlags, Pacing status flags for each car
+        carIdxPaceFlags = new CVar(client, "CarIdxPaceFlags");
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(LapTimingSample.class, args);
@@ -112,6 +199,8 @@ public class LapTimingSample implements CommandLineRunner {
         // bump priority up so we get time from the sim
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 
+        initCVar();
+
         //****Note, put your init logic here
 
         return true;
@@ -131,7 +220,7 @@ public class LapTimingSample implements CommandLineRunner {
             }
 
             // update the display as well
-            if (updateDisplay) {
+            if (UPDATE_DISPLAY) {
                 updateDisplay();
             }
         }
@@ -155,7 +244,7 @@ public class LapTimingSample implements CommandLineRunner {
             resetState(false);
         }
 
-        for (int i = 0; i < maxCars; i++) {
+        for (int i = 0; i < MAX_CARS; i++) {
             float curDistPct = carIdxLapDistPct.getFloat(i);
             // reject if the car blinked out of the world
             if (curDistPct != -1) {
@@ -215,31 +304,49 @@ public class LapTimingSample implements CommandLineRunner {
 
         // Live weather info, may change as session progresses
         tstr.append("WeatherStatus:\n");
-        tstr.append(" AirDensity: " + airDensity.getFloat());                                       // kg/m^3, Density of air at start/finish line
-        tstr.append(" AirPressure: " + airPressure.getFloat());                                     // Hg, Pressure of air at start/finish line
-        tstr.append(" AirTemp: " + airTemp.getFloat());                                             // C, Temperature of air at start/finish line
+        tstr.append(" AirDensity: "
+                    + airDensity.getFloat());                                       // kg/m^3, Density of air at start/finish line
+        tstr.append(" AirPressure: "
+                    + airPressure.getFloat());                                     // Hg, Pressure of air at start/finish line
+        tstr.append(" AirTemp: "
+                    + airTemp.getFloat());                                             // C, Temperature of air at start/finish line
         tstr.append(" FogLevel: " + fogLevel.getFloat());                                           // %, Fog level
         tstr.append(" RelativeHumidity: " + relativeHumidity.getFloat());                           // %, Relative Humidity
-        tstr.append(" Skies: " + skies.getInt());                                                   // Skies (0=clear/1=p cloudy/2=m cloudy/3=overcast)
-        tstr.append(" TrackTempCrew: " + trackTempCrew.getFloat());                                 // C, Temperature of track measured by crew around track
-        tstr.append(" WeatherType: " + weatherType.getInt());                                       // Weather type (0=constant 1=dynamic)
-        tstr.append(" WindDir: " + windDir.getFloat());                                             // rad, Wind direction at start/finish line
-        tstr.append(" WindVel: " + windVel.getFloat());                                             // m/s, Wind velocity at start/finish line
+        tstr.append(" Skies: "
+                    + skies.getInt());                                                   // Skies (0=clear/1=p cloudy/2=m cloudy/3=overcast)
+        tstr.append(" TrackTempCrew: "
+                    + trackTempCrew.getFloat());                                 // C, Temperature of track measured by crew around track
+        tstr.append(" WeatherType: "
+                    + weatherType.getInt());                                       // Weather type (0=constant 1=dynamic)
+        tstr.append(" WindDir: "
+                    + windDir.getFloat());                                             // rad, Wind direction at start/finish line
+        tstr.append(" WindVel: "
+                    + windVel.getFloat());                                             // m/s, Wind velocity at start/finish line
         tstr.append("\n");
 
         // session status
         tstr.append("SessionStatus:\n");
-        tstr.append(" PitsOpen: " + pitsOpen.getBoolean() + "\n");                                  // True if pit stop is allowed, basically true if caution lights not out
+        tstr.append(" PitsOpen: "
+                    + pitsOpen.getBoolean()
+                    + "\n");                                  // True if pit stop is allowed, basically true if caution lights not out
         tstr.append(" RaceLaps: " + raceLaps.getInt() + "\n");                                      // Laps completed in race
         tstr.append(" SessionFlags: " + sessionTime.getInt() + "\n");                               // irsdk_Flags, bitfield
         tstr.append(" SessionLapsRemain: " + sessionLapsRemain.getInt() + "\n");                    // Laps left till session ends
-        tstr.append(" SessionLapsRemainEx: " + sessionLapsRemainEx.getInt() + "\n");                // New improved laps left till session ends
+        tstr.append(" SessionLapsRemainEx: "
+                    + sessionLapsRemainEx.getInt()
+                    + "\n");                // New improved laps left till session ends
         tstr.append(" SessionNum: " + sessionNum.getInt() + "\n");                                  // Session number
-        tstr.append(" SessionState: " + sessionState.getInt() + "\n");                              // irsdk_SessionState, Session state
+        tstr.append(" SessionState: "
+                    + sessionState.getInt()
+                    + "\n");                              // irsdk_SessionState, Session state
         tstr.append(" SessionTick: " + sessionTick.getInt() + "\n");                                // Current update number
-        tstr.append(" SessionTime: " + sessionTime.getDouble() + "\n");                             // s, Seconds since session start
+        tstr.append(" SessionTime: "
+                    + sessionTime.getDouble()
+                    + "\n");                             // s, Seconds since session start
         tstr.append(" SessionTimeOfDay: " + sessionTimeOfDay.getFloat() + "\n");                    // s, Time of day in seconds
-        tstr.append(" SessionTimeRemain: " + sessionTimeRemain.getDouble() + "\n");                 // s, Seconds left till session ends
+        tstr.append(" SessionTimeRemain: "
+                    + sessionTimeRemain.getDouble()
+                    + "\n");                 // s, Seconds left till session ends
         tstr.append(" SessionUniqueID: " + sessionUniqueID.getInt() + "\n");                        // Session ID
         tstr.append("\n");
 
@@ -251,21 +358,37 @@ public class LapTimingSample implements CommandLineRunner {
         }
 
         tstr.append(" Cars:\n");
-        for (int entry = 0; entry < maxCars; entry++) {
+        for (int entry = 0; entry < MAX_CARS; entry++) {
             tstr.append(" - CarIdx: " + entry + "\n"); // for convenience, the index into the array is the carIdx
-            tstr.append("   CarIdxEstTime: " + carIdxEstTime.getFloat(entry) + "\n"); // s, Estimated time to reach current location on track
-            tstr.append("   CarIdxClassPosition: " + carIdxClassPosition.getInt(entry) + "\n"); // Cars class position in race by car index
-            tstr.append("   CarIdxF2Time: " + carIdxF2Time.getFloat(entry) + "\n"); // s, Race time behind leader or fastest lap time otherwise
-            tstr.append("   CarIdxGear: " + carIdxGear.getInt(entry) + "\n"); // -1=reverse 0=neutral 1..n=current gear by car index
+            tstr.append("   CarIdxEstTime: "
+                        + carIdxEstTime.getFloat(entry)
+                        + "\n"); // s, Estimated time to reach current location on track
+            tstr.append("   CarIdxClassPosition: "
+                        + carIdxClassPosition.getInt(entry)
+                        + "\n"); // Cars class position in race by car index
+            tstr.append("   CarIdxF2Time: "
+                        + carIdxF2Time.getFloat(entry)
+                        + "\n"); // s, Race time behind leader or fastest lap time otherwise
+            tstr.append("   CarIdxGear: "
+                        + carIdxGear.getInt(entry)
+                        + "\n"); // -1=reverse 0=neutral 1..n=current gear by car index
             tstr.append("   CarIdxLap: " + carIdxLap.getInt(entry) + "\n"); // Lap count by car index
             tstr.append("   CarIdxLapCompleted: " + carIdxLapCompleted.getInt(entry) + "\n"); // Laps completed by car index
-            tstr.append("   CarIdxLapDistPct: " + carIdxLapDistPct.getFloat(entry) + "\n"); // %, Percentage distance around lap by car index
-            tstr.append("   CarIdxOnPitRoad: " + carIdxOnPitRoad.getBoolean(entry) + "\n"); // On pit road between the cones by car index
+            tstr.append("   CarIdxLapDistPct: "
+                        + carIdxLapDistPct.getFloat(entry)
+                        + "\n"); // %, Percentage distance around lap by car index
+            tstr.append("   CarIdxOnPitRoad: "
+                        + carIdxOnPitRoad.getBoolean(entry)
+                        + "\n"); // On pit road between the cones by car index
             tstr.append("   CarIdxPosition: " + carIdxPosition.getInt(entry) + "\n"); // Cars position in race by car index
             tstr.append("   CarIdxRPM: " + carIdxRPM.getFloat(entry) + "\n"); // revs/min, Engine rpm by car index
             tstr.append("   CarIdxSteer: " + carIdxSteer.getFloat(entry) + "\n"); // rad, Steering wheel angle by car index
-            tstr.append("   CarIdxTrackSurface: " + carIdxTrackSurface.getInt(entry) + "\n"); // irsdk_TrkLoc, Track surface type by car index
-            tstr.append("   CarIdxTrackSurfaceMaterial: " + carIdxTrackSurfaceMaterial.getInt(entry) + "\n"); // irsdk_TrkSurf, Track surface material type by car index
+            tstr.append("   CarIdxTrackSurface: "
+                        + carIdxTrackSurface.getInt(entry)
+                        + "\n"); // irsdk_TrkLoc, Track surface type by car index
+            tstr.append("   CarIdxTrackSurfaceMaterial: "
+                        + carIdxTrackSurfaceMaterial.getInt(entry)
+                        + "\n"); // irsdk_TrkSurf, Track surface material type by car index
             //****Note, don't use this one any more, it is replaced by CarIdxLastLapTime
             tstr.append("   CarIdxLapTime: " + lapTime[entry] + "\n"); // s, last lap time or -1 if not yet crossed s/f
             // new variables, check if they exist on members
@@ -278,20 +401,29 @@ public class LapTimingSample implements CommandLineRunner {
             if (carIdxBestLapNum.isValid()) {
                 tstr.append("   CarIdxBestLapNum: " + carIdxBestLapNum.getInt(entry) + "\n"); // Cars best lap number}
             }
-            if (carIdxP2P_Status.isValid()) {
-                tstr.append("   CarIdxP2P_Status: " + carIdxP2P_Status.getBoolean(entry) + "\n"); // Push2Pass active or not}
+            if (this.carIdxP2P_status.isValid()) {
+                tstr.append("   CarIdxP2P_Status: " + this.carIdxP2P_status.getBoolean(entry) + "\n"); // Push2Pass active or not}
             }
-            if (carIdxP2P_Count.isValid()) {
-                tstr.append("   CarIdxP2P_Count: " + carIdxP2P_Count.getInt(entry) + "\n"); // Push2Pass count of usage (or remaining in Race)
+
+            if (carIdxP2P_count.isValid()) {
+                tstr.append("   CarIdxP2P_Count: "
+                            + carIdxP2P_count.getInt(entry)
+                            + "\n"); // Push2Pass count of usage (or remaining in Race)
             }
             if (carIdxPaceLine.isValid()) {
-                tstr.append("   CarIdxPaceLine: " + carIdxPaceLine.getInt(entry) + "\n"); // What line cars are pacing in, or -1 if not pacing}
+                tstr.append("   CarIdxPaceLine: "
+                            + carIdxPaceLine.getInt(entry)
+                            + "\n"); // What line cars are pacing in, or -1 if not pacing}
             }
             if (carIdxPaceRow.isValid()) {
-                tstr.append("   CarIdxPaceRow: " + carIdxPaceRow.getInt(entry) + "\n"); // What row cars are pacing in, or -1 if not pacing}
+                tstr.append("   CarIdxPaceRow: "
+                            + carIdxPaceRow.getInt(entry)
+                            + "\n"); // What row cars are pacing in, or -1 if not pacing}
             }
             if (carIdxPaceFlags.isValid()) {
-                tstr.append("   CarIdxPaceFlags: " + carIdxPaceFlags.getInt(entry) + "\n"); // irsdk_PaceFlags, Pacing status flags for each car}
+                tstr.append("   CarIdxPaceFlags: "
+                            + carIdxPaceFlags.getInt(entry)
+                            + "\n"); // irsdk_PaceFlags, Pacing status flags for each car}
             }
 
         }
@@ -400,7 +532,7 @@ public class LapTimingSample implements CommandLineRunner {
 
     }
 
-    private boolean parceYamlInt(String yamlStr, String[] path, int dest) {
+    private boolean parceYamlInt(String yamlStr, String path, int dest) {
         if (dest != 0) {
             dest = 0;
 
@@ -427,7 +559,7 @@ public class LapTimingSample implements CommandLineRunner {
             Collections.fill(driverTableTable, new DriverEntry());
         }
 
-        for (int i = 0; i < maxCars; i++) {
+        for (int i = 0; i < MAX_CARS; i++) {
             lastTime = -1;
             lastDistPct[i] = -1;
             lapStartTime[i] = -1;
@@ -611,8 +743,8 @@ public class LapTimingSample implements CommandLineRunner {
         // print car info
         // don't scroll off the end of the buffer
         int linesUsed = 0;
-        int maxLines = Math.min(maxCars, maxCarLines);
-        for (int i = 0; i < maxCars; i++) {
+        int maxLines = Math.min(MAX_CARS, maxCarLines);
+        for (int i = 0; i < MAX_CARS; i++) {
             if (linesUsed < maxLines) {
                 // is the car in the world, or did we at least collect data on it when it was?
                 if (carIdxTrackSurface.getInt() != -1 || carIdxLap.getInt(i) != -1 || carIdxPosition.getInt(i) != 0) {
@@ -639,8 +771,8 @@ public class LapTimingSample implements CommandLineRunner {
                             (carIdxLastLapTime.isValid()) ? carIdxLastLapTime.getFloat(i) : -1,
                             (carIdxBestLapTime.isValid()) ? carIdxBestLapTime.getFloat(i) : -1,
                             (carIdxBestLapNum.isValid()) ? carIdxBestLapNum.getInt(i) : -1,
-                            (carIdxP2P_Status.isValid()) ? carIdxP2P_Status.getBoolean(i) : -1,
-                            (carIdxP2P_Count.isValid()) ? carIdxP2P_Count.getInt(i) : -1,
+                            (carIdxP2P_status.isValid()) ? carIdxP2P_status.getBoolean(i) : -1,
+                            (carIdxP2P_count.isValid()) ? carIdxP2P_count.getInt(i) : -1,
                             (carIdxPaceLine.isValid()) ? carIdxPaceLine.getInt(i) : -1,
                             (carIdxPaceRow.isValid()) ? carIdxPaceRow.getInt(i) : -1,
                             (carIdxPaceFlags.isValid()) ? carIdxPaceFlags.getInt(i) : -1));
