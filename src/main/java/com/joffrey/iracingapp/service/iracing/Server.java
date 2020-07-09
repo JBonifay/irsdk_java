@@ -1,6 +1,6 @@
 package com.joffrey.iracingapp.service.iracing;
 
-import com.joffrey.iracingapp.model.iracing.defines.VarType;
+import com.joffrey.iracingapp.model.defines.VarType;
 
 public class Server {
 

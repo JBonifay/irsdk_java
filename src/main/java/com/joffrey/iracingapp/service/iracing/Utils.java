@@ -1,10 +1,10 @@
 package com.joffrey.iracingapp.service.iracing;
 
-import com.joffrey.iracingapp.model.iracing.Header;
-import com.joffrey.iracingapp.model.iracing.VarHeader;
-import com.joffrey.iracingapp.model.iracing.defines.BroadcastMsg;
-import com.joffrey.iracingapp.model.iracing.defines.Constant;
-import com.joffrey.iracingapp.model.iracing.defines.StatusField;
+import com.joffrey.iracingapp.model.Header;
+import com.joffrey.iracingapp.model.VarHeader;
+import com.joffrey.iracingapp.model.defines.BroadcastMsg;
+import com.joffrey.iracingapp.model.defines.Constant;
+import com.joffrey.iracingapp.model.defines.StatusField;
 import com.joffrey.iracingapp.service.windows.WindowsService;
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.WinNT;
@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 import jdk.jshell.spi.ExecutionControl.NotImplementedException;

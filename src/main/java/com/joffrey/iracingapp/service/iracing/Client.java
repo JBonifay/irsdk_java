@@ -1,8 +1,8 @@
 package com.joffrey.iracingapp.service.iracing;
 
-import com.joffrey.iracingapp.model.iracing.VarHeader;
-import com.joffrey.iracingapp.model.iracing.defines.VarType;
-import com.joffrey.iracingapp.model.iracing.defines.VarTypeBytes;
+import com.joffrey.iracingapp.model.VarHeader;
+import com.joffrey.iracingapp.model.defines.VarType;
+import com.joffrey.iracingapp.model.defines.VarTypeBytes;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import lombok.Getter;

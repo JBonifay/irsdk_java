@@ -1,6 +1,5 @@
 package com.joffrey.iracingapp.service.iracing;
 
-import com.joffrey.iracingapp.model.iracing.defines.YamlState;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,12 +1,10 @@
 package com.joffrey.iracingapp;
 
-import com.joffrey.iracingapp.model.iracing.defines.Flags;
-import com.joffrey.iracingapp.model.iracing.defines.PaceMode;
-import com.joffrey.iracingapp.model.iracing.defines.SessionState;
+import com.joffrey.iracingapp.model.defines.Flags;
+import com.joffrey.iracingapp.model.defines.PaceMode;
+import com.joffrey.iracingapp.model.defines.SessionState;
 import com.joffrey.iracingapp.service.iracing.Client;
 import com.joffrey.iracingapp.service.iracing.YamlParser;
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
