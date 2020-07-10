@@ -5,6 +5,7 @@ import com.joffrey.iracingapp.model.defines.VarType;
 import com.joffrey.iracingapp.model.defines.VarTypeBytes;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class Client {
 
-    private final Utils utils;
+    private final Utils      utils;
+    private final YamlParser yamlParser;
 
     private ByteBuffer data;
     private int        nData;
@@ -108,17 +110,17 @@ public class Client {
                     // 4 bytes
                     // 8 bytes
                     return switch (vhType) {
-                        case irsdk_char, irsdk_bool -> (data.getChar(
-                                vh.getOffset() + (entry * VarTypeBytes.IRSDK_BOOL.getValue()))) != 0;
+                        case irsdk_char, irsdk_bool -> (data.getChar(vh.getOffset() + (entry
+                                                                                       * VarTypeBytes.IRSDK_BOOL.getValue())))
+                                                       != 0;
 
-                        case irsdk_int, irsdk_bitField -> (data.getInt(
-                                vh.getOffset() + (entry * VarTypeBytes.IRSDK_BOOL.getValue()))) != 0;
+                        case irsdk_int, irsdk_bitField -> (data.getInt(vh.getOffset() + (entry
+                                                                                         * VarTypeBytes.IRSDK_BOOL.getValue())))
+                                                          != 0;
 
-                        case irsdk_float -> (data.getFloat(
-                                vh.getOffset() + (entry * VarTypeBytes.IRSDK_BOOL.getValue()))) != 0;
+                        case irsdk_float -> (data.getFloat(vh.getOffset() + (entry * VarTypeBytes.IRSDK_BOOL.getValue()))) != 0;
 
-                        case irsdk_double -> (data.getDouble(
-                                vh.getOffset() + (entry * VarTypeBytes.IRSDK_BOOL.getValue()))) != 0;
+                        case irsdk_double -> (data.getDouble(vh.getOffset() + (entry * VarTypeBytes.IRSDK_BOOL.getValue()))) != 0;
 
                         default -> throw new IllegalStateException("Unexpected value: " + vhType);
                     };
@@ -133,36 +135,34 @@ public class Client {
     }
 
     public int getVarInt(int idx, int entry) {
-            if (isConnected()) {
-                VarHeader vh = utils.getVarHeaderEntry(idx);
-                if (vh != null) {
-                    if (entry >= 0 && entry < vh.getCount()) {
-                        VarType vhType = VarType.get(vh.getType());
-                        // 1 byte
-                        // 4 bytes
-                        // 8 bytes
-                        return switch (vhType) {
-                            case irsdk_char, irsdk_bool -> (int) data.getChar(
-                                    vh.getOffset() + (entry * VarTypeBytes.IRSDK_INT.getValue()));
+        if (isConnected()) {
+            VarHeader vh = utils.getVarHeaderEntry(idx);
+            if (vh != null) {
+                if (entry >= 0 && entry < vh.getCount()) {
+                    VarType vhType = VarType.get(vh.getType());
+                    // 1 byte
+                    // 4 bytes
+                    // 8 bytes
+                    return switch (vhType) {
+                        case irsdk_char, irsdk_bool -> (int) data.getChar(vh.getOffset() + (entry
+                                                                                            * VarTypeBytes.IRSDK_INT.getValue()));
 
-                            case irsdk_int, irsdk_bitField -> (int) data.getInt(
-                                    vh.getOffset() + (entry * VarTypeBytes.IRSDK_INT.getValue()));
+                        case irsdk_int, irsdk_bitField -> (int) data.getInt(vh.getOffset() + (entry
+                                                                                              * VarTypeBytes.IRSDK_INT.getValue()));
 
-                            case irsdk_float -> (int) data.getFloat(
-                                    vh.getOffset() + (entry * VarTypeBytes.IRSDK_INT.getValue()));
+                        case irsdk_float -> (int) data.getFloat(vh.getOffset() + (entry * VarTypeBytes.IRSDK_INT.getValue()));
 
-                            case irsdk_double -> (int) data.getDouble(
-                                    vh.getOffset() + (entry * VarTypeBytes.IRSDK_INT.getValue()));
+                        case irsdk_double -> (int) data.getDouble(vh.getOffset() + (entry * VarTypeBytes.IRSDK_INT.getValue()));
 
-                            default -> throw new IllegalStateException("Unexpected value: " + vhType);
-                        };
-                    } else {
-                        // invalid offset
-                    }
+                        default -> throw new IllegalStateException("Unexpected value: " + vhType);
+                    };
                 } else {
-                    //invalid variable index
+                    // invalid offset
                 }
+            } else {
+                //invalid variable index
             }
+        }
         return 0;
     }
 
@@ -176,16 +176,16 @@ public class Client {
                     // 4 bytes
                     // 8 bytes
                     return switch (vhType) {
-                        case irsdk_char, irsdk_bool -> (float) data.getChar(
-                                vh.getOffset() + (entry * VarTypeBytes.IRSDK_FLOAT.getValue()));
+                        case irsdk_char, irsdk_bool -> (float) data.getChar(vh.getOffset() + (entry
+                                                                                              * VarTypeBytes.IRSDK_FLOAT.getValue()));
 
-                        case irsdk_int, irsdk_bitField -> (float) data.getInt(
-                                vh.getOffset() + (entry * VarTypeBytes.IRSDK_FLOAT.getValue()));
+                        case irsdk_int, irsdk_bitField -> (float) data.getInt(vh.getOffset() + (entry
+                                                                                                * VarTypeBytes.IRSDK_FLOAT.getValue()));
 
                         case irsdk_float -> (float) data.getFloat(vh.getOffset() + (entry * VarTypeBytes.IRSDK_FLOAT.getValue()));
 
-                        case irsdk_double -> (float) data.getDouble(
-                                vh.getOffset() + (entry * VarTypeBytes.IRSDK_FLOAT.getValue()));
+                        case irsdk_double -> (float) data.getDouble(vh.getOffset() + (entry
+                                                                                      * VarTypeBytes.IRSDK_FLOAT.getValue()));
 
                         default -> throw new IllegalStateException("Unexpected value: " + vhType);
                     };
@@ -210,17 +210,17 @@ public class Client {
                     // 4 bytes
                     // 8 bytes
                     return switch (vhType) {
-                        case irsdk_char, irsdk_bool -> (double) data.getChar(
-                                vh.getOffset() + (entry * VarTypeBytes.IRSDK_DOUBLE.getValue()));
+                        case irsdk_char, irsdk_bool -> (double) data.getChar(vh.getOffset() + (entry
+                                                                                               * VarTypeBytes.IRSDK_DOUBLE.getValue()));
 
-                        case irsdk_int, irsdk_bitField -> (double) data.getInt(
-                                vh.getOffset() + (entry * VarTypeBytes.IRSDK_DOUBLE.getValue()));
+                        case irsdk_int, irsdk_bitField -> (double) data.getInt(vh.getOffset() + (entry * VarTypeBytes.IRSDK_DOUBLE
+                                .getValue()));
 
-                        case irsdk_float -> (double) data.getFloat(
-                                vh.getOffset() + (entry * VarTypeBytes.IRSDK_DOUBLE.getValue()));
+                        case irsdk_float -> (double) data.getFloat(vh.getOffset() + (entry
+                                                                                     * VarTypeBytes.IRSDK_DOUBLE.getValue()));
 
-                        case irsdk_double -> (double) data.getDouble(
-                                vh.getOffset() + (entry * VarTypeBytes.IRSDK_DOUBLE.getValue()));
+                        case irsdk_double -> (double) data.getDouble(vh.getOffset() + (entry
+                                                                                       * VarTypeBytes.IRSDK_DOUBLE.getValue()));
 
                         default -> throw new IllegalStateException("Unexpected value: " + vhType);
                     };
@@ -236,8 +236,37 @@ public class Client {
     }
 
     //path is in the form of "DriverInfo:Drivers:CarIdx:{%d}UserName:"
-    public int getSessionStrVal() {
-        return -1;
+    public int getSessionStrVal(String path, List<String> val, int valLen) {
+        if (isConnected() && !path.isEmpty() && val != null && valLen > 0) {
+            // track changes in string
+            lastSessionCt = getSessionCt();
+
+            int tValLen = 0;
+            String yamlString = utils.getSessionInfoStr();
+            String tVal = yamlParser.parseYaml(yamlString, path, tValLen);
+            tValLen = tVal.length();
+            if (!tVal.isEmpty()) {
+
+                // dont overflow out buffer
+                int len = tValLen;
+                if (len > valLen) {
+                    len = valLen;
+                }
+
+                // copy what we can, even if buffer too small
+                val.add(tVal.substring(0, len));
+
+                // if buffer was big enough, return success
+                if (valLen >= tValLen) {
+                    return 1;
+                } else // return size of buffer needed
+                {
+                    return -tValLen;
+                }
+            }
+        }
+
+        return 0;
     }
 
     public String getSessionStr() {

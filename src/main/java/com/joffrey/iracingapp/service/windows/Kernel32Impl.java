@@ -6,7 +6,7 @@ import com.sun.jna.win32.W32APIOptions;
 
 public interface Kernel32Impl extends com.sun.jna.platform.win32.Kernel32 {
 
-    static final Kernel32Impl KERNEL_32 = Native.loadLibrary("kernel32", Kernel32Impl.class, W32APIOptions.DEFAULT_OPTIONS);
+    static final Kernel32Impl KERNEL_32 = Native.load("kernel32", Kernel32Impl.class, W32APIOptions.DEFAULT_OPTIONS);
 
     HANDLE OpenFileMapping(int lfProtect, boolean bInherit, String lpName);
 

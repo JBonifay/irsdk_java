@@ -1,4 +1,4 @@
-package com.joffrey.iracingapp;
+package com.joffrey.iracingapp.model;
 
 import com.joffrey.iracingapp.service.iracing.Client;
 import lombok.Data;

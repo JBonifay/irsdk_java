@@ -1,5 +1,7 @@
 package com.joffrey.iracingapp;
 
+import com.joffrey.iracingapp.model.CVar;
+import com.joffrey.iracingapp.model.DriverEntry;
 import com.joffrey.iracingapp.model.defines.Flags;
 import com.joffrey.iracingapp.model.defines.PaceMode;
 import com.joffrey.iracingapp.model.defines.SessionState;
@@ -12,7 +14,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;

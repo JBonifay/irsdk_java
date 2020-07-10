@@ -5,22 +5,14 @@ import static com.joffrey.iracingapp.model.defines.YamlState.newline;
 import static com.joffrey.iracingapp.model.defines.YamlState.space;
 
 import com.joffrey.iracingapp.model.defines.YamlState;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import org.springframework.stereotype.Component;
-import org.yaml.snakeyaml.Yaml;
 
 @Component
 public class YamlParser {
 
     public String parseYaml(String data, String path, int len) {
 
-        if (!data.isEmpty() && path != null && len != 0) {
+        if (!data.isEmpty() && path != null && len >= 0) {
             // make sure we set this to something
             String val = "";
             len = 0;
