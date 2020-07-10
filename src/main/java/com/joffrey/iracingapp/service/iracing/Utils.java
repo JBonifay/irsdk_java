@@ -5,9 +5,16 @@ import com.joffrey.iracingapp.model.VarHeader;
 import com.joffrey.iracingapp.model.defines.BroadcastMsg;
 import com.joffrey.iracingapp.model.defines.Constant;
 import com.joffrey.iracingapp.model.defines.StatusField;
+import com.joffrey.iracingapp.service.windows.Kernel32Impl;
 import com.joffrey.iracingapp.service.windows.WindowsService;
 import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.Kernel32Util;
+import com.sun.jna.platform.win32.WinDef;
+import com.sun.jna.platform.win32.WinDef.LPARAM;
+import com.sun.jna.platform.win32.WinDef.WPARAM;
 import com.sun.jna.platform.win32.WinNT;
+import com.sun.jna.platform.win32.WinUser;
 import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -104,8 +111,8 @@ public class Utils {
                         int curTickCount = header.getVarBuf(latest).getTickCount();
 
                         // memcpy(data, pSharedMem + pHeader -> varBuf[latest].bufOffset, pHeader -> bufLen);
-                        data = ByteBuffer.wrap(
-                                sharedMemory.getByteArray(header.getVarBuf(latest).getBufOffset(), header.getBufLen()));
+                        data = ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarBuf(latest).getBufOffset(),
+                                                                         header.getBufLen()));
 
                         dataBuffer = data;
 
@@ -220,9 +227,9 @@ public class Utils {
     public VarHeader getVarHeaderEntry(int index) {
         if (isInitialized) {
             if (index >= 0 && index < header.getNumVars()) {
-                return new VarHeader(ByteBuffer.wrap(
-                        sharedMemory.getByteArray(header.getHeaderOffset() + (VarHeader.SIZEOF_VAR_HEADER * index),
-                                                  VarHeader.SIZEOF_VAR_HEADER)));
+                return new VarHeader(ByteBuffer.wrap(sharedMemory.getByteArray(header.getHeaderOffset()
+                                                                               + (VarHeader.SIZEOF_VAR_HEADER * index),
+                                                                               VarHeader.SIZEOF_VAR_HEADER)));
             }
         }
         return null;
@@ -251,16 +258,23 @@ public class Utils {
         return windowsService.registerWindowMessage(Constant.IRSDK_BROADCASTMSGNAME);
     }
 
-    public void broadcastMsg(BroadcastMsg msg, int var1, int var2, int var3) throws NotImplementedException {
-        throw new NotImplementedException("Not Impl");
+    public void broadcastMsg(BroadcastMsg msg, int var1, int var2, int var3) {
+        broadcastMsg(msg, var1, (long) (var2 + var3));
     }
 
-    public void broadcastMsg(BroadcastMsg msg, int var1, float var2) throws NotImplementedException {
-        throw new NotImplementedException("Not Impl");
+    public void broadcastMsg(BroadcastMsg msg, int var1, float var2) {
+        // multiply by 2^16-1 to move fractional part to the integer part
+        int real = (int) (var2 * 65536.0f);
+
+        broadcastMsg(msg, var1, real);
     }
 
-    public void broadcastMsg(BroadcastMsg msg, int var1, int var2) throws NotImplementedException {
-        throw new NotImplementedException("Not Impl");
+    public void broadcastMsg(BroadcastMsg msg, int var1, int var2) {
+        int msgId = getBroadcastMsgID();
+
+        if (msgId != 0 && msg.getValue() >= 0 && msg.getValue() < BroadcastMsg.irsdk_BroadcastLast.getValue()) {
+            boolean sent = windowsService.sendNotifyMessage(msgId, MAKELONG(msg, var1), var2);
+        }
     }
 
     public int padCarNum(int num, int zero) {
@@ -279,6 +293,10 @@ public class Utils {
         }
 
         return retVal;
+    }
+
+    private int MAKELONG(BroadcastMsg msg, int var1) {
+        return (var1 << 16) | ((msg.getValue()) & 0xFFFF);
     }
 
 }

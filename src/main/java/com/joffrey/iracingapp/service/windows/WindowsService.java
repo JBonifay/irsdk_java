@@ -4,7 +4,11 @@ import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.Win32Exception;
+import com.sun.jna.platform.win32.WinDef;
+import com.sun.jna.platform.win32.WinDef.LPARAM;
+import com.sun.jna.platform.win32.WinDef.WPARAM;
 import com.sun.jna.platform.win32.WinNT;
+import com.sun.jna.platform.win32.WinUser;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 
@@ -43,9 +47,23 @@ public class WindowsService {
 
     public int registerWindowMessage(final String lpString) {
         final int messageId = User32.INSTANCE.RegisterWindowMessage(lpString);
-        if (messageId == 0)
+        if (messageId == 0) {
             throw new Win32Exception(Kernel32.INSTANCE.GetLastError());
+        }
         return messageId;
     }
+
+    public boolean sendNotifyMessage(int msg, int wParam, int lParam) {
+        if (msg != 0) {
+            boolean sent = User32Impl.USER_32.SendNotifyMessage(User32.HWND_BROADCAST,
+                                                                msg,
+                                                                new WinDef.WPARAM(wParam).intValue(),
+                                                                new WinDef.LPARAM(lParam).intValue());
+            lastError = Kernel32.INSTANCE.GetLastError();
+            return sent;
+        }
+        return false;
+    }
+
 
 }
