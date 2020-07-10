@@ -1,11 +1,11 @@
 package com.joffrey.iracingapp;
 
-import ch.qos.logback.core.BasicStatusManager;
 import com.joffrey.iracingapp.service.DiskClient;
 import com.joffrey.iracingapp.service.iracing.Client;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import jdk.jshell.spi.ExecutionControl.NotImplementedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -175,7 +175,8 @@ public class DumpSetup implements CommandLineRunner {
 
     //------------------------
     // process ibt files
-    void processFile(String path) {
+    // TODO: 10 Jul 2020 NOT TESTED
+    void processFile(String path) throws NotImplementedException {
         final int MAX_STR = 1024;
         String tstr = "";
 
@@ -238,6 +239,7 @@ public class DumpSetup implements CommandLineRunner {
         } else {
             log.info("failed!\n");
         }
+        throw new NotImplementedException("Code is not tested for now");
     }
 }
 

@@ -1,8 +1,8 @@
 package com.joffrey.iracingapp.service;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class DiskClient {
 
     public boolean openFile(String path) {
