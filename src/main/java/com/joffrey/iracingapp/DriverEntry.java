@@ -11,5 +11,4 @@ public class DriverEntry {
     private String teamName;
     private String carNumStr;
 
-
 }

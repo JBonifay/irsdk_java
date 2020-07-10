@@ -11,8 +11,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -36,7 +39,7 @@ public class LapTimingSample implements CommandLineRunner {
     // lap time for last lap, or -1 if not yet completed a lap
     private static final float[]  lapTime      = new float[MAX_CARS];
 
-    private static final List<DriverEntry> driverTableTable = new ArrayList<>(MAX_CARS);
+    private static       List<DriverEntry> driverTableTable = new ArrayList<>(MAX_CARS);
     private              boolean           wasConnected     = false;
     private static final boolean           UPDATE_DISPLAY   = true;
 
@@ -87,12 +90,6 @@ public class LapTimingSample implements CommandLineRunner {
 
 
     private void initVar() {
-
-        for (int i = 0; i < MAX_CARS; i++) {
-            DriverEntry driverEntry = new DriverEntry();
-            driverEntry.setCarIdx(i);
-            driverTableTable.add(driverEntry);
-        }
 
         // 'live' session info
         // Live weather info, may change as session progresses
@@ -492,24 +489,33 @@ public class LapTimingSample implements CommandLineRunner {
             String tstr;
             for (int i = 0; i < MAX_CARS; i++) {
 
+                DriverEntry newDriverEntry = new DriverEntry();
+
                 // skip the rest if carIdx not found
+                Pattern p = Pattern.compile("CarIdx: " + i + "\n");   // the pattern to search for
+                Matcher m = p.matcher(yamlString);
+                if (m.find()) {
 
-                tstr = String.format("DriverInfo:Drivers:CarIdx:{%d}", i);
-                driverTableTable.get(i).setCarIdx(parceYamlInt(yamlString, tstr));
+                    tstr = String.format("DriverInfo:Drivers:CarIdx:{%d}", i);
+                    newDriverEntry.setCarIdx(parceYamlInt(yamlString, tstr));
 
-                tstr = String.format("DriverInfo:Drivers:CarIdx:{%d}CarClassID", i);
-                driverTableTable.get(i).setCarClassId(parceYamlInt(yamlString, tstr));
+                    tstr = String.format("DriverInfo:Drivers:CarIdx:{%d}CarClassID:", i);
+                    newDriverEntry.setCarClassId(parceYamlInt(yamlString, tstr));
 
-                tstr = String.format("DriverInfo:Drivers:CarIdx:{%d}UserName:", i);
-                driverTableTable.get(i).setDriverName(parceYamlStr(yamlString, tstr));
+                    tstr = String.format("DriverInfo:Drivers:CarIdx:{%d}UserName:", i);
+                    newDriverEntry.setDriverName(parceYamlStr(yamlString, tstr));
 
-                tstr = String.format("DriverInfo:Drivers:CarIdx:{%d}TeamName:", i);
-                driverTableTable.get(i).setTeamName(parceYamlStr(yamlString, tstr));
+                    tstr = String.format("DriverInfo:Drivers:CarIdx:{%d}TeamName:", i);
+                    newDriverEntry.setTeamName(parceYamlStr(yamlString, tstr));
 
-                tstr = String.format("DriverInfo:Drivers:CarIdx:{%d}CarNumber:", i);
-                driverTableTable.get(i).setCarNumStr(parceYamlStr(yamlString, tstr));
+                    tstr = String.format("DriverInfo:Drivers:CarIdx:{%d}CarNumber:", i);
+                    newDriverEntry.setCarNumStr(parceYamlStr(yamlString, tstr));
 
-                // TeamID
+                    // TeamID
+
+                }
+
+                driverTableTable.add(newDriverEntry);
             }
         }
 
@@ -554,7 +560,7 @@ public class LapTimingSample implements CommandLineRunner {
 
     private String parceYamlStr(String yamlString, String path) {
         int count = path.length();
-        return yamlParser.parseYaml(yamlString, path,count);
+        return yamlParser.parseYaml(yamlString, path, count);
     }
 
     private void resetState(boolean isNewConnection) {

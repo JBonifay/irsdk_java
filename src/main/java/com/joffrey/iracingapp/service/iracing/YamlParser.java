@@ -103,7 +103,10 @@ public class YamlParser {
                                                                                                         keylen + 1,
                                                                                                         keylen + 2))) {
 
-                                        // 0 == strncmp(valuestr, (pathptr + keylen + 1), valuelen))
+                                        //   if (valuelen == pathvaluelen - (keylen + 1) && 0 == strncmp(valuestr, (pathptr + keylen + 1), valuelen))
+                                        //       pathptr += valuelen + 2;
+                                        //   else
+                                        //       found = false;
 
                                         pathptr = new StringBuilder(pathptr.substring(valuelen + 2));
                                     } else {

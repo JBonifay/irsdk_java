@@ -1,4 +1,4 @@
-package com.joffrey.iracingapp.service.iracing;
+package com.joffrey.iracingapp;
 
 import com.joffrey.iracingapp.model.defines.VarType;
 
