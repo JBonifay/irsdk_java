@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -672,26 +673,18 @@ public class LapTimingSample implements CommandLineRunner {
             case irsdk_StateRacing -> log.info("Racing");
             case irsdk_StateCheckered -> log.info("Checkered");
             case irsdk_StateCoolDown -> log.info("CoolDown");
+            default -> log.error(("Unexpected value: " + SessionState.get(state)));
         }
     }
 
     private void printPaceMode(int mode) {
         switch (PaceMode.get(mode)) {
-            case irsdk_PaceModeSingleFileStart:
-                log.info("SingleFileStart");
-                break;
-            case irsdk_PaceModeDoubleFileStart:
-                log.info("DoubleFileStart");
-                break;
-            case irsdk_PaceModeSingleFileRestart:
-                log.info("SingleFileRestart");
-                break;
-            case irsdk_PaceModeDoubleFileRestart:
-                log.info("DoubleFileRestart:");
-                break;
-            case irsdk_PaceModeNotPacing:
-                log.info("NotPacing");
-                break;
+            case irsdk_PaceModeSingleFileStart -> log.info("SingleFileStart");
+            case irsdk_PaceModeDoubleFileStart -> log.info("DoubleFileStart");
+            case irsdk_PaceModeSingleFileRestart -> log.info("SingleFileRestart");
+            case irsdk_PaceModeDoubleFileRestart -> log.info("DoubleFileRestart:");
+            case irsdk_PaceModeNotPacing -> log.info("NotPacing");
+            default -> log.error("Unexpected value: " + PaceMode.get(mode));
         }
     }
 
@@ -755,7 +748,7 @@ public class LapTimingSample implements CommandLineRunner {
                 // is the car in the world, or did we at least collect data on it when it was?
                 if (carIdxTrackSurface.getInt() != -1 || carIdxLap.getInt(i) != -1 || carIdxPosition.getInt(i) != 0) {
                     log.info(String.format(
-                            " %2d %3s %7.3f %2d %2d %2d %6.3f %s %8.2f %5.2f %2d %2d %2d %2d %7.3f %7.3f %7.3f %7.3f %2d %s %2d %2d %2d 0x%02x \n",
+                            " %2d %3s %7.3f %2d %2d %2d %6.3f %s %8.2f %5.2f %2d %2d %2d %2d %7.3f %7.3f %7.3f %7.3f %2d %s %2d %2d %2d 0x%02x %n",
                             i,
                             driverTableTable.get(i).getCarNumStr(),
                             carIdxEstTime.getFloat(i),

@@ -122,7 +122,7 @@ public class YamlParser {
                                     if (pathptr.charAt(keylen) == '\0') {
                                         val = valuestr;
                                         len = valuelen;
-                                        return val.substring(0, valuelen);
+                                        return val.substring(0, valuelen).replace("\"", "");
                                     }
                                 }
                             }
