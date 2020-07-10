@@ -9,9 +9,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -21,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.yaml.snakeyaml.Yaml;
 
 
 @RequiredArgsConstructor
@@ -336,7 +333,7 @@ public class LapTimingSample implements CommandLineRunner {
                     + pitsOpen.getBoolean()
                     + "\n");                                  // True if pit stop is allowed, basically true if caution lights not out
         tstr.append(" RaceLaps: " + raceLaps.getInt() + "\n");                                      // Laps completed in race
-        tstr.append(" SessionFlags: " + sessionTime.getInt() + "\n");                               // irsdk_Flags, bitfield
+        tstr.append(" SessionFlags: " + sessionFlags.getInt() + "\n");                               // irsdk_Flags, bitfield
         tstr.append(" SessionLapsRemain: " + sessionLapsRemain.getInt() + "\n");                    // Laps left till session ends
         tstr.append(" SessionLapsRemainEx: "
                     + sessionLapsRemainEx.getInt()
@@ -585,83 +582,83 @@ public class LapTimingSample implements CommandLineRunner {
     private void printFlags(int flags) {
 
         // global flags
-        if (flags == Flags.irsdk_checkered.getValue()) {
+        if ((flags & Flags.irsdk_checkered.getValue()) != 0) {
             log.info("checkered ");
         }
-        if (flags == Flags.irsdk_white.getValue()) {
+        if ((flags & Flags.irsdk_white.getValue()) != 0) {
             log.info("white ");
         }
-        if (flags == Flags.irsdk_green.getValue()) {
+        if ((flags & Flags.irsdk_green.getValue()) != 0) {
             log.info("green ");
         }
-        if (flags == Flags.irsdk_yellow.getValue()) {
+        if ((flags & Flags.irsdk_yellow.getValue()) != 0) {
             log.info("yellow ");
         }
-        if (flags == Flags.irsdk_red.getValue()) {
+        if ((flags & Flags.irsdk_red.getValue()) != 0) {
             log.info("red ");
         }
-        if (flags == Flags.irsdk_blue.getValue()) {
+        if ((flags & Flags.irsdk_blue.getValue()) != 0) {
             log.info("blue ");
         }
-        if (flags == Flags.irsdk_debris.getValue()) {
+        if ((flags & Flags.irsdk_debris.getValue()) != 0) {
             log.info("debris ");
         }
-        if (flags == Flags.irsdk_crossed.getValue()) {
+        if ((flags & Flags.irsdk_crossed.getValue()) != 0) {
             log.info("crossed ");
         }
-        if (flags == Flags.irsdk_yellowWaving.getValue()) {
+        if ((flags & Flags.irsdk_yellowWaving.getValue()) != 0) {
             log.info("yellowWaving ");
         }
-        if (flags == Flags.irsdk_oneLapToGreen.getValue()) {
+        if ((flags & Flags.irsdk_oneLapToGreen.getValue()) != 0) {
             log.info("oneLapToGreen ");
         }
-        if (flags == Flags.irsdk_greenHeld.getValue()) {
+        if ((flags & Flags.irsdk_greenHeld.getValue()) != 0) {
             log.info("greenHeld ");
         }
-        if (flags == Flags.irsdk_tenToGo.getValue()) {
+        if ((flags & Flags.irsdk_tenToGo.getValue()) != 0) {
             log.info("tenToGo ");
         }
-        if (flags == Flags.irsdk_fiveToGo.getValue()) {
+        if ((flags & Flags.irsdk_fiveToGo.getValue()) != 0) {
             log.info("fiveToGo ");
         }
-        if (flags == Flags.irsdk_randomWaving.getValue()) {
+        if ((flags & Flags.irsdk_randomWaving.getValue()) != 0) {
             log.info("randomWaving ");
         }
-        if (flags == Flags.irsdk_caution.getValue()) {
+        if ((flags & Flags.irsdk_caution.getValue()) != 0) {
             log.info("caution ");
         }
-        if (flags == Flags.irsdk_cautionWaving.getValue()) {
+        if ((flags & Flags.irsdk_cautionWaving.getValue()) != 0) {
             log.info("cautionWaving ");
         }
 
         // drivers black flags
-        if (flags == Flags.irsdk_black.getValue()) {
+        if ((flags & Flags.irsdk_black.getValue()) != 0) {
             log.info("black ");
         }
-        if (flags == Flags.irsdk_disqualify.getValue()) {
+        if ((flags & Flags.irsdk_disqualify.getValue()) != 0) {
             log.info("disqualify ");
         }
-        if (flags == Flags.irsdk_servicible.getValue()) {
+        if ((flags & Flags.irsdk_servicible.getValue()) != 0) {
             log.info("servicible ");
         }
-        if (flags == Flags.irsdk_furled.getValue()) {
+        if ((flags & Flags.irsdk_furled.getValue()) != 0) {
             log.info("furled ");
         }
-        if (flags == Flags.irsdk_repair.getValue()) {
+        if ((flags & Flags.irsdk_repair.getValue()) != 0) {
             log.info("repair ");
         }
 
         // start lights
-        if (flags == Flags.irsdk_startHidden.getValue()) {
+        if ((flags & Flags.irsdk_startHidden.getValue()) != 0) {
             log.info("startHidden ");
         }
-        if (flags == Flags.irsdk_startReady.getValue()) {
+        if ((flags & Flags.irsdk_startReady.getValue()) != 0) {
             log.info("startReady ");
         }
-        if (flags == Flags.irsdk_startSet.getValue()) {
+        if ((flags & Flags.irsdk_startSet.getValue()) != 0) {
             log.info("startSet ");
         }
-        if (flags == Flags.irsdk_startGo.getValue()) {
+        if ((flags & Flags.irsdk_startGo.getValue()) != 0) {
             log.info("startGo ");
         }
     }

@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum PaceMode {
-    irsdk_PaceModeSingleFileStart(1),
-    irsdk_PaceModeDoubleFileStart(2),
-    irsdk_PaceModeSingleFileRestart(3),
-    irsdk_PaceModeDoubleFileRestart(4),
-    irsdk_PaceModeNotPacing(5),
+    irsdk_PaceModeSingleFileStart(0),
+    irsdk_PaceModeDoubleFileStart(1),
+    irsdk_PaceModeSingleFileRestart(2),
+    irsdk_PaceModeDoubleFileRestart(3),
+    irsdk_PaceModeNotPacing(4),
     ;
 
     private static final Map<Integer, PaceMode> paceModeMap = new HashMap();
