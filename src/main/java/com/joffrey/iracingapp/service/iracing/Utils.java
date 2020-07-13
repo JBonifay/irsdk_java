@@ -5,22 +5,13 @@ import com.joffrey.iracingapp.model.VarHeader;
 import com.joffrey.iracingapp.model.defines.BroadcastMsg;
 import com.joffrey.iracingapp.model.defines.Constant;
 import com.joffrey.iracingapp.model.defines.StatusField;
-import com.joffrey.iracingapp.service.windows.Kernel32Impl;
 import com.joffrey.iracingapp.service.windows.WindowsService;
 import com.sun.jna.Pointer;
-import com.sun.jna.platform.win32.Kernel32;
-import com.sun.jna.platform.win32.Kernel32Util;
-import com.sun.jna.platform.win32.WinDef;
-import com.sun.jna.platform.win32.WinDef.LPARAM;
-import com.sun.jna.platform.win32.WinDef.WPARAM;
 import com.sun.jna.platform.win32.WinNT;
-import com.sun.jna.platform.win32.WinUser;
 import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Map;
-import java.util.TreeMap;
 import jdk.jshell.spi.ExecutionControl.NotImplementedException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -77,10 +68,6 @@ public class Utils {
 
         isInitialized = false;
         return isInitialized;
-    }
-
-    public void shutdown() throws NotImplementedException {
-        throw new NotImplementedException("Not Impl");
     }
 
     public boolean getNewData(ByteBuffer data) {
@@ -143,18 +130,6 @@ public class Utils {
         return false;
     }
 
-    private Map<Integer, VarHeader> getVarheaderList(int numberOfVar, ByteBuffer buffer) {
-        Map<Integer, VarHeader> varHeaderMap = new TreeMap<>();
-
-        for (int i = 0; i < numberOfVar; i++) {
-            int varOffset = i * VarHeader.SIZEOF_VAR_HEADER;
-            VarHeader varHeader = new VarHeader(buffer, varOffset);
-            //now put it in the cache
-            varHeaderMap.put(varHeader.getOffset(), varHeader);
-        }
-        return varHeaderMap;
-    }
-
     public boolean waitForDataReady(int timeOut, ByteBuffer data) throws InterruptedException {
         if (isInitialized || startup()) {
 
@@ -202,8 +177,11 @@ public class Utils {
         return null;
     }
 
-    public String getData(int index) throws NotImplementedException {
-        throw new NotImplementedException("Not Impl");
+    public String getData(int index) {
+        if (isInitialized) {
+            return new String(sharedMemory.getByteArray(header.getVarBuf(index).getBufOffset(), header.getBufLen()));
+        }
+        return "";
     }
 
     public String getSessionInfoStr() {
@@ -250,8 +228,18 @@ public class Utils {
         return -1;
     }
 
-    public int varNameToOffset(String name) throws NotImplementedException {
-        throw new NotImplementedException("Not Impl");
+    public int varNameToOffset(String name) {
+        VarHeader vh;
+
+        if (!name.isEmpty()) {
+            for (int index = 0; index < header.getNumVars(); index++) {
+                vh = getVarHeaderEntry(index);
+                if (vh != null && vh.getName().equalsIgnoreCase(name)) {
+                    return vh.getOffset();
+                }
+            }
+        }
+        return -1;
     }
 
     public int getBroadcastMsgID() {
@@ -273,10 +261,17 @@ public class Utils {
         int msgId = getBroadcastMsgID();
 
         if (msgId != 0 && msg.getValue() >= 0 && msg.getValue() < BroadcastMsg.irsdk_BroadcastLast.getValue()) {
-            boolean sent = windowsService.sendNotifyMessage(msgId, MAKELONG(msg, var1), var2);
+            boolean sent = windowsService.sendNotifyMessage(msgId, MAKELONG(msg.getValue(), var1), var2);
         }
     }
 
+    /**
+     * add a leading zero (or zeros) to a car number
+     * to encode car #001 call padCarNum(1,2)
+     * @param num the car number
+     * @param zero the leading zero
+     * @return the new CarNumber
+     */
     public int padCarNum(int num, int zero) {
         int retVal = num;
         int numPlace = 1;
@@ -295,8 +290,14 @@ public class Utils {
         return retVal;
     }
 
-    private int MAKELONG(BroadcastMsg msg, int var1) {
-        return (var1 << 16) | ((msg.getValue()) & 0xFFFF);
+    /**
+     * C++ MAKELONG for Java
+     * @param var1 the first int
+     * @param var2 the second int
+     * @return
+     */
+    private int MAKELONG(int var1, int var2) {
+        return (var2 << 16) | ((var1) & 0xFFFF);
     }
 
 }
