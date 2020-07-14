@@ -19,27 +19,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.iracingapp.service.iracing;
+package com.joffrey.iracingapp;
 
-import org.springframework.stereotype.Service;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
-@Service
-public class DiskClient {
+@SpringBootTest
+class LapTimingTests {
 
-    public boolean openFile(String path) {
-        return false;
+    @Test
+    void contextLoads() {
     }
 
-    public int getSessionStrVal(String s, String tstr, int max_str) {
-        return 0;
-    }
-
-    public String getSessionStr() {
-        return null;
-    }
-
-    public void closeFile() {
-
-
-    }
 }
