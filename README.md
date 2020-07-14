@@ -8,16 +8,16 @@ This project is an implementation of the iRacing c++ sdk in java.
 ### Samples  
 Like in the C++ sdk you'll can find samples.    
 For the moment the following samples are present:    
--[ ] irsdk_csv2ibt  
--[x] irsdk_dumpSetup (*processFile method: not working yet*) 
--[ ] irsdk_ffbForce 
--[ ] irsdk_ir2ad 
--[x] irsdk_lapTiming(*updateDisplay method: not clearing terminal for now*) 
--[x] irsdk_msgTest 
--[ ] irsdk_readTest 
--[ ] irsdk_server 
--[ ] irsdk_writeTest 
 
+- [ ] irsdk_csv2ibt  
+- [x] irsdk_dumpSetup (*processFile method: not working yet*)  
+- [ ] irsdk_ffbForce  
+- [ ] irsdk_ir2ad  
+- [x] irsdk_lapTiming(*updateDisplay method: not clearing terminal for now*)  
+- [x] irsdk_msgTest  
+- [ ] irsdk_readTest  
+- [ ] irsdk_server  
+- [ ] irsdk_writeTest  
 
 All present samples work but may contains bugs, if you find one, don't hesitate to [create an issue](https://github.com/JBonifay/irsdk_java/issues/new)
 
