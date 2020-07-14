@@ -28,7 +28,7 @@ Branch should be named like the following:
 - fix       Fix 
 
 
-### SDK Improvement
+## SDK Improvement
 Actually three samples are working,
 I'm not planning to rewrite all c++ samples,   
 if you want rewrite c++ sample to java it could be a great contribution !
