@@ -238,7 +238,7 @@ public class LapTiming implements CommandLineRunner {
 
             // and grab the data here
             processLapInfo();
-            // processYAMLSessionString(generateLiveYAMLString());
+            processYAMLSessionString(generateLiveYAMLString());
 
             // only process session string if it changed
             if (client.wasSessionStrUpdated()) {
