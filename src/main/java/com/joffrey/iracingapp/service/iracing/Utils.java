@@ -33,7 +33,6 @@ import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
-import jdk.jshell.spi.ExecutionControl.NotImplementedException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -219,8 +218,12 @@ public class Utils {
         return -1;
     }
 
-    public VarHeader getVarHeaderPtr() throws NotImplementedException {
-        throw new NotImplementedException("Not Impl");
+    public VarHeader getVarHeaderPtr() {
+        if (isInitialized) {
+            return new VarHeader(ByteBuffer.wrap(sharedMemory.getByteArray(header.getHeaderOffset(),
+                                                                           VarHeader.SIZEOF_VAR_HEADER)));
+        }
+        return null;
     }
 
     public VarHeader getVarHeaderEntry(int index) {
