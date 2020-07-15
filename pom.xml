@@ -10,11 +10,11 @@
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
-  <groupId>com.joffrey.iracing</groupId>
-  <artifactId>iracing-app</artifactId>
+  <groupId>com.joffrey</groupId>
+  <artifactId>irsdk_java</artifactId>
   <version>0.0.1-beta</version>
-  <name>iracing-app</name>
-  <description>Demo project for Spring Boot</description>
+  <name>irsdk_java</name>
+  <description>Java irsdk implementation</description>
 
   <properties>
     <java.version>14</java.version>
@@ -56,14 +56,5 @@
     </dependency>
 
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>
