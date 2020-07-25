@@ -21,27 +21,27 @@
 
 package com.joffrey.irsdkjava.model;
 
-import com.joffrey.irsdkjava.service.iracing.Client;
+import com.joffrey.irsdkjava.service.iracing.IrsdkClient;
 import lombok.Data;
 
 @Data
 public class CVar {
 
-    private final Client client;
-    private final String name;
+    private final IrsdkClient irsdkClient;
+    private final String      name;
     private       int    idx      = -1;
     private       int    statusID = -1;
 
-    public CVar(Client client, String name) {
-        this.client = client;
+    public CVar(IrsdkClient irsdkClient, String name) {
+        this.irsdkClient = irsdkClient;
         this.name = name;
     }
 
     private boolean checkIdx() {
-        if (client.isConnected()) {
-            if (this.statusID != client.getStatusID()) {
-                this.statusID = client.getStatusID();
-                this.idx = client.getVarIdx(getName());
+        if (irsdkClient.isConnected()) {
+            if (this.statusID != irsdkClient.getStatusID()) {
+                this.statusID = irsdkClient.getStatusID();
+                this.idx = irsdkClient.getVarIdx(getName());
             }
             return true;
         }
@@ -50,14 +50,14 @@ public class CVar {
 
     public int getType() {
         if (checkIdx()) {
-            return client.getVarType(this.idx);
+            return irsdkClient.getVarType(this.idx);
         }
         return 0;
     }
 
     public int getCount() {
         if (checkIdx()) {
-            return client.getVarCount(this.idx);
+            return irsdkClient.getVarCount(this.idx);
         }
         return 0;
     }
@@ -73,7 +73,7 @@ public class CVar {
 
     public boolean getBoolean(int entry) {
         if (checkIdx()) {
-            return client.getVarBoolean(this.idx, entry);
+            return irsdkClient.getVarBoolean(this.idx, entry);
         }
         return false;
     }
@@ -84,7 +84,7 @@ public class CVar {
 
     public int getInt(int entry) {
         if (checkIdx()) {
-            return client.getVarInt(this.idx, entry);
+            return irsdkClient.getVarInt(this.idx, entry);
         }
         return 0;
     }
@@ -95,7 +95,7 @@ public class CVar {
 
     public float getFloat(int entry) {
         if (checkIdx()) {
-            return client.getVarFloat(this.idx, entry);
+            return irsdkClient.getVarFloat(this.idx, entry);
         }
         return 0.0f;
     }
@@ -106,7 +106,7 @@ public class CVar {
 
     public double getDouble(int entry) {
         if (checkIdx()) {
-            return client.getVarDouble(this.idx, entry);
+            return irsdkClient.getVarDouble(this.idx, entry);
         }
         return 0.0;
     }

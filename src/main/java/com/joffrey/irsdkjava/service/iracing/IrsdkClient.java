@@ -34,10 +34,10 @@ import org.springframework.stereotype.Component;
 @Getter
 @RequiredArgsConstructor
 @Component
-public class Client {
+public class IrsdkClient {
 
-    private final Utils      utils;
-    private final YamlParser yamlParser;
+    private final IrsdkUtils      irsdkUtils;
+    private final IrsdkYamlParser irsdkYamlParser;
 
     private ByteBuffer data;
     private int        nData;
@@ -47,16 +47,16 @@ public class Client {
     public boolean waitForData(int timeoutMS) throws InterruptedException {
 
         // wait for start of session or new data
-        if (utils.waitForDataReady(timeoutMS, data) && utils.getHeader() != null) {
+        if (irsdkUtils.waitForDataReady(timeoutMS, data) && irsdkUtils.getHeader() != null) {
 
             // if new connection, or data changed lenght then init
-            if (data != null || nData != utils.getHeader().getBufLen()) {
+            if (data != null || nData != irsdkUtils.getHeader().getBufLen()) {
 
                 // allocate memory to hold incoming data from sim
                 if (data != null) {
                     data = null;
                 }
-                nData = utils.getHeader().getBufLen();
+                nData = irsdkUtils.getHeader().getBufLen();
                 data = ByteBuffer.allocate(nData);
 
                 // indicate a new connection
@@ -66,8 +66,8 @@ public class Client {
                 lastSessionCt = -1;
 
                 // and try to fill in the data
-                if (utils.getNewData(data)) {
-                    data = utils.getDataBuffer();
+                if (irsdkUtils.getNewData(data)) {
+                    data = irsdkUtils.getDataBuffer();
                     data.order(ByteOrder.LITTLE_ENDIAN);
                     return true;
                 }
@@ -87,19 +87,19 @@ public class Client {
     }
 
     public boolean isConnected() {
-        return data != null && utils.isConnected();
+        return data != null && irsdkUtils.isConnected();
     }
 
     public int getVarIdx(String varName) {
         if (isConnected()) {
-            return utils.varNameToIndex(varName);
+            return irsdkUtils.varNameToIndex(varName);
         }
         return -1;
     }
 
     public int getVarType(int idx) {
         if (isConnected()) {
-            VarHeader vh = utils.getVarHeaderEntry(idx);
+            VarHeader vh = irsdkUtils.getVarHeaderEntry(idx);
             if (vh != null) {
                 return vh.getType();
             } else {
@@ -111,7 +111,7 @@ public class Client {
 
     public int getVarCount(int idx) {
         if (isConnected()) {
-            VarHeader vh = utils.getVarHeaderEntry(idx);
+            VarHeader vh = irsdkUtils.getVarHeaderEntry(idx);
             if (vh != null) {
                 return vh.getCount();
             } else {
@@ -123,7 +123,7 @@ public class Client {
 
     public boolean getVarBoolean(int idx, int entry) {
         if (isConnected()) {
-            VarHeader vh = utils.getVarHeaderEntry(idx);
+            VarHeader vh = irsdkUtils.getVarHeaderEntry(idx);
             if (vh != null) {
                 if (entry >= 0 && entry < vh.getCount()) {
                     VarType vhType = VarType.get(vh.getType());
@@ -157,7 +157,7 @@ public class Client {
 
     public int getVarInt(int idx, int entry) {
         if (isConnected()) {
-            VarHeader vh = utils.getVarHeaderEntry(idx);
+            VarHeader vh = irsdkUtils.getVarHeaderEntry(idx);
             if (vh != null) {
                 if (entry >= 0 && entry < vh.getCount()) {
                     VarType vhType = VarType.get(vh.getType());
@@ -189,7 +189,7 @@ public class Client {
 
     public float getVarFloat(int idx, int entry) {
         if (isConnected()) {
-            VarHeader vh = utils.getVarHeaderEntry(idx);
+            VarHeader vh = irsdkUtils.getVarHeaderEntry(idx);
             if (vh != null) {
                 if (entry >= 0 && entry < vh.getCount()) {
                     VarType vhType = VarType.get(vh.getType());
@@ -223,7 +223,7 @@ public class Client {
 
     public double getVarDouble(int idx, int entry) {
         if (isConnected()) {
-            VarHeader vh = utils.getVarHeaderEntry(idx);
+            VarHeader vh = irsdkUtils.getVarHeaderEntry(idx);
             if (vh != null) {
                 if (entry >= 0 && entry < vh.getCount()) {
                     VarType vhType = VarType.get(vh.getType());
@@ -263,8 +263,7 @@ public class Client {
             lastSessionCt = getSessionCt();
 
             int tValLen = 0;
-            byte[] yamlString = utils.getSessionInfoStr();
-            String tVal = yamlParser.parseYaml(new String(yamlString), path, tValLen);
+            String tVal = irsdkYamlParser.parseYaml(irsdkUtils.getSessionInfoStr(), path, tValLen);
             tValLen = tVal.length();
             if (!tVal.isEmpty()) {
 
@@ -290,20 +289,20 @@ public class Client {
         return 0;
     }
 
-    public byte[] getSessionStr() {
+    public String getSessionStr() {
         if (isConnected()) {
             lastSessionCt = getSessionCt();
-            return utils.getSessionInfoStr();
+            return irsdkUtils.getSessionInfoStr();
         }
-        return new byte[0];
+        return "";
     }
 
     public boolean wasSessionStrUpdated() {
-        return lastSessionCt != utils.getSessionInfoStrUpdate();
+        return lastSessionCt != irsdkUtils.getSessionInfoStrUpdate();
     }
 
     private int getSessionCt() {
-        return utils.getSessionInfoStrUpdate();
+        return irsdkUtils.getSessionInfoStrUpdate();
     }
 
 }

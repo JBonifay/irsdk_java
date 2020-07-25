@@ -29,7 +29,7 @@ import com.joffrey.irsdkjava.model.defines.YamlState;
 import org.springframework.stereotype.Component;
 
 @Component
-public class YamlParser {
+public class IrsdkYamlParser {
 
     public String parseYaml(String data, String path, int len) {
 

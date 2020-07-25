@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class Utils {
+public class IrsdkUtils {
 
     private final WindowsService windowsService;
 
@@ -204,11 +204,11 @@ public class Utils {
         return "";
     }
 
-    public byte[] getSessionInfoStr() {
+    public String getSessionInfoStr() {
         if (isInitialized) {
-            return sharedMemory.getByteArray(header.getSessionInfoOffset(), header.getSessionInfoLen());
+            return new String(sharedMemory.getByteArray(header.getSessionInfoOffset(), header.getSessionInfoLen()));
         }
-        return new byte[0];
+        return "";
     }
 
     public int getSessionInfoStrUpdate() {
