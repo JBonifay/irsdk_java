@@ -14,7 +14,7 @@
   <artifactId>irsdk_java</artifactId>
   <version>0.1.0-Dev</version>
   <name>irsdk_java</name>
-  <description>Java irsdk implementation</description>
+  <description>Irsdk-java dev version, used has a library</description>
 
   <properties>
     <java.version>14</java.version>
