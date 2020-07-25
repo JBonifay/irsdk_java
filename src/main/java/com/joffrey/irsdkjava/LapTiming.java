@@ -242,7 +242,7 @@ public class LapTiming implements CommandLineRunner {
 
             // only process session string if it changed
             if (client.wasSessionStrUpdated()) {
-                processYAMLSessionString(client.getSessionStr());
+                processYAMLSessionString(new String(client.getSessionStr()));
             }
 
             // update the display as well

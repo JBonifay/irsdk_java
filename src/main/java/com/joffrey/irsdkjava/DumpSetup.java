@@ -145,7 +145,7 @@ public class DumpSetup implements CommandLineRunner {
                     }
 
                     // get the current setup and dump it
-                    String sesStr = client.getSessionStr();
+                    String sesStr = new String(client.getSessionStr());
                     if (!sesStr.isEmpty()) {
                         //****Note, this assumes CarSetup is the last section of the session string.
                         String res = sesStr.substring(strStr(sesStr, "CarSetup:"));

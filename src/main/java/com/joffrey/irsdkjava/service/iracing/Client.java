@@ -263,8 +263,8 @@ public class Client {
             lastSessionCt = getSessionCt();
 
             int tValLen = 0;
-            String yamlString = utils.getSessionInfoStr();
-            String tVal = yamlParser.parseYaml(yamlString, path, tValLen);
+            byte[] yamlString = utils.getSessionInfoStr();
+            String tVal = yamlParser.parseYaml(new String(yamlString), path, tValLen);
             tValLen = tVal.length();
             if (!tVal.isEmpty()) {
 
@@ -290,12 +290,12 @@ public class Client {
         return 0;
     }
 
-    public String getSessionStr() {
+    public byte[] getSessionStr() {
         if (isConnected()) {
             lastSessionCt = getSessionCt();
             return utils.getSessionInfoStr();
         }
-        return "";
+        return new byte[0];
     }
 
     public boolean wasSessionStrUpdated() {

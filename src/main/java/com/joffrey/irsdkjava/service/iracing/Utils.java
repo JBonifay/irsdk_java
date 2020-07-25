@@ -204,11 +204,11 @@ public class Utils {
         return "";
     }
 
-    public String getSessionInfoStr() {
+    public byte[] getSessionInfoStr() {
         if (isInitialized) {
-            return new String(sharedMemory.getByteArray(header.getSessionInfoOffset(), header.getSessionInfoLen()));
+            return sharedMemory.getByteArray(header.getSessionInfoOffset(), header.getSessionInfoLen());
         }
-        return "";
+        return new byte[0];
     }
 
     public int getSessionInfoStrUpdate() {
