@@ -21,95 +21,16 @@
 
 package com.joffrey.irsdkjava.model;
 
-import com.joffrey.irsdkjava.service.iracing.IrsdkClient;
 import lombok.Data;
 
 @Data
 public class CVar {
 
-    private final IrsdkClient irsdkClient;
-    private final String      name;
+    private final String name;
     private       int    idx      = -1;
     private       int    statusID = -1;
 
-    public CVar(IrsdkClient irsdkClient, String name) {
-        this.irsdkClient = irsdkClient;
+    public CVar(String name) {
         this.name = name;
     }
-
-    private boolean checkIdx() {
-        if (irsdkClient.isConnected()) {
-            if (this.statusID != irsdkClient.getStatusID()) {
-                this.statusID = irsdkClient.getStatusID();
-                this.idx = irsdkClient.getVarIdx(getName());
-            }
-            return true;
-        }
-        return false;
-    }
-
-    public int getType() {
-        if (checkIdx()) {
-            return irsdkClient.getVarType(this.idx);
-        }
-        return 0;
-    }
-
-    public int getCount() {
-        if (checkIdx()) {
-            return irsdkClient.getVarCount(this.idx);
-        }
-        return 0;
-    }
-
-    public boolean isValid() {
-        checkIdx();
-        return this.idx > -1;
-    }
-
-    public boolean getBoolean() {
-        return getBoolean(0);
-    }
-
-    public boolean getBoolean(int entry) {
-        if (checkIdx()) {
-            return irsdkClient.getVarBoolean(this.idx, entry);
-        }
-        return false;
-    }
-
-    public int getInt() {
-        return getInt(0);
-    }
-
-    public int getInt(int entry) {
-        if (checkIdx()) {
-            return irsdkClient.getVarInt(this.idx, entry);
-        }
-        return 0;
-    }
-
-    public float getFloat() {
-        return getFloat(0);
-    }
-
-    public float getFloat(int entry) {
-        if (checkIdx()) {
-            return irsdkClient.getVarFloat(this.idx, entry);
-        }
-        return 0.0f;
-    }
-
-    public double getDouble() {
-        return getDouble(0);
-    }
-
-    public double getDouble(int entry) {
-        if (checkIdx()) {
-            return irsdkClient.getVarDouble(this.idx, entry);
-        }
-        return 0.0;
-    }
-
-
 }

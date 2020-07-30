@@ -12,7 +12,7 @@
 
   <groupId>com.joffrey</groupId>
   <artifactId>irsdk_java</artifactId>
-  <version>0.1.0-Dev</version>
+  <version>0.1.1-Dev</version>
   <name>irsdk_java</name>
   <description>Irsdk-java dev version, used has a library</description>
 
@@ -40,7 +40,6 @@
       <artifactId>jna-platform</artifactId>
       <version>5.5.0</version>
     </dependency>
-
 
     <!-- Test -->
     <dependency>

@@ -27,6 +27,7 @@ import com.joffrey.irsdkjava.model.defines.VarTypeBytes;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
+import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
