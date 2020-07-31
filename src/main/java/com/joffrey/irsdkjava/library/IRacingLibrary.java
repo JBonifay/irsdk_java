@@ -39,8 +39,11 @@ import com.sun.jna.platform.win32.WinNT;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -56,6 +59,7 @@ public class IRacingLibrary {
     private WinNT.HANDLE dataValidEvent = null;
     private Pointer      sharedMemory   = null;
     private Header       header         = null;
+    private ByteBuffer   dataByteBuffer;
 
     private int     lastTickCount = Integer.MAX_VALUE;
     private boolean isInitialized = false;
@@ -66,6 +70,7 @@ public class IRacingLibrary {
         if (isInitialized || startup()) {
 
             // if sim is not active, then no new data
+            // TODO: 31 Jul 2020 Revert header parameter to sharedMemory to avoid creating each time Header object, sharedMemory will keep data updated all time
             if (header.getStatus() != StatusField.IRSDK_STCONNECTED.getValue()) {
                 lastTickCount = Integer.MAX_VALUE;
                 return false;
@@ -81,8 +86,9 @@ public class IRacingLibrary {
 
                     int curTickCount = header.getVarBuf(latest).getTickCount();
 
-                    header = new Header(ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarBuf(latest).getBufOffset(),
-                                                                                  header.getBufLen())));
+                    dataByteBuffer = ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarBufOffset(header.getLatestVarBuf()),
+                                                                               header.getBufLen()));
+                    dataByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
                     if (curTickCount == header.getVarBuf(latest).getTickCount()) {
                         lastTickCount = curTickCount;
@@ -143,7 +149,7 @@ public class IRacingLibrary {
         }
 
         isInitialized = false;
-        return isInitialized;
+        return false;
     }
 
     // ==================== Get Values ====================
@@ -161,9 +167,9 @@ public class IRacingLibrary {
                 entry.setDriverPos(getVarInt("CarIdxPosition", idx));
                 entry.setDriverNum(driverEntryList.get(idx).getCarNumber());
                 entry.setDriverName(driverEntryList.get(idx).getUserName());
-                entry.setDriverDelta(getVarFloat("CarIdxF2Time", idx));
-                entry.setDriverLastLap(getVarFloat("CarIdxLastLapTime", idx));
-                entry.setDriverBestLap(getVarFloat("CarIdxBestLapTime", idx));
+                entry.setDriverDelta(convertToLapTimingFormat(getVarFloat("CarIdxF2Time", idx)));
+                entry.setDriverLastLap(convertToLapTimingFormat(getVarFloat("CarIdxLastLapTime", idx)));
+                entry.setDriverBestLap(convertToLapTimingFormat(getVarFloat("CarIdxBestLapTime", idx)));
                 entry.setDriverIRating(driverEntryList.get(idx).getIRating());
 
                 lapTimingList.add(entry);
@@ -211,21 +217,21 @@ public class IRacingLibrary {
             if (vh != null) {
                 if (entry >= 0 && entry < vh.getCount()) {
                     com.joffrey.irsdkjava.model.defines.VarType vhType = com.joffrey.irsdkjava.model.defines.VarType.get(vh.getType());
-                    ByteBuffer data = ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarBufOffset(header.getLatestVarBuf()),
-                                                                                header.getBufLen()));
-                    data.order(ByteOrder.LITTLE_ENDIAN);
                     return switch (vhType) {
-                        case irsdk_char, irsdk_bool -> (data.getChar(vh.getOffset() + (entry
-                                                                                       * VarTypeBytes.IRSDK_BOOL.getValue())))
+                        case irsdk_char, irsdk_bool -> (dataByteBuffer.getChar(vh.getOffset() + (entry
+                                                                                                 * VarTypeBytes.IRSDK_BOOL.getValue())))
                                                        != 0;
 
-                        case irsdk_int, irsdk_bitField -> (data.getInt(vh.getOffset() + (entry
+                        case irsdk_int, irsdk_bitField -> (dataByteBuffer.getInt(vh.getOffset() + (entry * VarTypeBytes.IRSDK_BOOL
+                                .getValue()))) != 0;
+
+                        case irsdk_float -> (dataByteBuffer.getFloat(vh.getOffset() + (entry
+                                                                                       * VarTypeBytes.IRSDK_BOOL.getValue())))
+                                            != 0;
+
+                        case irsdk_double -> (dataByteBuffer.getDouble(vh.getOffset() + (entry
                                                                                          * VarTypeBytes.IRSDK_BOOL.getValue())))
-                                                          != 0;
-
-                        case irsdk_float -> (data.getFloat(vh.getOffset() + (entry * VarTypeBytes.IRSDK_BOOL.getValue()))) != 0;
-
-                        case irsdk_double -> (data.getDouble(vh.getOffset() + (entry * VarTypeBytes.IRSDK_BOOL.getValue()))) != 0;
+                                             != 0;
 
                         default -> throw new IllegalStateException("Unexpected value: " + vhType);
                     };
@@ -249,19 +255,18 @@ public class IRacingLibrary {
             if (vh != null) {
                 if (entry >= 0 && entry < vh.getCount()) {
                     com.joffrey.irsdkjava.model.defines.VarType vhType = com.joffrey.irsdkjava.model.defines.VarType.get(vh.getType());
-                    ByteBuffer data = ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarBufOffset(header.getLatestVarBuf()),
-                                                                                header.getBufLen()));
-                    data.order(ByteOrder.LITTLE_ENDIAN);
                     return switch (vhType) {
-                        case irsdk_char, irsdk_bool -> (int) data.getChar(vh.getOffset() + (entry
+                        case irsdk_char, irsdk_bool -> (int) dataByteBuffer.getChar(vh.getOffset() + (entry
+                                                                                                      * VarTypeBytes.IRSDK_INT.getValue()));
+
+                        case irsdk_int, irsdk_bitField -> (int) dataByteBuffer.getInt(vh.getOffset() + (entry
+                                                                                                        * VarTypeBytes.IRSDK_INT.getValue()));
+
+                        case irsdk_float -> (int) dataByteBuffer.getFloat(vh.getOffset() + (entry
                                                                                             * VarTypeBytes.IRSDK_INT.getValue()));
 
-                        case irsdk_int, irsdk_bitField -> (int) data.getInt(vh.getOffset() + (entry
+                        case irsdk_double -> (int) dataByteBuffer.getDouble(vh.getOffset() + (entry
                                                                                               * VarTypeBytes.IRSDK_INT.getValue()));
-
-                        case irsdk_float -> (int) data.getFloat(vh.getOffset() + (entry * VarTypeBytes.IRSDK_INT.getValue()));
-
-                        case irsdk_double -> (int) data.getDouble(vh.getOffset() + (entry * VarTypeBytes.IRSDK_INT.getValue()));
 
                         default -> throw new IllegalStateException("Unexpected value: " + vhType);
                     };
@@ -285,20 +290,20 @@ public class IRacingLibrary {
             if (vh != null) {
                 if (entry >= 0 && entry < vh.getCount()) {
                     com.joffrey.irsdkjava.model.defines.VarType vhType = com.joffrey.irsdkjava.model.defines.VarType.get(vh.getType());
-                    ByteBuffer data = ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarBufOffset(header.getLatestVarBuf()),
-                                                                                header.getBufLen()));
-                    data.order(ByteOrder.LITTLE_ENDIAN);
                     return switch (vhType) {
-                        case irsdk_char, irsdk_bool -> (float) data.getChar(vh.getOffset() + (entry
+                        case irsdk_char, irsdk_bool -> (float) dataByteBuffer.getChar(vh.getOffset() + (entry
+                                                                                                        * VarTypeBytes.IRSDK_FLOAT
+                                                                                                                .getValue()));
+
+                        case irsdk_int, irsdk_bitField -> (float) dataByteBuffer.getInt(vh.getOffset() + (entry
+                                                                                                          * VarTypeBytes.IRSDK_FLOAT
+                                                                                                                  .getValue()));
+
+                        case irsdk_float -> (float) dataByteBuffer.getFloat(vh.getOffset() + (entry
                                                                                               * VarTypeBytes.IRSDK_FLOAT.getValue()));
 
-                        case irsdk_int, irsdk_bitField -> (float) data.getInt(vh.getOffset() + (entry
+                        case irsdk_double -> (float) dataByteBuffer.getDouble(vh.getOffset() + (entry
                                                                                                 * VarTypeBytes.IRSDK_FLOAT.getValue()));
-
-                        case irsdk_float -> (float) data.getFloat(vh.getOffset() + (entry * VarTypeBytes.IRSDK_FLOAT.getValue()));
-
-                        case irsdk_double -> (float) data.getDouble(vh.getOffset() + (entry
-                                                                                      * VarTypeBytes.IRSDK_FLOAT.getValue()));
 
                         default -> throw new IllegalStateException("Unexpected value: " + vhType);
                     };
@@ -327,21 +332,20 @@ public class IRacingLibrary {
             if (vh != null) {
                 if (entry >= 0 && entry < vh.getCount()) {
                     com.joffrey.irsdkjava.model.defines.VarType vhType = VarType.get(vh.getType());
-                    ByteBuffer data = ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarBufOffset(header.getLatestVarBuf()),
-                                                                                header.getBufLen()));
-                    data.order(ByteOrder.LITTLE_ENDIAN);
                     return switch (vhType) {
-                        case irsdk_char, irsdk_bool -> (double) data.getChar(vh.getOffset() + (entry
+                        case irsdk_char, irsdk_bool -> (double) dataByteBuffer.getChar(vh.getOffset() + (entry
+                                                                                                         * VarTypeBytes.IRSDK_DOUBLE
+                                                                                                                 .getValue()));
+
+                        case irsdk_int, irsdk_bitField -> (double) dataByteBuffer.getInt(vh.getOffset() + (entry
+                                                                                                           * VarTypeBytes.IRSDK_DOUBLE
+                                                                                                                   .getValue()));
+
+                        case irsdk_float -> (double) dataByteBuffer.getFloat(vh.getOffset() + (entry
                                                                                                * VarTypeBytes.IRSDK_DOUBLE.getValue()));
 
-                        case irsdk_int, irsdk_bitField -> (double) data.getInt(vh.getOffset() + (entry * VarTypeBytes.IRSDK_DOUBLE
+                        case irsdk_double -> (double) dataByteBuffer.getDouble(vh.getOffset() + (entry * VarTypeBytes.IRSDK_DOUBLE
                                 .getValue()));
-
-                        case irsdk_float -> (double) data.getFloat(vh.getOffset() + (entry
-                                                                                     * VarTypeBytes.IRSDK_DOUBLE.getValue()));
-
-                        case irsdk_double -> (double) data.getDouble(vh.getOffset() + (entry
-                                                                                       * VarTypeBytes.IRSDK_DOUBLE.getValue()));
 
                         default -> throw new IllegalStateException("Unexpected value: " + vhType);
                     };
@@ -416,4 +420,15 @@ public class IRacingLibrary {
         return ((highWord << 16) & 0xFFFF0000) | lowWord;
     }
 
+    // ==================== Utils ====================
+    private String convertToLapTimingFormat(double seconds) {
+        // If seconds == -1 return "-" for better UI
+        if (seconds == -1) {
+            return "-";
+        }
+        Date d = new Date((long) (seconds * 1000L));
+        SimpleDateFormat df = new SimpleDateFormat("mm:ss.SSS");
+        df.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return df.format(d).replaceAll(":", "'");
+    }
 }

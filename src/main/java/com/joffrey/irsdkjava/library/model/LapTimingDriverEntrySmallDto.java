@@ -8,9 +8,9 @@ public class LapTimingDriverEntrySmallDto {
     private int    driverPos;
     private String driverNum;
     private String driverName;
-    private float  driverDelta;
-    private float  driverLastLap;
-    private float  driverBestLap;
+    private String driverDelta;
+    private String driverLastLap;
+    private String driverBestLap;
     private String driverIRating;
 
 }

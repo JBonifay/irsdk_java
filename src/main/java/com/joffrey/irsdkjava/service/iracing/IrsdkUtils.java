@@ -68,13 +68,13 @@ public class IrsdkUtils {
         if (memMapFile != null) {
             if (sharedMemory == null) {
                 sharedMemory = windowsService.mapViewOfFile(memMapFile);
-                // header = new Header(sharedMemory);
                 lastTickCount = Integer.MAX_VALUE;
             }
 
             if (sharedMemory != null) {
                 if (dataValidEvent == null) {
                     dataValidEvent = windowsService.openEvent(Constant.IRSDK_DATAVALIDEVENTNAME);
+                    header = new Header(ByteBuffer.wrap(sharedMemory.getByteArray(0, Header.HEADER_SIZE)));
                     lastTickCount = Integer.MAX_VALUE;
                 }
             }
