@@ -42,10 +42,14 @@ public enum VarType {
     irsdk_ETCount(6);
 
     private static final Map<Integer, VarType> varTypeMap = new HashMap();
-    private final        int                   value;
+    private final        int                   type;
 
-    VarType(int value) {
-        this.value = value;
+    VarType(int type) {
+        this.type = type;
+    }
+
+    public int getType() {
+        return type;
     }
 
     public static VarType get(int code) {
@@ -54,7 +58,7 @@ public enum VarType {
 
     static {
         for (VarType varType : EnumSet.allOf(VarType.class)) {
-            varTypeMap.put(varType.value, varType);
+            varTypeMap.put(varType.type, varType);
         }
     }
 

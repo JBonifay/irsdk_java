@@ -128,9 +128,6 @@ public class IrsdkClient {
             if (vh != null) {
                 if (entry >= 0 && entry < vh.getCount()) {
                     VarType vhType = VarType.get(vh.getType());
-                    // 1 byte
-                    // 4 bytes
-                    // 8 bytes
                     return switch (vhType) {
                         case irsdk_char, irsdk_bool -> (data.getChar(vh.getOffset() + (entry
                                                                                        * VarTypeBytes.IRSDK_BOOL.getValue())))
@@ -146,11 +143,7 @@ public class IrsdkClient {
 
                         default -> throw new IllegalStateException("Unexpected value: " + vhType);
                     };
-                } else {
-                    // invalid offset
                 }
-            } else {
-                //invalid variable index
             }
         }
         return false;
@@ -162,9 +155,6 @@ public class IrsdkClient {
             if (vh != null) {
                 if (entry >= 0 && entry < vh.getCount()) {
                     VarType vhType = VarType.get(vh.getType());
-                    // 1 byte
-                    // 4 bytes
-                    // 8 bytes
                     return switch (vhType) {
                         case irsdk_char, irsdk_bool -> (int) data.getChar(vh.getOffset() + (entry
                                                                                             * VarTypeBytes.IRSDK_INT.getValue()));
@@ -178,11 +168,7 @@ public class IrsdkClient {
 
                         default -> throw new IllegalStateException("Unexpected value: " + vhType);
                     };
-                } else {
-                    // invalid offset
                 }
-            } else {
-                //invalid variable index
             }
         }
         return 0;

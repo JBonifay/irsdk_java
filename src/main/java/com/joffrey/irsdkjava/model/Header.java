@@ -21,15 +21,18 @@
 
 package com.joffrey.irsdkjava.model;
 
-import com.sun.jna.Pointer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import lombok.Data;
 
+@Data
 public class Header {
 
     public static final int HEADER_SIZE = 112; // All fields are int (4 bytes), there are 28 fields (28 * 4) = 112
+    public final static int VARBUF_SIZE = 4 * 4;
 
-    private Pointer sharedMemory;
+    private ByteBuffer    byteBuffer;
+    private DiskSubHeader diskSubHeader;
 
     private int ver;                                                                      // this api header version, see IRSDK_VER
     private int status;                                                                   // bitfield using irsdk_StatusField
@@ -50,76 +53,65 @@ public class Header {
     private final VarBuf[] varBuf = new VarBuf[]{new VarBuf(), new VarBuf(), new VarBuf(), new VarBuf()};
     // buffers of data being written to
 
-    public Header(Pointer sharedMemory) {
-        this.sharedMemory = sharedMemory;
-    }
+    public Header(ByteBuffer buffer) {
+        //make a copy of the buffer
+        byteBuffer = ByteBuffer.allocate(HEADER_SIZE);
+        byteBuffer.position(0);
+        buffer.position(0);
+        byteBuffer.put(buffer);
+        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        
+        ver =  byteBuffer.getInt(0);
+        status =  byteBuffer.getInt(4);
+        tickRate = byteBuffer.getInt(8);
+        sessionInfoUpdate = byteBuffer.getInt(12);
+        sessionInfoLen = byteBuffer.getInt(16);
+        sessionInfoOffset = byteBuffer.getInt(20);
+        numVars = byteBuffer.getInt(24);
+        varHeaderOffset = byteBuffer.getInt(28);
+        numBuf = byteBuffer.getInt(32);
+        bufLen = byteBuffer.getInt(36);
 
-    private ByteBuffer getSharedMemoryByteBuffer() {
-        ByteBuffer headerByteBuffer = ByteBuffer.wrap(sharedMemory.getByteArray(0, Header.HEADER_SIZE));
-        headerByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        return headerByteBuffer;
     }
-
-    public int getVer() {
-        return getSharedMemoryByteBuffer().getInt(0);
-    }
-
-    public int getStatus() {
-        return getSharedMemoryByteBuffer().getInt(4);
-    }
-
-    public int getTickRate() {
-        return getSharedMemoryByteBuffer().getInt(8);
-    }
-
-    public int getSessionInfoUpdate() {
-        return getSharedMemoryByteBuffer().getInt(12);
-    }
-
-    public int getSessionInfoLen() {
-        return getSharedMemoryByteBuffer().getInt(16);
-    }
-
-    public int getSessionInfoOffset() {
-        return getSharedMemoryByteBuffer().getInt(20);
-    }
-
-    public int getNumVars() {
-        return getSharedMemoryByteBuffer().getInt(24);
-    }
-
-    public int getHeaderOffset() {
-        return getSharedMemoryByteBuffer().getInt(28);
-    }
-
-    public int getNumBuf() {
-        return getSharedMemoryByteBuffer().getInt(32);
-    }
-
-    public int getBufLen() {
-        return getSharedMemoryByteBuffer().getInt(36);
-    }
-
+    
     public int getPadValue(int padIdx) {
         if (padIdx == 0) {
-            return getSharedMemoryByteBuffer().getInt(40);
+            return byteBuffer.getInt(40);
         } else if (padIdx == 1) {
-            return getSharedMemoryByteBuffer().getInt(44);
+            return byteBuffer.getInt(44);
         }
         return -1;
     }
 
     public VarBuf getVarBuf(int varBufIdx) {
         if (varBufIdx == 0) {
-            return new VarBuf(getSharedMemoryByteBuffer().getInt(48), getSharedMemoryByteBuffer().getInt(52));
+            return new VarBuf(byteBuffer.getInt(48), byteBuffer.getInt(52));
         } else if (varBufIdx == 1) {
-            return new VarBuf(getSharedMemoryByteBuffer().getInt(64), getSharedMemoryByteBuffer().getInt(68));
+            return new VarBuf(byteBuffer.getInt(64), byteBuffer.getInt(68));
         } else if (varBufIdx == 2) {
-            return new VarBuf(getSharedMemoryByteBuffer().getInt(80), getSharedMemoryByteBuffer().getInt(84));
+            return new VarBuf(byteBuffer.getInt(80), byteBuffer.getInt(84));
         } else if (varBufIdx == 3) {
-            return new VarBuf(getSharedMemoryByteBuffer().getInt(96), getSharedMemoryByteBuffer().getInt(100));
+            return new VarBuf(byteBuffer.getInt(96), byteBuffer.getInt(100));
         }
         return null;
+    }
+
+    public int getLatestVarBuf() {
+        int latest = 0;
+        for (int i = 1; i < getNumBuf(); i++) {
+            if (getVarBuf(latest).getTickCount() < getVarBuf(i).getTickCount()) {
+                latest = i;
+            }
+        }
+        return latest;
+    }
+
+    public int getVarBufTickCount(int varBuf) {
+        return byteBuffer.getInt((varBuf * VARBUF_SIZE) + 48);
+    }
+
+    public int getVarBufOffset(int varBuf) {
+        return byteBuffer.getInt((varBuf * VARBUF_SIZE) + 52);
     }
 
 }

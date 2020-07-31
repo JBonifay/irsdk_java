@@ -27,6 +27,7 @@ import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.Win32Exception;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
+import com.sun.jna.platform.win32.WinNT.HANDLE;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 
@@ -43,11 +44,20 @@ public class WindowsService {
         return memMapFile;
     }
 
+    public void closeHandle(HANDLE memMapFile) {
+        Kernel32Impl.KERNEL_32.CloseHandle(memMapFile);
+    }
+
     public Pointer mapViewOfFile(WinNT.HANDLE handle) {
         if (handle == null) {
             return null;
         }
         return Kernel32.INSTANCE.MapViewOfFile(handle, WinNT.SECTION_MAP_READ, 0, 0, 0);
+    }
+
+    public void unmapViewOfFile(Pointer sharedMemory) {
+        Kernel32Impl.KERNEL_32.UnmapViewOfFile(sharedMemory);
+        lastError = Kernel32Impl.KERNEL_32.GetLastError();
     }
 
     public void waitForSingleObject(WinNT.HANDLE handle, int timeout) {

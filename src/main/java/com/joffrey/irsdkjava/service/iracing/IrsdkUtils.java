@@ -50,9 +50,9 @@ public class IrsdkUtils {
 
     @Getter
     private ByteBuffer dataBuffer;
-
-    private int     lastTickCount = Integer.MAX_VALUE;
-    private boolean isInitialized = false;
+    @Getter
+    private boolean    isInitialized = false;
+    private int        lastTickCount = Integer.MAX_VALUE;
 
     private final double    timeout       = 30.0;                // timeout after 30 seconds with no communication
     private       Timestamp lastValidTime = new Timestamp(System.currentTimeMillis());
@@ -68,7 +68,7 @@ public class IrsdkUtils {
         if (memMapFile != null) {
             if (sharedMemory == null) {
                 sharedMemory = windowsService.mapViewOfFile(memMapFile);
-                header = new Header(sharedMemory);
+                // header = new Header(sharedMemory);
                 lastTickCount = Integer.MAX_VALUE;
             }
 
@@ -99,12 +99,7 @@ public class IrsdkUtils {
                 return false;
             }
 
-            int latest = 0;
-            for (int i = 1; i < header.getNumBuf(); i++) {
-                if (header.getVarBuf(latest).getTickCount() < header.getVarBuf(i).getTickCount()) {
-                    latest = i;
-                }
-            }
+            int latest = header.getLatestVarBuf();
 
             // if newer than last recieved, than report new data
             if (lastTickCount < header.getVarBuf(latest).getTickCount()) {
@@ -117,7 +112,6 @@ public class IrsdkUtils {
 
                         int curTickCount = header.getVarBuf(latest).getTickCount();
 
-                        // memcpy(data, pSharedMem + pHeader -> varBuf[latest].bufOffset, pHeader -> bufLen);
                         data = ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarBuf(latest).getBufOffset(),
                                                                          header.getBufLen()));
 
@@ -220,8 +214,7 @@ public class IrsdkUtils {
 
     public VarHeader getVarHeaderPtr() {
         if (isInitialized) {
-            return new VarHeader(ByteBuffer.wrap(sharedMemory.getByteArray(header.getHeaderOffset(),
-                                                                           VarHeader.SIZEOF_VAR_HEADER)));
+            // return new VarHeader(ByteBuffer.wrap(sharedMemory.getByteArray(header.getHeaderOffset(), VarHeader.VAR_HEADER_SIZE)));
         }
         return null;
     }
@@ -229,9 +222,9 @@ public class IrsdkUtils {
     public VarHeader getVarHeaderEntry(int index) {
         if (isInitialized) {
             if (index >= 0 && index < header.getNumVars()) {
-                return new VarHeader(ByteBuffer.wrap(sharedMemory.getByteArray(header.getHeaderOffset()
-                                                                               + (VarHeader.SIZEOF_VAR_HEADER * index),
-                                                                               VarHeader.SIZEOF_VAR_HEADER)));
+                return new VarHeader(ByteBuffer.wrap(sharedMemory.getByteArray(header.getVarHeaderOffset()
+                                                                               + (VarHeader.VAR_HEADER_SIZE * index),
+                                                                               VarHeader.VAR_HEADER_SIZE)));
             }
         }
         return null;
@@ -271,7 +264,7 @@ public class IrsdkUtils {
     }
 
     public void broadcastMsg(BroadcastMsg msg, int var1, int var2, int var3) {
-        broadcastMsg(msg, var1, (long) (var2 + var3));
+        broadcastMsg(msg, var1, MAKELONG(var2, var3));
     }
 
     public void broadcastMsg(BroadcastMsg msg, int var1, float var2) {
@@ -290,9 +283,9 @@ public class IrsdkUtils {
     }
 
     /**
-     * add a leading zero (or zeros) to a car number
-     * to encode car #001 call padCarNum(1,2)
-     * @param num the car number
+     * add a leading zero (or zeros) to a car number to encode car #001 call padCarNum(1,2)
+     *
+     * @param num  the car number
      * @param zero the leading zero
      * @return the new CarNumber
      */
@@ -316,12 +309,9 @@ public class IrsdkUtils {
 
     /**
      * C++ MAKELONG for Java
-     * @param var1 the first int
-     * @param var2 the second int
-     * @return
      */
-    private int MAKELONG(int var1, int var2) {
-        return (var2 << 16) | ((var1) & 0xFFFF);
+    private int MAKELONG(int lowWord, int highWord) {
+        return ((highWord << 16) & 0xFFFF0000) | lowWord;
     }
 
 }

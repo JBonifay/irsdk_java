@@ -32,11 +32,11 @@ import lombok.NoArgsConstructor;
 public class VarHeader {
 
     public final static int NUMBER_OF_FIELDS  = 4;
-    public final static int SIZEOF_FIELDS     = 4;
-    public final static int SIZEOF_VAR_HEADER = (NUMBER_OF_FIELDS * SIZEOF_FIELDS)
-                                                + Constant.IRSDK_MAX_STRING
-                                                + Constant.IRSDK_MAX_DESC
-                                                + Constant.IRSDK_MAX_STRING;
+    public final static int SIZEOF_FIELDS   = 4;
+    public final static int VAR_HEADER_SIZE = (NUMBER_OF_FIELDS * SIZEOF_FIELDS)
+                                              + Constant.IRSDK_MAX_STRING
+                                              + Constant.IRSDK_MAX_DESC
+                                              + Constant.IRSDK_MAX_STRING;
 
     private int type;                                                 // irsdk_VarType
     private int offset;                                               // offset fron start of buffer row
