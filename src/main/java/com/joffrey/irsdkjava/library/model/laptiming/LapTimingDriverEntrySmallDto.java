@@ -1,4 +1,4 @@
-package com.joffrey.irsdkjava.library.model;
+package com.joffrey.irsdkjava.library.model.laptiming;
 
 import lombok.Data;
 
