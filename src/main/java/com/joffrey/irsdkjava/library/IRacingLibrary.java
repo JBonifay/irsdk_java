@@ -24,6 +24,7 @@ package com.joffrey.irsdkjava.library;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.joffrey.irsdkjava.library.model.laptiming.LapTimingDriverEntrySmallDto;
+import com.joffrey.irsdkjava.library.model.tveditor.TvCamera;
 import com.joffrey.irsdkjava.library.model.tveditor.TvDriverEntry.TvDriverEntry;
 import com.joffrey.irsdkjava.library.yaml.IrsdkYamlFileDto;
 import com.joffrey.irsdkjava.library.yaml.irsdkyaml.DriversDto;
@@ -47,6 +48,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -150,14 +152,16 @@ public class IRacingLibrary {
     }
 
     // ==================== Get Values ====================
-    public List<TvDriverEntry> getTvEditorDriverEntries() {
+    public List<TvDriverEntry> getDriverEntries() {
         IrsdkYamlFileDto irsdkYamlFileDto = getIrsdkYamlFileBean();
         List<TvDriverEntry> tvDriverEntryList = new ArrayList<>();
 
         if (irsdkYamlFileDto != null) {
             int maxCar = irsdkYamlFileDto.getDriverInfo().getDrivers().size();
             List<DriversDto> driverEntryList = irsdkYamlFileDto.getDriverInfo().getDrivers();
-            List<ResultsPositionsDto> resultsPositionsList = irsdkYamlFileDto.getSessionInfo().getSessions().get(0)
+            List<ResultsPositionsDto> resultsPositionsList = irsdkYamlFileDto.getSessionInfo()
+                                                                             .getSessions()
+                                                                             .get(0)
                                                                              .getResultsPositions();
 
             for (int idx = 0; idx < maxCar; idx++) {
@@ -173,6 +177,17 @@ public class IRacingLibrary {
         return tvDriverEntryList;
     }
 
+    public List<TvCamera> getCameraEntries() {
+        IrsdkYamlFileDto irsdkYamlFileDto = getIrsdkYamlFileBean();
+        return irsdkYamlFileDto.getCameraInfo()
+                               .getGroups()
+                               .stream()
+                               .map(groupsDto -> new TvCamera(Integer.parseInt(groupsDto.getGroupNum()),
+                                                              groupsDto.getGroupName()))
+                               .collect(Collectors.toList());
+
+    }
+
     public List<LapTimingDriverEntrySmallDto> getLapTimingValuesSmall() {
         IrsdkYamlFileDto irsdkYamlFileDto = getIrsdkYamlFileBean();
         List<LapTimingDriverEntrySmallDto> lapTimingList = new ArrayList<>();
@@ -180,7 +195,9 @@ public class IRacingLibrary {
         if (irsdkYamlFileDto != null) {
             int maxCar = irsdkYamlFileDto.getDriverInfo().getDrivers().size();
             List<DriversDto> driverEntryList = irsdkYamlFileDto.getDriverInfo().getDrivers();
-            List<ResultsPositionsDto> resultsPositionsList = irsdkYamlFileDto.getSessionInfo().getSessions().get(0)
+            List<ResultsPositionsDto> resultsPositionsList = irsdkYamlFileDto.getSessionInfo()
+                                                                             .getSessions()
+                                                                             .get(0)
                                                                              .getResultsPositions();
 
             for (int idx = 0; idx < maxCar; idx++) {
