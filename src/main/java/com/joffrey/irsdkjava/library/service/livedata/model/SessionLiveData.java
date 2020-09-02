@@ -28,11 +28,16 @@ public class SessionLiveData {
 
     private String[] sessionFlags;
     private int      sessionLapsRemain;
+    private int      sessionLapsRemainEx;
+    private int      sessionTick;
     private int      sessionNum;
     private String   sessionState;
     private double   sessionTime;
+    private float    sessionTimeOfDay;
     private double   sessionTimeRemain;
     private int      sessionUniqueID;
+    private boolean  pitsOpen;
+    private int      raceLaps;
 
 
 }

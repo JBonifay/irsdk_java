@@ -31,11 +31,22 @@ public class CarLiveData {
     private   float   carIdxF2Time;
     protected int     carIdxGear;
     private   int     carIdxLap;
+    private   int     carIdxLapCompleted;
     private   float   carIdxLapDistPct;
     private   boolean carIdxOnPitRoad;
     private   int     carIdxPosition;
     private   float   carIdxRPM;
     private   float   carIdxSteer;
     private   String  carIdxTrackSurface;
+    private   String  carIdxTrackSurfaceMaterial;
+    private   float   carIdxLastLapTime;
+    private   float   carIdxBestLapTime;
+    private   int     carIdxBestLapNum;
+    private   boolean carIdxP2P_Status;
+    private   int     carIdxP2P_Count;
+    private   int     paceMode;
+    private   int     carIdxPaceLine;
+    private   int     carIdxPaceRow;
+    private   int     carIdxPaceFlags;
 
 }

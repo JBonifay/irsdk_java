@@ -86,7 +86,6 @@ public class CarTelemetryLiveData {
     private float    pitSvRRP;
     private int      playerCarClassPosition;
     private int      playerCarPosition;
-    private int      raceLaps;
     private int      radioTransmitCarIdx;
     private int      radioTransmitFrequencyIdx;
     private int      radioTransmitRadioIdx;
