@@ -23,12 +23,11 @@ package com.joffrey.irsdkjava.library;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.joffrey.irsdkjava.library.model.laptiming.LapTimingDriverEntrySmallDto;
-import com.joffrey.irsdkjava.library.model.tveditor.TvCamera;
-import com.joffrey.irsdkjava.library.model.tveditor.TvDriverEntry.TvDriverEntry;
+import com.joffrey.irsdkjava.library.model.Driver;
+import com.joffrey.irsdkjava.library.model.LapTiming;
+import com.joffrey.irsdkjava.library.model.Camera;
 import com.joffrey.irsdkjava.library.yaml.IrsdkYamlFileDto;
 import com.joffrey.irsdkjava.library.yaml.irsdkyaml.DriversDto;
-import com.joffrey.irsdkjava.library.yaml.irsdkyaml.ResultsPositionsDto;
 import com.joffrey.irsdkjava.model.Header;
 import com.joffrey.irsdkjava.model.VarHeader;
 import com.joffrey.irsdkjava.model.defines.BroadcastMsg;
@@ -42,7 +41,6 @@ import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.WinNT;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.sql.Driver;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -146,9 +144,9 @@ public class IRacingLibrary {
     }
 
     // ==================== Get Values ====================
-    public List<TvDriverEntry> getDriverEntries() {
+    public List<Driver> getDriverEntries() {
         IrsdkYamlFileDto irsdkYamlFileDto = getIrsdkYamlFileBean();
-        List<TvDriverEntry> tvDriverEntryList = new ArrayList<>();
+        List<Driver> driverList = new ArrayList<>();
 
         if (irsdkYamlFileDto != null) {
             int maxCar = irsdkYamlFileDto.getDriverInfo().getDrivers().size();
@@ -159,60 +157,56 @@ public class IRacingLibrary {
                 // Check if car is present on track ( or in pit)
                 if (isCarActive(idx)) {
 
-                    TvDriverEntry tvDriverEntry = new TvDriverEntry();
-                    tvDriverEntry.setDriverName(driverEntryList.get(idx).getUserName());
+                    Driver Driver = new Driver();
+                    Driver.setDriverName(driverEntryList.get(idx).getUserName());
 
                     String carNumber = driverEntryList.get(idx).getCarNumber();
                     if (!carNumber.isEmpty()) {
-                        tvDriverEntry.setDriverNumber(Integer.parseInt(carNumber));
+                        Driver.setDriverNumber(Integer.parseInt(carNumber));
                     }
 
-                    tvDriverEntry.setDriverposition(getVarInt("CarIdxPosition", idx));
-                    tvDriverEntryList.add(tvDriverEntry);
+                    Driver.setDriverposition(getVarInt("CarIdxPosition", idx));
+                    driverList.add(Driver);
 
                 }
 
             }
         }
 
-        return tvDriverEntryList;
+        return driverList;
     }
 
-    public List<TvCamera> getCameraEntries() {
+    public List<Camera> getCameraEntries() {
         IrsdkYamlFileDto irsdkYamlFileDto = getIrsdkYamlFileBean();
         return irsdkYamlFileDto.getCameraInfo()
                                .getGroups()
                                .stream()
-                               .map(groupsDto -> new TvCamera(Integer.parseInt(groupsDto.getGroupNum()),
-                                                              groupsDto.getGroupName()))
+                               .map(groupsDto -> new Camera(Integer.parseInt(groupsDto.getGroupNum()),
+                                                            groupsDto.getGroupName()))
                                .collect(Collectors.toList());
 
     }
 
-    public List<LapTimingDriverEntrySmallDto> getLapTimingValuesSmall() {
+    public List<LapTiming> getLapTimingValuesSmall() {
         IrsdkYamlFileDto irsdkYamlFileDto = getIrsdkYamlFileBean();
-        List<LapTimingDriverEntrySmallDto> lapTimingList = new ArrayList<>();
+        List<LapTiming> lapTimingList = new ArrayList<>();
 
         if (irsdkYamlFileDto != null) {
             int maxCar = irsdkYamlFileDto.getDriverInfo().getDrivers().size();
             List<DriversDto> driverEntryList = irsdkYamlFileDto.getDriverInfo().getDrivers();
 
             for (int idx = 0; idx < maxCar; idx++) {
-                LapTimingDriverEntrySmallDto entry = new LapTimingDriverEntrySmallDto();
+                LapTiming entry = new LapTiming();
 
-                // Check if car is present on track ( or in pit)
-                // if (isCarActive(idx)) {
+                entry.setDriverPos(getVarInt("CarIdxPosition", idx));
+                entry.setDriverNum(driverEntryList.get(idx).getCarNumber());
+                entry.setDriverName(driverEntryList.get(idx).getUserName());
+                entry.setDriverDelta(convertToLapTimingFormat(getVarFloat("CarIdxF2Time", idx)));
+                entry.setDriverLastLap(convertToLapTimingFormat(getVarFloat("CarIdxLastLapTime", idx)));
+                entry.setDriverBestLap(convertToLapTimingFormat(getVarFloat("CarIdxBestLapTime", idx)));
+                entry.setDriverIRating(driverEntryList.get(idx).getIRating());
 
-                    entry.setDriverPos(getVarInt("CarIdxPosition", idx));
-                    entry.setDriverNum(driverEntryList.get(idx).getCarNumber());
-                    entry.setDriverName(driverEntryList.get(idx).getUserName());
-                    entry.setDriverDelta(convertToLapTimingFormat(getVarFloat("CarIdxF2Time", idx)));
-                    entry.setDriverLastLap(convertToLapTimingFormat(getVarFloat("CarIdxLastLapTime", idx)));
-                    entry.setDriverBestLap(convertToLapTimingFormat(getVarFloat("CarIdxBestLapTime", idx)));
-                    entry.setDriverIRating(driverEntryList.get(idx).getIRating());
-
-                    lapTimingList.add(entry);
-                // }
+                lapTimingList.add(entry);
             }
         }
 
@@ -228,15 +222,15 @@ public class IRacingLibrary {
      *
      * @param lapTimingList the initial List
      */
-    private void sortLapTimingEntries(List<LapTimingDriverEntrySmallDto> lapTimingList) {
-        List<LapTimingDriverEntrySmallDto> entriesWithZero = new ArrayList<>();
+    private void sortLapTimingEntries(List<LapTiming> lapTimingList) {
+        List<LapTiming> entriesWithZero = new ArrayList<>();
 
         // Remove all entries with pos == 0
-        lapTimingList.forEach(lapTimingDriverEntrySmallDto -> {
-            int driverPos = lapTimingDriverEntrySmallDto.getDriverPos();
+        lapTimingList.forEach(LapTiming -> {
+            int driverPos = LapTiming.getDriverPos();
             if (driverPos == 0) {
                 // Add them in a new list
-                entriesWithZero.add(lapTimingDriverEntrySmallDto);
+                entriesWithZero.add(LapTiming);
             }
         });
 
@@ -244,7 +238,7 @@ public class IRacingLibrary {
         lapTimingList.removeIf(l -> l.getDriverPos() == 0);
 
         // Sort initial list
-        lapTimingList.sort(Comparator.comparingInt(LapTimingDriverEntrySmallDto::getDriverPos));
+        lapTimingList.sort(Comparator.comparingInt(LapTiming::getDriverPos));
 
         // Add entries with pos == 0 at the end of the list
         lapTimingList.addAll(entriesWithZero);

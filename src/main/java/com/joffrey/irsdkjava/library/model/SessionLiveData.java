@@ -19,16 +19,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.model.tveditor;
+package com.joffrey.irsdkjava.library.model;
 
-import lombok.AllArgsConstructor;
+import com.joffrey.irsdkjava.model.defines.Flags;
+import com.joffrey.irsdkjava.model.defines.SessionState;
 import lombok.Data;
 
-@AllArgsConstructor
 @Data
-public class TvCamera {
+public class SessionLiveData {
 
-    private int    cameraNum;
-    private String cameraName;
+    private Flags        sessionFlags;
+    private int          sessionLapsRemain;
+    private int          sessionNum;
+    private SessionState sessionState;
+    private double sessionTime;
+    private double sessionTimeRemain;
+    private int sessionUniqueID;
+
 
 }
