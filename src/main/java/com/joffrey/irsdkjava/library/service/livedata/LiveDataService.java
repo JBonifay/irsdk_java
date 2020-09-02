@@ -244,7 +244,6 @@ public class LiveDataService {
         carTelemetryLiveData.setPitSvRRP(gameVarUtilsHelper.getVarFloat("PitSvRRP"));
         carTelemetryLiveData.setPlayerCarClassPosition(gameVarUtilsHelper.getVarInt("PlayerCarClassPosition"));
         carTelemetryLiveData.setPlayerCarPosition(gameVarUtilsHelper.getVarInt("PlayerCarPosition"));
-        carTelemetryLiveData.setRaceLaps(gameVarUtilsHelper.getVarInt("RaceLaps"));
         carTelemetryLiveData.setRadioTransmitCarIdx(gameVarUtilsHelper.getVarInt("RadioTransmitCarIdx"));
         carTelemetryLiveData.setRadioTransmitFrequencyIdx(gameVarUtilsHelper.getVarInt("RadioTransmitFrequencyIdx"));
         carTelemetryLiveData.setRadioTransmitRadioIdx(gameVarUtilsHelper.getVarInt("RadioTransmitRadioIdx"));
@@ -320,6 +319,7 @@ public class LiveDataService {
         sessionLiveData.setSessionTime(gameVarUtilsHelper.getVarDouble("SessionTime"));
         sessionLiveData.setSessionTimeRemain(gameVarUtilsHelper.getVarDouble("SessionTimeRemain"));
         sessionLiveData.setSessionUniqueID(gameVarUtilsHelper.getVarInt("SessionUniqueID"));
+        sessionLiveData.setRaceLaps(gameVarUtilsHelper.getVarInt("RaceLaps"));
 
         return sessionLiveData;
     }
