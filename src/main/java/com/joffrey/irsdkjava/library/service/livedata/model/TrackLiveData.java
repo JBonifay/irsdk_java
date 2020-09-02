@@ -19,40 +19,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.utils;
+package com.joffrey.irsdkjava.library.service.livedata.model;
 
-import com.joffrey.irsdkjava.sdk.SdkStarter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import lombok.Data;
 
-@RequiredArgsConstructor
-@Component
-public class Utils {
+@Data
+public class TrackLiveData {
 
-    private final SdkStarter sdkStarter;
-
-    private static String convertToLapTimingFormat(double seconds) {
-        // If seconds == -1 || 0, return "-" for better UI
-        if (seconds == -1 || seconds == 0) {
-            return "-";
-        }
-        Date d = new Date((long) (seconds * 1000L));
-        SimpleDateFormat df;
-        if (seconds < 60) {
-            df = new SimpleDateFormat("ss.SSS");
-        } else {
-            df = new SimpleDateFormat("mm:ss.SSS");
-        }
-        df.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return df.format(d);
-    }
-
-
-
-
-
+    private float airDensity;
+    private float airPressure;
+    private float airTemp;
+    private float alt;
+    private float fogLevel;
+    private float relativeHumidity;
+    private int   skies;
+    private float trackTemp;
+    private float trackTempCrew;
+    private int   weatherType;
+    private float windDir;
+    private float windVel;
 
 }

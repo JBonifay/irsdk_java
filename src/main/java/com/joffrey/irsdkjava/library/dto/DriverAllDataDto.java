@@ -19,40 +19,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.utils;
+package com.joffrey.irsdkjava.library.dto;
 
-import com.joffrey.irsdkjava.sdk.SdkStarter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import com.joffrey.irsdkjava.library.service.livedata.model.CarLiveData;
+import com.joffrey.irsdkjava.library.service.yaml.irsdkyaml.DriverInfoYaml;
+import com.joffrey.irsdkjava.library.service.yaml.irsdkyaml.QualifyResultInfoYaml;
+import com.joffrey.irsdkjava.library.service.yaml.irsdkyaml.ResultsFastestLapYaml;
+import com.joffrey.irsdkjava.library.service.yaml.irsdkyaml.ResultsPositionsYaml;
+import lombok.Data;
 
-@RequiredArgsConstructor
-@Component
-public class Utils {
+@Data
+public class DriverAllDataDto {
 
-    private final SdkStarter sdkStarter;
-
-    private static String convertToLapTimingFormat(double seconds) {
-        // If seconds == -1 || 0, return "-" for better UI
-        if (seconds == -1 || seconds == 0) {
-            return "-";
-        }
-        Date d = new Date((long) (seconds * 1000L));
-        SimpleDateFormat df;
-        if (seconds < 60) {
-            df = new SimpleDateFormat("ss.SSS");
-        } else {
-            df = new SimpleDateFormat("mm:ss.SSS");
-        }
-        df.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return df.format(d);
-    }
-
-
-
-
-
+    private DriverInfoYaml        driverInfoYaml;
+    private QualifyResultInfoYaml qualifyResultInfoYaml;
+    private ResultsFastestLapYaml resultsFastestLapYaml;
+    private ResultsPositionsYaml  resultsPositionsYaml;
+    private CarLiveData           carLiveData;
 
 }

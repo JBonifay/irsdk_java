@@ -19,40 +19,38 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.utils;
+package com.joffrey.irsdkjava.sdk.model;
 
-import com.joffrey.irsdkjava.sdk.SdkStarter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import lombok.Data;
 
-@RequiredArgsConstructor
-@Component
-public class Utils {
+@Data
+public class DiskSubHeader {
 
-    private final SdkStarter sdkStarter;
+    public final static int SUB_HEADER_SIZE = 8 + 8 + 8 + 4 + 4;
 
-    private static String convertToLapTimingFormat(double seconds) {
-        // If seconds == -1 || 0, return "-" for better UI
-        if (seconds == -1 || seconds == 0) {
-            return "-";
-        }
-        Date d = new Date((long) (seconds * 1000L));
-        SimpleDateFormat df;
-        if (seconds < 60) {
-            df = new SimpleDateFormat("ss.SSS");
-        } else {
-            df = new SimpleDateFormat("mm:ss.SSS");
-        }
-        df.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return df.format(d);
+    private ByteBuffer byteBuffer;
+
+    private long   sessionStartDate;
+    private double sessionStartTime;
+    private double sessionEndTime;
+    private int    sessionsLapCount;
+    private int    sessionRecordCount;
+
+
+    public DiskSubHeader(ByteBuffer byteBuffer) {
+        this.byteBuffer = byteBuffer;
+        this.byteBuffer = ByteBuffer.allocate(SUB_HEADER_SIZE);
+        this.byteBuffer.position(0);
+        byteBuffer.position(0);
+        this.byteBuffer.put(byteBuffer);
+        this.byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+
+        sessionStartDate = byteBuffer.getLong(0);
+        sessionStartTime = byteBuffer.getDouble(8);
+        sessionEndTime = byteBuffer.getLong(16);
+        sessionsLapCount = byteBuffer.getInt(24);
+        sessionRecordCount = byteBuffer.getInt(28);
     }
-
-
-
-
-
-
 }

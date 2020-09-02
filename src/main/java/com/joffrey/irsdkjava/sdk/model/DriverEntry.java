@@ -19,40 +19,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.utils;
+package com.joffrey.irsdkjava.sdk.model;
 
-import com.joffrey.irsdkjava.sdk.SdkStarter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@RequiredArgsConstructor
-@Component
-public class Utils {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class DriverEntry {
 
-    private final SdkStarter sdkStarter;
-
-    private static String convertToLapTimingFormat(double seconds) {
-        // If seconds == -1 || 0, return "-" for better UI
-        if (seconds == -1 || seconds == 0) {
-            return "-";
-        }
-        Date d = new Date((long) (seconds * 1000L));
-        SimpleDateFormat df;
-        if (seconds < 60) {
-            df = new SimpleDateFormat("ss.SSS");
-        } else {
-            df = new SimpleDateFormat("mm:ss.SSS");
-        }
-        df.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return df.format(d);
-    }
-
-
-
-
-
+    private int carIdx;
+    private int carClassId;
+    private String driverName;
+    private String teamName;
+    private String carNumStr;
 
 }

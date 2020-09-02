@@ -19,40 +19,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.utils;
+package com.joffrey.irsdkjava.sdk.model;
 
-import com.joffrey.irsdkjava.sdk.SdkStarter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@RequiredArgsConstructor
-@Component
-public class Utils {
+@NoArgsConstructor
+@Data
+public class VarBuf {
 
-    private final SdkStarter sdkStarter;
+    private int   tickCount;           // used to detect changes in data
+    private int   bufOffset;           // offset from header
+    private int[] pad = new int[2];    // (16 byte align)
 
-    private static String convertToLapTimingFormat(double seconds) {
-        // If seconds == -1 || 0, return "-" for better UI
-        if (seconds == -1 || seconds == 0) {
-            return "-";
-        }
-        Date d = new Date((long) (seconds * 1000L));
-        SimpleDateFormat df;
-        if (seconds < 60) {
-            df = new SimpleDateFormat("ss.SSS");
-        } else {
-            df = new SimpleDateFormat("mm:ss.SSS");
-        }
-        df.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return df.format(d);
+    public VarBuf(int tickCount, int bufOffset) {
+        this.tickCount = tickCount;
+        this.bufOffset = bufOffset;
     }
-
-
-
-
-
-
 }

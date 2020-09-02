@@ -19,40 +19,49 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.utils;
+package com.joffrey.irsdkjava.library.service.yaml;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.joffrey.irsdkjava.sdk.SdkStarter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import lombok.extern.java.Log;
+import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
-@Component
-public class Utils {
+@Log
+@Service
+public class YamlService {
 
     private final SdkStarter sdkStarter;
 
-    private static String convertToLapTimingFormat(double seconds) {
-        // If seconds == -1 || 0, return "-" for better UI
-        if (seconds == -1 || seconds == 0) {
-            return "-";
+    public String getSessionInfoStr() {
+        if (sdkStarter.isConnected()) {
+            return new String(sdkStarter.getHeader().getSessionInfoByteBuffer().array());
         }
-        Date d = new Date((long) (seconds * 1000L));
-        SimpleDateFormat df;
-        if (seconds < 60) {
-            df = new SimpleDateFormat("ss.SSS");
-        } else {
-            df = new SimpleDateFormat("mm:ss.SSS");
-        }
-        df.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return df.format(d);
+        return "";
     }
 
+    public YamlFile getIrsdkYamlFileBean() {
+        if (sdkStarter.isConnected()) {
+            return createYamlObject(getSessionInfoStr());
+        }
+        return null;
+    }
 
-
-
-
+    private YamlFile createYamlObject(String yamlString) {
+        if (!yamlString.isEmpty()) {
+            // Remove 'null' ascii char after '...' yaml ending
+            yamlString = yamlString.substring(0, yamlString.indexOf("...") + 3);
+            ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
+            try {
+                return objectMapper.readValue(yamlString, YamlFile.class);
+            } catch (IOException e) {
+                log.warning(e.getMessage());
+            }
+        }
+        return null;
+    }
 
 }
