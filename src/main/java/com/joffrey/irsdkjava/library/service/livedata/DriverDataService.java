@@ -31,6 +31,7 @@ import com.joffrey.irsdkjava.library.service.yaml.irsdkyaml.QualifyResultInfoYam
 import com.joffrey.irsdkjava.library.service.yaml.irsdkyaml.ResultsFastestLapYaml;
 import com.joffrey.irsdkjava.library.service.yaml.irsdkyaml.ResultsPositionsYaml;
 import com.joffrey.irsdkjava.library.service.yaml.irsdkyaml.SessionYaml;
+import com.joffrey.irsdkjava.sdk.defines.TrkLoc;
 import com.joffrey.irsdkjava.sdk.defines.TrkSurf;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -148,7 +149,17 @@ public class DriverDataService {
         carLiveData.setCarIdxPosition(gameVarUtilsHelper.getVarInt("CarIdxPosition", carIdx));
         carLiveData.setCarIdxRPM(gameVarUtilsHelper.getVarFloat("CarIdxRPM", carIdx));
         carLiveData.setCarIdxSteer(gameVarUtilsHelper.getVarFloat("CarIdxSteer", carIdx));
-        carLiveData.setCarIdxTrackSurface(TrkSurf.valueOf(gameVarUtilsHelper.getVarInt("CarIdxTrackSurface", carIdx)));
+        carLiveData.setCarIdxTrackSurface(TrkLoc.valueOf(gameVarUtilsHelper.getVarInt("CarIdxTrackSurface", carIdx)));
+        carLiveData.setCarIdxTrackSurface(TrkSurf.valueOf(gameVarUtilsHelper.getVarInt("carIdxTrackSurfaceMaterial", carIdx)));
+        carLiveData.setCarIdxLastLapTime(gameVarUtilsHelper.getVarFloat("CarIdxLastLapTime", carIdx));
+        carLiveData.setCarIdxBestLapTime(gameVarUtilsHelper.getVarFloat("CarIdxBestLapTime", carIdx));
+        carLiveData.setCarIdxBestLapNum(gameVarUtilsHelper.getVarInt("carIdxBestLapNum", carIdx));
+        carLiveData.setCarIdxP2P_Status(gameVarUtilsHelper.getVarBoolean("CarIdxP2P_Status", carIdx));
+        carLiveData.setCarIdxP2P_Count(gameVarUtilsHelper.getVarInt("CarIdxP2P_Count",carIdx));
+        carLiveData.setPaceMode(gameVarUtilsHelper.getVarInt("PaceMode", carIdx));
+        carLiveData.setCarIdxPaceLine(gameVarUtilsHelper.getVarInt("CarIdxPaceLine", carIdx));
+        carLiveData.setCarIdxPaceRow(gameVarUtilsHelper.getVarInt("CarIdxPaceRow", carIdx));
+        carLiveData.setCarIdxPaceFlags(gameVarUtilsHelper.getVarInt("CarIdxPaceFlags",carIdx));
 
         return carLiveData;
     }

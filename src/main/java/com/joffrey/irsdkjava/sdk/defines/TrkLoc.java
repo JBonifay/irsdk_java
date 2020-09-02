@@ -38,13 +38,13 @@ public enum TrkLoc {
         this.value = value;
     }
 
-    public static TrkLoc getValue(int value) {
+    public static String valueOf(int value) {
         for (TrkLoc t : TrkLoc.values()) {
             if (t.value == value) {
-                return t;
+                return t.toString();
             }
         }
-        return irsdk_NotInWorld;
+        return irsdk_NotInWorld.toString();
     }
 
 
