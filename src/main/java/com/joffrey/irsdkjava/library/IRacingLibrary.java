@@ -34,6 +34,7 @@ import com.joffrey.irsdkjava.model.VarHeader;
 import com.joffrey.irsdkjava.model.defines.BroadcastMsg;
 import com.joffrey.irsdkjava.model.defines.Constant;
 import com.joffrey.irsdkjava.model.defines.StatusField;
+import com.joffrey.irsdkjava.model.defines.TrkLoc;
 import com.joffrey.irsdkjava.model.defines.VarType;
 import com.joffrey.irsdkjava.model.defines.VarTypeBytes;
 import com.joffrey.irsdkjava.service.windows.WindowsService;
@@ -75,7 +76,6 @@ public class IRacingLibrary {
         if (isInitialized || startup()) {
 
             // if sim is not active, then no new data
-            // TODO: 31 Jul 2020 Revert header parameter to sharedMemory to avoid creating each time Header object, sharedMemory will keep data updated all time
             if (header.getStatus() != StatusField.IRSDK_STCONNECTED.getValue()) {
                 lastTickCount = Integer.MAX_VALUE;
                 return false;
@@ -90,9 +90,6 @@ public class IRacingLibrary {
 
             int curTickCount = header.getVarBuf_TickCount(latest);
 
-            // header.getLatestVarByteBuffer() = header.getVarByteBuffer(latest);
-            // header.getLatestVarByteBuffer().order(ByteOrder.LITTLE_ENDIAN);
-
             if (curTickCount == header.getVarBuf_TickCount(latest)) {
                 lastTickCount = curTickCount;
                 return true;
@@ -105,18 +102,10 @@ public class IRacingLibrary {
     }
 
     public boolean isConnected() {
-        if (isInitialized || init()) {
+        if (isInitialized || startup()) {
             return (header.getStatus() & StatusField.IRSDK_STCONNECTED.getValue()) > 0;
         }
         return false;
-    }
-
-    private boolean init() {
-        if (!isInitialized) {
-            startup();
-            isInitialized = true;
-        }
-        return true;
     }
 
     private boolean startup() {
@@ -130,6 +119,11 @@ public class IRacingLibrary {
             if (sharedMemory == null) {
                 sharedMemory = windowsService.mapViewOfFile(memMapFile);
                 header = new Header(sharedMemory);
+
+                if (header.getByteBuffer() == null) {
+                    return false;
+                }
+
                 lastTickCount = Integer.MAX_VALUE;
             }
 
@@ -159,18 +153,25 @@ public class IRacingLibrary {
         if (irsdkYamlFileDto != null) {
             int maxCar = irsdkYamlFileDto.getDriverInfo().getDrivers().size();
             List<DriversDto> driverEntryList = irsdkYamlFileDto.getDriverInfo().getDrivers();
-            List<ResultsPositionsDto> resultsPositionsList = irsdkYamlFileDto.getSessionInfo()
-                                                                             .getSessions()
-                                                                             .get(0)
-                                                                             .getResultsPositions();
 
             for (int idx = 0; idx < maxCar; idx++) {
-                TvDriverEntry tvDriverEntry = new TvDriverEntry();
-                tvDriverEntry.setDriverName(driverEntryList.get(idx).getUserName());
-                tvDriverEntry.setDriverNumber(Integer.parseInt(driverEntryList.get(idx).getCarNumber()));
-                tvDriverEntry.setDriverposition(getVarInt("CarIdxPosition", idx));
 
-                tvDriverEntryList.add(tvDriverEntry);
+                // Check if car is present on track ( or in pit)
+                if (isCarActive(idx)) {
+
+                    TvDriverEntry tvDriverEntry = new TvDriverEntry();
+                    tvDriverEntry.setDriverName(driverEntryList.get(idx).getUserName());
+
+                    String carNumber = driverEntryList.get(idx).getCarNumber();
+                    if (!carNumber.isEmpty()) {
+                        tvDriverEntry.setDriverNumber(Integer.parseInt(carNumber));
+                    }
+
+                    tvDriverEntry.setDriverposition(getVarInt("CarIdxPosition", idx));
+                    tvDriverEntryList.add(tvDriverEntry);
+
+                }
+
             }
         }
 
@@ -195,17 +196,14 @@ public class IRacingLibrary {
         if (irsdkYamlFileDto != null) {
             int maxCar = irsdkYamlFileDto.getDriverInfo().getDrivers().size();
             List<DriversDto> driverEntryList = irsdkYamlFileDto.getDriverInfo().getDrivers();
-            List<ResultsPositionsDto> resultsPositionsList = irsdkYamlFileDto.getSessionInfo()
-                                                                             .getSessions()
-                                                                             .get(0)
-                                                                             .getResultsPositions();
 
             for (int idx = 0; idx < maxCar; idx++) {
                 LapTimingDriverEntrySmallDto entry = new LapTimingDriverEntrySmallDto();
 
-                int pos = getVarInt("CarIdxPosition", idx);
-                if (pos != 0) {
-                    entry.setDriverPos(pos);
+                // Check if car is present on track ( or in pit)
+                // if (isCarActive(idx)) {
+
+                    entry.setDriverPos(getVarInt("CarIdxPosition", idx));
                     entry.setDriverNum(driverEntryList.get(idx).getCarNumber());
                     entry.setDriverName(driverEntryList.get(idx).getUserName());
                     entry.setDriverDelta(convertToLapTimingFormat(getVarFloat("CarIdxF2Time", idx)));
@@ -214,13 +212,46 @@ public class IRacingLibrary {
                     entry.setDriverIRating(driverEntryList.get(idx).getIRating());
 
                     lapTimingList.add(entry);
-                }
+                // }
             }
         }
 
-        lapTimingList.sort(Comparator.comparingInt(LapTimingDriverEntrySmallDto::getDriverPos));
+        sortLapTimingEntries(lapTimingList);
 
         return lapTimingList;
+    }
+
+    // ==================== Utils ====================
+
+    /**
+     * Sort timing entries, all entries with pos == 0 are add at the end of the list
+     *
+     * @param lapTimingList the initial List
+     */
+    private void sortLapTimingEntries(List<LapTimingDriverEntrySmallDto> lapTimingList) {
+        List<LapTimingDriverEntrySmallDto> entriesWithZero = new ArrayList<>();
+
+        // Remove all entries with pos == 0
+        lapTimingList.forEach(lapTimingDriverEntrySmallDto -> {
+            int driverPos = lapTimingDriverEntrySmallDto.getDriverPos();
+            if (driverPos == 0) {
+                // Add them in a new list
+                entriesWithZero.add(lapTimingDriverEntrySmallDto);
+            }
+        });
+
+        // Remove them from initial list
+        lapTimingList.removeIf(l -> l.getDriverPos() == 0);
+
+        // Sort initial list
+        lapTimingList.sort(Comparator.comparingInt(LapTimingDriverEntrySmallDto::getDriverPos));
+
+        // Add entries with pos == 0 at the end of the list
+        lapTimingList.addAll(entriesWithZero);
+    }
+
+    private boolean isCarActive(int carIdx) {
+        return TrkLoc.getValue(getVarInt("CarIdxTrackSurface", carIdx)).getValue() >= 1;
     }
 
 

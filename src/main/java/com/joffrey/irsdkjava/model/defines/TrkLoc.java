@@ -21,7 +21,31 @@
 
 package com.joffrey.irsdkjava.model.defines;
 
+import lombok.Getter;
+
+@Getter
 public enum TrkLoc {
-    irsdk_AproachingPits, irsdk_InPitStall, irsdk_NotInWorld, irsdk_OffTrack, irsdk_OnTrack,
+    irsdk_NotInWorld(-1),
+    irsdk_OffTrack(0),
+    irsdk_InPitStall(1),
+    irsdk_AproachingPits(2),
+    irsdk_OnTrack(3),
     ;
+
+    private final int value;
+
+    TrkLoc(int value) {
+        this.value = value;
+    }
+
+    public static TrkLoc getValue(int value) {
+        for (TrkLoc t : TrkLoc.values()) {
+            if (t.value == value) {
+                return t;
+            }
+        }
+        return irsdk_NotInWorld;
+    }
+
+
 }
