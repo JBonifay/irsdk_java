@@ -19,7 +19,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.service.livedata.utils;
+package com.joffrey.irsdkjava.sdk;
 
 import com.joffrey.irsdkjava.sdk.SdkStarter;
 import com.joffrey.irsdkjava.sdk.model.VarHeader;

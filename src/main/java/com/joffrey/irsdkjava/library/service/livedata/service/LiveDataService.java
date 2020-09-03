@@ -19,7 +19,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.service.livedata;
+package com.joffrey.irsdkjava.library.service.livedata.service;
 
 import com.joffrey.irsdkjava.library.service.livedata.model.CameraLiveData;
 import com.joffrey.irsdkjava.library.service.livedata.model.CarSetupLiveData;
@@ -30,7 +30,7 @@ import com.joffrey.irsdkjava.library.service.livedata.model.SessionLiveData;
 import com.joffrey.irsdkjava.library.service.livedata.model.SteeringWheelLiveData;
 import com.joffrey.irsdkjava.library.service.livedata.model.TeamLiveData;
 import com.joffrey.irsdkjava.library.service.livedata.model.TrackLiveData;
-import com.joffrey.irsdkjava.library.service.livedata.utils.GameVarUtils;
+import com.joffrey.irsdkjava.sdk.GameVarUtils;
 import com.joffrey.irsdkjava.sdk.defines.CameraState;
 import com.joffrey.irsdkjava.sdk.defines.SessionState;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +56,6 @@ public class LiveDataService {
         cameraLiveData.setCamGroupNumber(gameVarUtilsHelper.getVarInt("CamGroupNumber"));
         return cameraLiveData;
     }
-
 
     public CarSetupLiveData getCarSetupLiveData() {
         CarSetupLiveData carSetupLiveData = new CarSetupLiveData();
