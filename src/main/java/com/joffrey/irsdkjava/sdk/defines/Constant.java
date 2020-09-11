@@ -21,6 +21,9 @@
 
 package com.joffrey.irsdkjava.sdk.defines;
 
+import lombok.Getter;
+
+@Getter
 public class Constant {
 
     public static final String IRSDK_DATAVALIDEVENTNAME = "Local\\IRSDKDataValidEvent";

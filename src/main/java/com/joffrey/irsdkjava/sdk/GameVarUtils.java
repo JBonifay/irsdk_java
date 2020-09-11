@@ -21,14 +21,12 @@
 
 package com.joffrey.irsdkjava.sdk;
 
-import com.joffrey.irsdkjava.sdk.SdkStarter;
-import com.joffrey.irsdkjava.sdk.model.VarHeader;
 import com.joffrey.irsdkjava.sdk.defines.VarType;
 import com.joffrey.irsdkjava.sdk.defines.VarTypeBytes;
+import com.joffrey.irsdkjava.sdk.model.VarHeader;
 import java.nio.ByteBuffer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Component

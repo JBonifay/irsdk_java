@@ -21,15 +21,17 @@
 
 package com.joffrey.irsdkjava.sdk;
 
-import com.joffrey.irsdkjava.sdk.model.Header;
+import com.joffrey.irsdkjava.library.livedata.service.LiveDataService;
 import com.joffrey.irsdkjava.sdk.defines.Constant;
 import com.joffrey.irsdkjava.sdk.defines.StatusField;
+import com.joffrey.irsdkjava.sdk.model.Header;
 import com.joffrey.irsdkjava.sdk.windows.WindowsService;
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.WinNT;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -39,6 +41,9 @@ public class SdkStarter {
 
     private final WindowsService windowsService;
 
+    @Autowired
+    private LiveDataService liveDataService;
+
     private WinNT.HANDLE memMapFile     = null;
     private WinNT.HANDLE dataValidEvent = null;
     @Getter
@@ -46,8 +51,9 @@ public class SdkStarter {
     @Getter
     private Header       header         = null;
 
-    private boolean isInitialized = false;
-    private boolean wasConnected  = false;
+    private boolean isInitialized             = false;
+    private boolean wasConnected              = false;
+    private boolean isLapTimingLoggingEnabled = true;
 
 
     public void monitorConnectionStatus() {
@@ -62,6 +68,11 @@ public class SdkStarter {
             //****Note, put your connection handling here
             wasConnected = isConnected;
         }
+
+        if (isLapTimingLoggingEnabled) {
+            liveDataService.recordLapTiming();
+        }
+
     }
 
     public boolean isConnected() {
@@ -74,7 +85,7 @@ public class SdkStarter {
     private boolean startup() {
         // Try to open Memory Mapped File
         if (memMapFile == null) {
-            memMapFile = windowsService.openMemoryMapFile(Constant.IRSDK_MEMMAPFILENAME);
+            memMapFile = windowsService.openMemoryMapFile(com.joffrey.irsdkjava.sdk.defines.Constant.IRSDK_MEMMAPFILENAME);
         }
 
         if (memMapFile != null) {

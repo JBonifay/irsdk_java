@@ -6,7 +6,7 @@
  *    You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- *      
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -19,16 +19,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.sdk.windows;
+package com.joffrey.irsdkjava.library.livedata.model.config;
 
-import com.sun.jna.Native;
-import com.sun.jna.platform.win32.User32;
-import com.sun.jna.win32.W32APIOptions;
+import lombok.Data;
 
-interface User32Impl extends User32 {
+@Data
+public class ConfigLiveData {
 
-    static final User32Impl USER_32 = Native.load("user32", User32Impl.class, W32APIOptions.DEFAULT_OPTIONS);
-
-    boolean SendNotifyMessage(HWND hWnd, int Msg, int wParam, int lParam);
+    private float   cpuUsageBG;
+    private float   frameRate;
+    private int     displayUnits;
+    private int     enterExitReset;
+    private boolean isDiskLoggingActive;
+    private boolean isDiskLoggingEnabled;
 
 }

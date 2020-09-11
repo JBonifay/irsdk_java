@@ -6,7 +6,7 @@
  *    You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- *      
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -19,16 +19,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.sdk.windows;
+package com.joffrey.irsdkjava.library.livedata.model.car;
 
-import com.sun.jna.Native;
-import com.sun.jna.platform.win32.User32;
-import com.sun.jna.win32.W32APIOptions;
+import lombok.Data;
 
-interface User32Impl extends User32 {
+@Data
+public class CarLiveData {
 
-    static final User32Impl USER_32 = Native.load("user32", User32Impl.class, W32APIOptions.DEFAULT_OPTIONS);
-
-    boolean SendNotifyMessage(HWND hWnd, int Msg, int wParam, int lParam);
+    private   int     carIdxClassPosition;
+    private   float   carIdxEstTime;
+    private   float   carIdxF2Time;
+    protected int     carIdxGear;
+    private   int     carIdxLap;
+    private   int     carIdxLapCompleted;
+    private   float   carIdxLapDistPct;
+    private   boolean carIdxOnPitRoad;
+    private   int     carIdxPosition;
+    private   float   carIdxRPM;
+    private   float   carIdxSteer;
+    private   String  carIdxTrackSurface;
+    private   String  carIdxTrackSurfaceMaterial;
+    private   float   carIdxLastLapTime;
+    private   float   carIdxBestLapTime;
+    private   int     carIdxBestLapNum;
+    private   boolean carIdxP2P_Status;
+    private   int     carIdxP2P_Count;
+    private   int     paceMode;
+    private   int     carIdxPaceLine;
+    private   int     carIdxPaceRow;
+    private   int     carIdxPaceFlags;
 
 }
