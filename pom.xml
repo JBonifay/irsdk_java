@@ -12,7 +12,7 @@
 
   <groupId>com.joffrey</groupId>
   <artifactId>irsdk_java</artifactId>
-  <version>0.3.3-Library</version>
+  <version>0.3.4-Library</version>
   <name>irsdk_java</name>
   <description>Irsdk-java dev version, used has a library</description>
 
