@@ -19,18 +19,35 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
+package com.joffrey.irsdkjava.defines;
+
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
+public enum PaceMode {
+    irsdk_PaceModeSingleFileStart(0),
+    irsdk_PaceModeDoubleFileStart(1),
+    irsdk_PaceModeSingleFileRestart(2),
+    irsdk_PaceModeDoubleFileRestart(3),
+    irsdk_PaceModeNotPacing(4),
+    ;
+
+    private static final Map<Integer, PaceMode> paceModeMap = new HashMap();
+    private final        int                        value;
+
+    PaceMode(int value) {
+        this.value = value;
+    }
 
 
-import com.joffrey.irsdkjava.defines.CameraState;
-import lombok.Data;
+    public static PaceMode get(int code) {
+        return (PaceMode) paceModeMap.get(code);
+    }
 
-@Data
-public class CameraLiveData {
-
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
-
+    static {
+        for (PaceMode paceMode : EnumSet.allOf(PaceMode.class)) {
+            paceModeMap.put(paceMode.value, paceMode);
+        }
+    }
 }

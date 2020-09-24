@@ -76,7 +76,7 @@ public class WeekendInfoYaml {
     @JsonProperty
     private String           RaceWeek = "";
     @JsonProperty
-    private String           RventType = "";
+    private String           EventType = "";
     @JsonProperty
     private String           Category = "";
     @JsonProperty

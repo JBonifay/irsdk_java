@@ -19,18 +19,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
+package com.joffrey.irsdkjava.model;
 
-
-import com.joffrey.irsdkjava.defines.CameraState;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class CameraLiveData {
+@AllArgsConstructor
+@NoArgsConstructor
+public class DriverEntry {
 
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
+    private int carIdx;
+    private int carClassId;
+    private String driverName;
+    private String teamName;
+    private String carNumStr;
 
 }

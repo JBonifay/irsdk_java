@@ -1,4 +1,4 @@
-/*
+package com.joffrey.irsdkjava.windows;/*
  *    Copyright (C) 2020 Joffrey Bonifay
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -6,7 +6,7 @@
  *    You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ *      
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -19,18 +19,23 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
 
+import com.sun.jna.Native;
+import com.sun.jna.platform.win32.WinNT;
+import com.sun.jna.win32.W32APIOptions;
 
-import com.joffrey.irsdkjava.defines.CameraState;
-import lombok.Data;
+public interface Kernel32Impl extends com.sun.jna.platform.win32.Kernel32 {
 
-@Data
-public class CameraLiveData {
+    static final Kernel32Impl KERNEL_32 = Native.load("kernel32", Kernel32Impl.class, W32APIOptions.DEFAULT_OPTIONS);
 
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
+    HANDLE OpenFileMapping(int lfProtect, boolean bInherit, String lpName);
+
+    HANDLE OpenEvent(int i, boolean bManualReset, String lpName);
+
+    boolean SetConsoleTitle(String lpTitle);
+
+    boolean PurgeComm(HANDLE hFile, WinNT.DWORD dwFlags);
+
+    boolean EscapeCommFunction(HANDLE hFile, WinNT.DWORD dwFunc);
 
 }

@@ -19,18 +19,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
+package com.joffrey.irsdkjava.defines;
 
+// irsdk_BroadcastCamSwitchPos or irsdk_BroadcastCamSwitchNum camera focus defines
+// pass these in for the first parameter to select the 'focus at' types in the camera system.
+public enum CsMode {
 
-import com.joffrey.irsdkjava.defines.CameraState;
-import lombok.Data;
+    irsdk_csFocusAtIncident(-3),
+    irsdk_csFocusAtLeader(-2),
+    irsdk_csFocusAtExiting(-1),
 
-@Data
-public class CameraLiveData {
+    // ctFocusAtDriver + car number...
+    irsdk_csFocusAtDriver(0),
+    ;
 
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
+    CsMode(int value) {
 
+    }
 }

@@ -1,4 +1,4 @@
-/*
+package com.joffrey.irsdkjava.defines;/*
  *    Copyright (C) 2020 Joffrey Bonifay
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,18 +19,26 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
 
+import lombok.Getter;
 
-import com.joffrey.irsdkjava.defines.CameraState;
-import lombok.Data;
+@Getter
+public class Constant {
 
-@Data
-public class CameraLiveData {
+    public static final String IRSDK_DATAVALIDEVENTNAME = "Local\\IRSDKDataValidEvent";
+    public static final String IRSDK_MEMMAPFILENAME     = "Local\\IRSDKMemMapFileName";
+    public static final String IRSDK_BROADCASTMSGNAME   = "IRSDK_BROADCASTMSG";
 
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
+    public static final int IRSDK_MAX_BUFS   = 4;
+    public static final int IRSDK_MAX_STRING = 32;
+    // descriptions can be longer than max_string!
+    public static final int IRSDK_MAX_DESC   = 64;
+
+    public static final int   IRSDK_UNLIMITED_LAPS = 32767;
+    public static final float IRSDK_UNLIMITED_TIME = 604800.0f;
+
+    // latest version of our telemetry headers
+    public static final int IRSDK_VER = 2;
+
 
 }

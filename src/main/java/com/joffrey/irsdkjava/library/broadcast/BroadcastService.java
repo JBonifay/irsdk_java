@@ -20,9 +20,9 @@ package com.joffrey.irsdkjava.library.broadcast;/*
  */
 
 
-import com.joffrey.irsdkjava.sdk.defines.BroadcastMsg;
-import com.joffrey.irsdkjava.sdk.defines.Constant;
-import com.joffrey.irsdkjava.sdk.windows.WindowsService;
+import com.joffrey.irsdkjava.defines.BroadcastMsg;
+import com.joffrey.irsdkjava.defines.Constant;
+import com.joffrey.irsdkjava.windows.WindowsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -2,7 +2,7 @@ package com.joffrey.irsdkjava.library.yaml;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.joffrey.irsdkjava.sdk.SdkStarter;
+import com.joffrey.irsdkjava.SdkStarter;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;

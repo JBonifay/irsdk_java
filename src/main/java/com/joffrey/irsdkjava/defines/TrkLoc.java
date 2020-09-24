@@ -1,4 +1,4 @@
-/*
+package com.joffrey.irsdkjava.defines;/*
  *    Copyright (C) 2020 Joffrey Bonifay
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,18 +19,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
 
+import lombok.Getter;
 
-import com.joffrey.irsdkjava.defines.CameraState;
-import lombok.Data;
+@Getter
+public enum TrkLoc {
+    irsdk_NotInWorld(-1),
+    irsdk_OffTrack(0),
+    irsdk_InPitStall(1),
+    irsdk_AproachingPits(2),
+    irsdk_OnTrack(3),
+    ;
 
-@Data
-public class CameraLiveData {
+    private final int value;
 
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
+    TrkLoc(int value) {
+        this.value = value;
+    }
+
+    public static String valueOf(int value) {
+        for (TrkLoc t : TrkLoc.values()) {
+            if (t.value == value) {
+                return t.toString();
+            }
+        }
+        return irsdk_NotInWorld.toString();
+    }
+
 
 }

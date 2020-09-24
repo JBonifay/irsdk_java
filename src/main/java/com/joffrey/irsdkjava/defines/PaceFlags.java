@@ -19,18 +19,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
+package com.joffrey.irsdkjava.defines;
 
+public enum PaceFlags {
+    irsdk_PaceFlagsEndOfLine(0x01),
+    irsdk_PaceFlagsFreePass(0x02),
+    irsdk_PaceFlagsWavedAround(0x04),
+    ;
 
-import com.joffrey.irsdkjava.defines.CameraState;
-import lombok.Data;
+    PaceFlags(int value) {
 
-@Data
-public class CameraLiveData {
-
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
-
+    }
 }

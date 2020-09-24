@@ -19,18 +19,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
+package com.joffrey.irsdkjava.defines;
 
+// You can call this any time
+public enum FFBCommandMode {
 
-import com.joffrey.irsdkjava.defines.CameraState;
-import lombok.Data;
+    irsdk_FFBCommand_MaxForce(0),          // Set the maximum force when mapping steering torque force to direct input units (float in Nm)
+    irsdk_FFBCommand_Last      (1)         // unused placeholder
+    ;
 
-@Data
-public class CameraLiveData {
+    private final int value;
 
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
+    FFBCommandMode(int value) {
+        this.value = value;
+    }
 
+    public int getValue() {
+        return value;
+    }
 }

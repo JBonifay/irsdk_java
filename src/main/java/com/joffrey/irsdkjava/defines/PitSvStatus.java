@@ -19,18 +19,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
+package com.joffrey.irsdkjava.defines;
 
+public enum PitSvStatus {
+    // status
+    irsdk_PitSvNone,
+    irsdk_PitSvInProgress,
+    irsdk_PitSvComplete,
 
-import com.joffrey.irsdkjava.defines.CameraState;
-import lombok.Data;
-
-@Data
-public class CameraLiveData {
-
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
-
+    // errors
+    irsdk_PitSvTooFarLeft,
+    irsdk_PitSvTooFarRight,
+    irsdk_PitSvTooFarForward,
+    irsdk_PitSvTooFarBack,
+    irsdk_PitSvBadAngle,
+    irsdk_PitSvCantFixThat,
 }

@@ -19,18 +19,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
+package com.joffrey.irsdkjava.defines;
 
+public enum RpyStateMode {
 
-import com.joffrey.irsdkjava.defines.CameraState;
-import lombok.Data;
+    irsdk_RpyState_EraseTape(0),               // clear any data in the replay tape
+    irsdk_RpyState_Last(1)               // unused place holder
+    ;
 
-@Data
-public class CameraLiveData {
+    private final int value;
 
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
+    RpyStateMode(int value) {
+        this.value = value;
+    }
 
+    public int getValue() {
+        return value;
+    }
 }

@@ -1,4 +1,4 @@
-/*
+package com.joffrey.irsdkjava.defines;/*
  *    Copyright (C) 2020 Joffrey Bonifay
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,18 +19,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
 
+public enum SessionState {
 
-import com.joffrey.irsdkjava.defines.CameraState;
-import lombok.Data;
+    irsdk_StateInvalid(0),
+    irsdk_StateGetInCar(1),
+    irsdk_StateWarmup(2),
+    irsdk_StateParadeLaps(3),
+    irsdk_StateRacing(4),
+    irsdk_StateCheckered(5),
+    irsdk_StateCoolDown(6);
 
-@Data
-public class CameraLiveData {
+    private final int value;
 
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
+    SessionState(int value) {
+        this.value = value;
+    }
+
+    public static String getStringOf(int value) {
+        for (SessionState s : SessionState.values()) {
+            if (s.value == value) {
+                return s.toString();
+            }
+        }
+        return SessionState.irsdk_StateInvalid.toString();
+    }
 
 }

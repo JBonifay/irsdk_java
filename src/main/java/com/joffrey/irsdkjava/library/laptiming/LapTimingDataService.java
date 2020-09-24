@@ -3,13 +3,11 @@ package com.joffrey.irsdkjava.library.laptiming;
 import com.joffrey.irsdkjava.library.laptiming.model.LapTimingData;
 import com.joffrey.irsdkjava.library.yaml.YamlService;
 import com.joffrey.irsdkjava.library.yaml.irsdkyaml.DriverInfoYaml;
-import com.joffrey.irsdkjava.library.yaml.irsdkyaml.ResultsPositionsYaml;
-import com.joffrey.irsdkjava.sdk.GameVarUtils;
-import com.joffrey.irsdkjava.sdk.SdkStarter;
-import com.joffrey.irsdkjava.sdk.defines.TrkLoc;
+import com.joffrey.irsdkjava.GameVarUtils;
+import com.joffrey.irsdkjava.SdkStarter;
+import com.joffrey.irsdkjava.defines.TrkLoc;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.Synchronized;
 import org.springframework.stereotype.Service;
@@ -67,7 +65,8 @@ public class LapTimingDataService {
             lapTimingData.setCarIdxLap(gameVarUtilsHelper.getVarInt("CarIdxLap", carIdx));
             lapTimingData.setCarIdxLapDistPct(gameVarUtilsHelper.getVarFloat("CarIdxLapDistPct", carIdx));
 
-            yamlService.getIrsdkYamlFileBean().getSessionInfo().getSessions().get(0).getResultsPositions().forEach(resultsPositionsYaml -> {
+            int sessionNum = gameVarUtilsHelper.getVarInt("SessionNum");
+            yamlService.getIrsdkYamlFileBean().getSessionInfo().getSessions().get(sessionNum).getResultsPositions().forEach(resultsPositionsYaml -> {
                 if (resultsPositionsYaml.getCarIdx().equals(String.valueOf(carIdx))) {
                     lapTimingData.setCarIdxLastLapTime(Float.parseFloat(resultsPositionsYaml.getLastTime()));
                     lapTimingData.setCarIdxBestLapTime(Float.parseFloat(resultsPositionsYaml.getFastestTime()));

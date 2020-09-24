@@ -1,4 +1,4 @@
-/*
+package com.joffrey.irsdkjava.defines;/*
  *    Copyright (C) 2020 Joffrey Bonifay
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,18 +19,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
+public enum StatusField {
 
+    IRSDK_STCONNECTED(1);
 
-import com.joffrey.irsdkjava.defines.CameraState;
-import lombok.Data;
+    private final int value;
 
-@Data
-public class CameraLiveData {
+    StatusField(int i) {
+        this.value = i;
+    }
 
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
-
+    public int getValue() {
+        return value;
+    }
 }

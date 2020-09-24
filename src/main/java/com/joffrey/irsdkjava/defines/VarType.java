@@ -1,4 +1,4 @@
-/*
+package com.joffrey.irsdkjava.defines;/*
  *    Copyright (C) 2020 Joffrey Bonifay
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,18 +19,47 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
 
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.joffrey.irsdkjava.defines.CameraState;
-import lombok.Data;
+public enum VarType {
+    // 1 byte
+    irsdk_char(0),
+    irsdk_bool(1),
 
-@Data
-public class CameraLiveData {
+    // 4 bytes
+    irsdk_int(2),
+    irsdk_bitField(3),
+    irsdk_float(4),
 
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
+    // 8 bytes
+    irsdk_double(5),
+
+    //index, don't use
+    irsdk_ETCount(6);
+
+    private static final Map<Integer, VarType> varTypeMap = new HashMap();
+    private final        int                   type;
+
+    VarType(int type) {
+        this.type = type;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public static VarType get(int code) {
+        return (VarType) varTypeMap.get(code);
+    }
+
+    static {
+        for (VarType varType : EnumSet.allOf(VarType.class)) {
+            varTypeMap.put(varType.type, varType);
+        }
+    }
+
 
 }

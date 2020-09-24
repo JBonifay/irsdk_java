@@ -19,18 +19,38 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
+package com.joffrey.irsdkjava.model;
 
-
-import com.joffrey.irsdkjava.defines.CameraState;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import lombok.Data;
 
 @Data
-public class CameraLiveData {
+public class DiskSubHeader {
 
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
+    public final static int SUB_HEADER_SIZE = 8 + 8 + 8 + 4 + 4;
 
+    private ByteBuffer byteBuffer;
+
+    private long   sessionStartDate;
+    private double sessionStartTime;
+    private double sessionEndTime;
+    private int    sessionsLapCount;
+    private int    sessionRecordCount;
+
+
+    public DiskSubHeader(ByteBuffer byteBuffer) {
+        this.byteBuffer = byteBuffer;
+        this.byteBuffer = ByteBuffer.allocate(SUB_HEADER_SIZE);
+        this.byteBuffer.position(0);
+        byteBuffer.position(0);
+        this.byteBuffer.put(byteBuffer);
+        this.byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+
+        sessionStartDate = byteBuffer.getLong(0);
+        sessionStartTime = byteBuffer.getDouble(8);
+        sessionEndTime = byteBuffer.getLong(16);
+        sessionsLapCount = byteBuffer.getInt(24);
+        sessionRecordCount = byteBuffer.getInt(28);
+    }
 }

@@ -19,18 +19,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
+package com.joffrey.irsdkjava.model;
 
-
-import com.joffrey.irsdkjava.defines.CameraState;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @Data
-public class CameraLiveData {
+public class VarBuf {
 
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
+    private int   tickCount;           // used to detect changes in data
+    private int   bufOffset;           // offset from header
+    private int[] pad = new int[2];    // (16 byte align)
 
+    public VarBuf(int tickCount, int bufOffset) {
+        this.tickCount = tickCount;
+        this.bufOffset = bufOffset;
+    }
 }

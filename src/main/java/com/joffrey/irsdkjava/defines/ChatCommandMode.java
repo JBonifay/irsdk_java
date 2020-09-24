@@ -19,18 +19,23 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
+package com.joffrey.irsdkjava.defines;
 
+public enum ChatCommandMode {
 
-import com.joffrey.irsdkjava.defines.CameraState;
-import lombok.Data;
+    irsdk_ChatCommand_Macro(0),            // pass in a number from 1-15 representing the chat macro to launch
+    irsdk_ChatCommand_BeginChat(1),        // Open up a new chat window
+    irsdk_ChatCommand_Reply(2),            // Reply to last private chat
+    irsdk_ChatCommand_Cancel (3)           // Close chat window
+    ;
 
-@Data
-public class CameraLiveData {
+    private final int value;
 
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
+    ChatCommandMode(int value) {
+        this.value = value;
+    }
 
+    public int getValue() {
+        return value;
+    }
 }

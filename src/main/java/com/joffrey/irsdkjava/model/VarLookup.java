@@ -19,18 +19,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
+package com.joffrey.irsdkjava.model;
 
-
-import com.joffrey.irsdkjava.defines.CameraState;
 import lombok.Data;
 
 @Data
-public class CameraLiveData {
+public class VarLookup {
 
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
+    private String name;
+    private int memIndex;
+    private int diskIndex;
+    private int logMode;
 
 }

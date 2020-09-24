@@ -19,18 +19,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
+package com.joffrey.irsdkjava.defines;
 
+public enum YamlState {
 
-import com.joffrey.irsdkjava.defines.CameraState;
-import lombok.Data;
-
-@Data
-public class CameraLiveData {
-
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
+    space, key, keysep, value, newline,
 
 }

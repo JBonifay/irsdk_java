@@ -19,18 +19,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
+package com.joffrey.irsdkjava.defines;
 
+public enum TelemCommandMode {
 
-import com.joffrey.irsdkjava.defines.CameraState;
-import lombok.Data;
+    irsdk_TelemCommand_Stop(0),               // Turn telemetry recording off
+    irsdk_TelemCommand_Start(1),              // Turn telemetry recording on
+    irsdk_TelemCommand_Restart(2),
+    ;            // Write current file to disk and start a new one
 
-@Data
-public class CameraLiveData {
+    private int value;
 
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
+    TelemCommandMode(int value) {
+        this.value = value;
+    }
 
+    public int getValue() {
+        return value;
+    }
 }

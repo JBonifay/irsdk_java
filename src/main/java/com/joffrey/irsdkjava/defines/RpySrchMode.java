@@ -19,18 +19,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
+package com.joffrey.irsdkjava.defines;
 
+public enum RpySrchMode {
 
-import com.joffrey.irsdkjava.defines.CameraState;
-import lombok.Data;
+    irsdk_RpySrch_ToStart(0),
+    irsdk_RpySrch_ToEnd(1),
+    irsdk_RpySrch_PrevSession(2),
+    irsdk_RpySrch_NextSession(3),
+    irsdk_RpySrch_PrevLap(4),
+    irsdk_RpySrch_NextLap(5),
+    irsdk_RpySrch_PrevFrame(6),
+    irsdk_RpySrch_NextFrame(7),
+    irsdk_RpySrch_PrevIncident(8),
+    irsdk_RpySrch_NextIncident(9),
+    irsdk_RpySrch_Last(10)            // unused placeholder
+    ;
 
-@Data
-public class CameraLiveData {
+    private final int value;
 
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
+    RpySrchMode(int value) {
+        this.value = value;
+    }
 
+    public int getValue() {
+        return value;
+    }
 }

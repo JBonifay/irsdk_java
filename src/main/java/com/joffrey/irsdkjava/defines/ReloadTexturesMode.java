@@ -19,18 +19,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
+package com.joffrey.irsdkjava.defines;
+
+public enum ReloadTexturesMode {
+
+    irsdk_ReloadTextures_All(0),              // reload all textuers
+    irsdk_ReloadTextures_CarIdx(1)            // reload only textures for the specific carIdx
+    ;
 
 
-import com.joffrey.irsdkjava.defines.CameraState;
-import lombok.Data;
+    private final int value;
 
-@Data
-public class CameraLiveData {
+    ReloadTexturesMode(int value) {
+        this.value = value;
+    }
 
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
-
+    public int getValue() {
+        return value;
+    }
 }

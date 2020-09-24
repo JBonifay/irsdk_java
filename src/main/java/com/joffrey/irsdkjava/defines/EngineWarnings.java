@@ -19,18 +19,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.library.livedata.model.camera;
+package com.joffrey.irsdkjava.defines;
 
+public enum EngineWarnings {
+    irsdk_waterTempWarning((byte) 0x01),
+    irsdk_fuelPressureWarning((byte) 0x02),
+    irsdk_oilPressureWarning((byte) 0x04),
+    irsdk_engineStalled((byte) 0x08),
+    irsdk_pitSpeedLimiter((byte) 0x10),
+    irsdk_revLimiterActive((byte) 0x20),
+    ;
 
-import com.joffrey.irsdkjava.defines.CameraState;
-import lombok.Data;
+    private int value;
 
-@Data
-public class CameraLiveData {
+    EngineWarnings(byte value) {
+        this.value = value;
+    }
 
-    private int         camCameraNumber;
-    private CameraState camCameraState;
-    private int         camCarIdx;
-    private int         camGroupNumber;
-
+    public int getValue() {
+        return value;
+    }
 }
