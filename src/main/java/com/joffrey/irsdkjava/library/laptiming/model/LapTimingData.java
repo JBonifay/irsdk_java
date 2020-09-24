@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class LapTimingData {
 
+    // Yaml Idx
     private int carIdx;
 
     // Live data

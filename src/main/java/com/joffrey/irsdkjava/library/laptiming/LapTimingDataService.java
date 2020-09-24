@@ -3,12 +3,15 @@ package com.joffrey.irsdkjava.library.laptiming;
 import com.joffrey.irsdkjava.library.laptiming.model.LapTimingData;
 import com.joffrey.irsdkjava.library.yaml.YamlService;
 import com.joffrey.irsdkjava.library.yaml.irsdkyaml.DriverInfoYaml;
+import com.joffrey.irsdkjava.library.yaml.irsdkyaml.ResultsPositionsYaml;
 import com.joffrey.irsdkjava.sdk.GameVarUtils;
 import com.joffrey.irsdkjava.sdk.SdkStarter;
 import com.joffrey.irsdkjava.sdk.defines.TrkLoc;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.Synchronized;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -25,14 +28,16 @@ public class LapTimingDataService {
      *
      * @return List<LapTimingData>
      */
+    @Synchronized
     public List<LapTimingData> getLapTimingDataList() {
         List<LapTimingData> lapTimingDataList = new ArrayList<>();
         if (sdkStarter.isConnected()) {
 
             int totalCars = yamlService.getIrsdkYamlFileBean().getDriverInfo().getDrivers().size();
 
-            for (int cardIdx = 0; cardIdx < totalCars; cardIdx++) {
-                lapTimingDataList.add(getLapTimingDataForCarIdx(cardIdx));
+            for (int carIdx = 0; carIdx < totalCars; carIdx++) {
+                // Check if car is 'PaceCar'
+                lapTimingDataList.add(getLapTimingDataForCarIdx(carIdx));
             }
 
             String playerCarIdx = yamlService.getIrsdkYamlFileBean().getDriverInfo().getDriverCarIdx();
@@ -50,24 +55,31 @@ public class LapTimingDataService {
      * @param carIdx the car idx
      * @return {@link LapTimingData} filled with values
      */
+    @Synchronized
     public LapTimingData getLapTimingDataForCarIdx(int carIdx) {
         LapTimingData lapTimingData = new LapTimingData();
         if (sdkStarter.isConnected()) {
-            lapTimingData.setCarIdx(gameVarUtilsHelper.getVarInt("CarIdx", carIdx));
+
             lapTimingData.setCarIdxPosition(gameVarUtilsHelper.getVarInt("CarIdxPosition", carIdx));
             lapTimingData.setCarIdxClassPosition(gameVarUtilsHelper.getVarInt("CarIdxClassPosition", carIdx));
-            lapTimingData.setCarIdxEstTime(gameVarUtilsHelper.getVarInt("CarIdxEstTime", carIdx));
-            lapTimingData.setCarIdxF2Time(gameVarUtilsHelper.getVarInt("CarIdxF2Time", carIdx));
+            lapTimingData.setCarIdxEstTime(gameVarUtilsHelper.getVarFloat("CarIdxEstTime", carIdx));
+            lapTimingData.setCarIdxF2Time(gameVarUtilsHelper.getVarFloat("CarIdxF2Time", carIdx));
             lapTimingData.setCarIdxLap(gameVarUtilsHelper.getVarInt("CarIdxLap", carIdx));
-            lapTimingData.setCarIdxLapDistPct(gameVarUtilsHelper.getVarInt("CarIdxLapDistPct", carIdx));
-            lapTimingData.setCarIdxOnPitRoad(gameVarUtilsHelper.getVarBoolean("CarIdxOnPitRoad", carIdx));
-            lapTimingData.setCarIdxLastLapTime(gameVarUtilsHelper.getVarInt("CarIdxLastLapTime", carIdx));
-            lapTimingData.setCarIdxBestLapTime(gameVarUtilsHelper.getVarInt("CarIdxBestLapTime", carIdx));
+            lapTimingData.setCarIdxLapDistPct(gameVarUtilsHelper.getVarFloat("CarIdxLapDistPct", carIdx));
+
+            yamlService.getIrsdkYamlFileBean().getSessionInfo().getSessions().get(0).getResultsPositions().forEach(resultsPositionsYaml -> {
+                if (resultsPositionsYaml.getCarIdx().equals(String.valueOf(carIdx))) {
+                    lapTimingData.setCarIdxLastLapTime(Float.parseFloat(resultsPositionsYaml.getLastTime()));
+                    lapTimingData.setCarIdxBestLapTime(Float.parseFloat(resultsPositionsYaml.getFastestTime()));
+                }
+            });
+
 
             int carIdxTrackSurface = gameVarUtilsHelper.getVarInt("CarIdxTrackSurface", carIdx);
             lapTimingData.setCarIdxTrackSurface(TrkLoc.valueOf(carIdxTrackSurface));
 
             DriverInfoYaml driverInfoYaml = yamlService.getIrsdkYamlFileBean().getDriverInfo().getDrivers().get(carIdx);
+            lapTimingData.setCarIdx(Integer.parseInt(driverInfoYaml.getCarIdx()));
             lapTimingData.setUserName(driverInfoYaml.getUserName());
             lapTimingData.setTeamName(driverInfoYaml.getTeamName());
             lapTimingData.setCarNumber(driverInfoYaml.getCarNumber());
