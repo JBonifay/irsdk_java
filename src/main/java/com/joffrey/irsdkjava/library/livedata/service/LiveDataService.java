@@ -48,13 +48,13 @@ public class LiveDataService {
 
     private final GameVarUtils gameVarUtilsHelper;
 
-    private final TelemetryGauges telemetryGauges = new TelemetryGauges();
-    private final TelemetryFuel     telemetryFuel     = new TelemetryFuel();
-    private final TelemetryFullData telemetryFullData = new TelemetryFullData();
-    private final ConfigLiveData    configLiveData    = new ConfigLiveData();
-    private final CameraLiveData   cameraLiveData   = new CameraLiveData();
-    private final CarSetupLiveData carSetupLiveData = new CarSetupLiveData();
-    private final TeamLiveData    teamLiveData    = new TeamLiveData();
+    private final TelemetryGauges       telemetryGauges       = new TelemetryGauges();
+    private final TelemetryFuel         telemetryFuel         = new TelemetryFuel();
+    private final TelemetryFullData     telemetryFullData     = new TelemetryFullData();
+    private final ConfigLiveData        configLiveData        = new ConfigLiveData();
+    private final CameraLiveData        cameraLiveData        = new CameraLiveData();
+    private final CarSetupLiveData      carSetupLiveData      = new CarSetupLiveData();
+    private final TeamLiveData          teamLiveData          = new TeamLiveData();
     private final ReplayLiveData        replayLiveData        = new ReplayLiveData();
     private final SessionLiveData       sessionLiveData       = new SessionLiveData();
     private final SteeringWheelLiveData steeringWheelLiveData = new SteeringWheelLiveData();
@@ -421,6 +421,9 @@ public class LiveDataService {
         return carLiveData;
     }
 
+    /**
+     * Start recording lapTiming at SDK Startup
+     */
     public void recordLapTiming() {
 
         int lap = gameVarUtilsHelper.getVarInt("Lap");

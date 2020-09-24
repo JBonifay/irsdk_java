@@ -26,17 +26,19 @@ public class LapTimingDataService {
      * @return List<LapTimingData>
      */
     public List<LapTimingData> getLapTimingDataList() {
-
         List<LapTimingData> lapTimingDataList = new ArrayList<>();
+        if (sdkStarter.isConnected()) {
 
-        int totalCars = yamlService.getIrsdkYamlFileBean().getDriverInfo().getDrivers().size();
+            int totalCars = yamlService.getIrsdkYamlFileBean().getDriverInfo().getDrivers().size();
 
-        for (int i = 0; i < totalCars; i++) {
-            lapTimingDataList.add(getLapTimingDataForCarIdx(i));
+            for (int cardIdx = 0; cardIdx < totalCars; cardIdx++) {
+                lapTimingDataList.add(getLapTimingDataForCarIdx(cardIdx));
+            }
+
+            String playerCarIdx = yamlService.getIrsdkYamlFileBean().getDriverInfo().getDriverCarIdx();
+            lapTimingDataList.get(Integer.parseInt(playerCarIdx)).setPlayer(true);
+
         }
-
-        String playerCarIdx = yamlService.getIrsdkYamlFileBean().getDriverInfo().getDriverCarIdx();
-        lapTimingDataList.get(Integer.parseInt(playerCarIdx)).setPlayer(true);
 
         return lapTimingDataList;
     }
@@ -50,32 +52,33 @@ public class LapTimingDataService {
      */
     public LapTimingData getLapTimingDataForCarIdx(int carIdx) {
         LapTimingData lapTimingData = new LapTimingData();
+        if (sdkStarter.isConnected()) {
+            lapTimingData.setCarIdx(gameVarUtilsHelper.getVarInt("CarIdx", carIdx));
+            lapTimingData.setCarIdxPosition(gameVarUtilsHelper.getVarInt("CarIdxPosition", carIdx));
+            lapTimingData.setCarIdxClassPosition(gameVarUtilsHelper.getVarInt("CarIdxClassPosition", carIdx));
+            lapTimingData.setCarIdxEstTime(gameVarUtilsHelper.getVarInt("CarIdxEstTime", carIdx));
+            lapTimingData.setCarIdxF2Time(gameVarUtilsHelper.getVarInt("CarIdxF2Time", carIdx));
+            lapTimingData.setCarIdxLap(gameVarUtilsHelper.getVarInt("CarIdxLap", carIdx));
+            lapTimingData.setCarIdxLapDistPct(gameVarUtilsHelper.getVarInt("CarIdxLapDistPct", carIdx));
+            lapTimingData.setCarIdxOnPitRoad(gameVarUtilsHelper.getVarBoolean("CarIdxOnPitRoad", carIdx));
+            lapTimingData.setCarIdxLastLapTime(gameVarUtilsHelper.getVarInt("CarIdxLastLapTime", carIdx));
+            lapTimingData.setCarIdxBestLapTime(gameVarUtilsHelper.getVarInt("CarIdxBestLapTime", carIdx));
 
-        lapTimingData.setCarIdx(gameVarUtilsHelper.getVarInt("CarIdx", carIdx));
-        lapTimingData.setCarIdxPosition(gameVarUtilsHelper.getVarInt("CarIdxPosition", carIdx));
-        lapTimingData.setCarIdxClassPosition(gameVarUtilsHelper.getVarInt("CarIdxClassPosition", carIdx));
-        lapTimingData.setCarIdxEstTime(gameVarUtilsHelper.getVarInt("CarIdxEstTime", carIdx));
-        lapTimingData.setCarIdxF2Time(gameVarUtilsHelper.getVarInt("CarIdxF2Time", carIdx));
-        lapTimingData.setCarIdxLap(gameVarUtilsHelper.getVarInt("CarIdxLap", carIdx));
-        lapTimingData.setCarIdxLapDistPct(gameVarUtilsHelper.getVarInt("CarIdxLapDistPct", carIdx));
-        lapTimingData.setCarIdxOnPitRoad(gameVarUtilsHelper.getVarBoolean("CarIdxOnPitRoad", carIdx));
-        lapTimingData.setCarIdxLastLapTime(gameVarUtilsHelper.getVarInt("CarIdxLastLapTime", carIdx));
-        lapTimingData.setCarIdxBestLapTime(gameVarUtilsHelper.getVarInt("CarIdxBestLapTime", carIdx));
+            int carIdxTrackSurface = gameVarUtilsHelper.getVarInt("CarIdxTrackSurface", carIdx);
+            lapTimingData.setCarIdxTrackSurface(TrkLoc.valueOf(carIdxTrackSurface));
 
-        int carIdxTrackSurface = gameVarUtilsHelper.getVarInt("CarIdxTrackSurface", carIdx);
-        lapTimingData.setCarIdxTrackSurface(TrkLoc.valueOf(carIdxTrackSurface));
-
-        DriverInfoYaml driverInfoYaml = yamlService.getIrsdkYamlFileBean().getDriverInfo().getDrivers().get(carIdx);
-        lapTimingData.setUserName(driverInfoYaml.getUserName());
-        lapTimingData.setTeamName(driverInfoYaml.getTeamName());
-        lapTimingData.setCarNumber(driverInfoYaml.getCarNumber());
-        lapTimingData.setIRating(driverInfoYaml.getIRating());
-        lapTimingData.setLicLevel(driverInfoYaml.getLicLevel());
-        lapTimingData.setLicString(driverInfoYaml.getLicString());
-        lapTimingData.setLicColor(driverInfoYaml.getLicColor());
-        lapTimingData.setIsSpectator(driverInfoYaml.getIsSpectator());
-        lapTimingData.setClubName(driverInfoYaml.getClubName());
-        lapTimingData.setDivisionName(driverInfoYaml.getDivisionName());
+            DriverInfoYaml driverInfoYaml = yamlService.getIrsdkYamlFileBean().getDriverInfo().getDrivers().get(carIdx);
+            lapTimingData.setUserName(driverInfoYaml.getUserName());
+            lapTimingData.setTeamName(driverInfoYaml.getTeamName());
+            lapTimingData.setCarNumber(driverInfoYaml.getCarNumber());
+            lapTimingData.setIRating(driverInfoYaml.getIRating());
+            lapTimingData.setLicLevel(driverInfoYaml.getLicLevel());
+            lapTimingData.setLicString(driverInfoYaml.getLicString());
+            lapTimingData.setLicColor(driverInfoYaml.getLicColor());
+            lapTimingData.setIsSpectator(driverInfoYaml.getIsSpectator());
+            lapTimingData.setClubName(driverInfoYaml.getClubName());
+            lapTimingData.setDivisionName(driverInfoYaml.getDivisionName());
+        }
 
         return lapTimingData;
     }

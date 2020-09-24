@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.yaml.snakeyaml.scanner.Constant;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,14 +29,20 @@ public class SdkStarter {
     @Getter
     private Header       header         = null;
 
-    private boolean isInitialized             = false;
-    private boolean wasConnected              = false;
-    private boolean isLapTimingLoggingEnabled = true;
+    private boolean isInitialized = false;
+    private boolean wasConnected  = false;
 
 
-    public void monitorConnectionStatus() {
+    public boolean isConnected() {
         // keep track of connection status
-        boolean isConnected = isConnected();
+        boolean isConnected;
+
+        if (isInitialized || startup()) {
+            isConnected = (header.getStatus() & StatusField.IRSDK_STCONNECTED.getValue()) > 0;
+        } else {
+            isConnected = false;
+        }
+
         if (wasConnected != isConnected) {
             if (isConnected) {
                 log.info("Connected to iRacing.");
@@ -48,17 +53,7 @@ public class SdkStarter {
             wasConnected = isConnected;
         }
 
-        if (isLapTimingLoggingEnabled) {
-            liveDataService.recordLapTiming();
-        }
-
-    }
-
-    public boolean isConnected() {
-        if (isInitialized || startup()) {
-            return (header.getStatus() & StatusField.IRSDK_STCONNECTED.getValue()) > 0;
-        }
-        return false;
+        return isConnected;
     }
 
     private boolean startup() {

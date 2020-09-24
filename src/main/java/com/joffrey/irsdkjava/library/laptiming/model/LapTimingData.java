@@ -10,13 +10,13 @@ public class LapTimingData {
     // Live data
     private int     carIdxPosition;
     private int     carIdxClassPosition;
-    private float  carIdxEstTime;
-    private float  carIdxF2Time;
+    private float   carIdxEstTime;
+    private float   carIdxF2Time;
     private int     carIdxLap;
     private float   carIdxLapDistPct;
     private boolean carIdxOnPitRoad;
-    private float  carIdxLastLapTime;
-    private float  carIdxBestLapTime;
+    private float   carIdxLastLapTime;
+    private float   carIdxBestLapTime;
     // Use this for know if car is in world
     private String  carIdxTrackSurface;
 
