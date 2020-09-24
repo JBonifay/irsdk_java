@@ -1,4 +1,4 @@
-/*
+package com.joffrey.irsdkjava.sdk.windows;/*
  *    Copyright (C) 2020 Joffrey Bonifay
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.sdk.windows;
 
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;

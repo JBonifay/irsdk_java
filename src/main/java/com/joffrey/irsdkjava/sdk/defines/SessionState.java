@@ -1,4 +1,4 @@
-/*
+package com.joffrey.irsdkjava.sdk.defines;/*
  *    Copyright (C) 2020 Joffrey Bonifay
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.sdk.defines;
 
 public enum SessionState {
 

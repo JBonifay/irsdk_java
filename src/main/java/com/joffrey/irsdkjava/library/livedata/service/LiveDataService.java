@@ -1,4 +1,4 @@
-/*
+package com.joffrey.irsdkjava.library.livedata.service;/*
  *    Copyright (C) 2020 Joffrey Bonifay
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.joffrey.irsdkjava.library.livedata.service;
 
 import com.joffrey.irsdkjava.library.livedata.model.camera.CameraLiveData;
 import com.joffrey.irsdkjava.library.livedata.model.car.CarLiveData;
@@ -49,13 +48,13 @@ public class LiveDataService {
 
     private final GameVarUtils gameVarUtilsHelper;
 
-    private final TelemetryGauges       telemetryGauges       = new TelemetryGauges();
-    private final TelemetryFuel         telemetryFuel         = new TelemetryFuel();
-    private final TelemetryFullData     telemetryFullData     = new TelemetryFullData();
-    private final ConfigLiveData        configLiveData        = new ConfigLiveData();
-    private final CameraLiveData        cameraLiveData        = new CameraLiveData();
-    private final CarSetupLiveData      carSetupLiveData      = new CarSetupLiveData();
-    private final TeamLiveData          teamLiveData          = new TeamLiveData();
+    private final TelemetryGauges telemetryGauges = new TelemetryGauges();
+    private final TelemetryFuel     telemetryFuel     = new TelemetryFuel();
+    private final TelemetryFullData telemetryFullData = new TelemetryFullData();
+    private final ConfigLiveData    configLiveData    = new ConfigLiveData();
+    private final CameraLiveData   cameraLiveData   = new CameraLiveData();
+    private final CarSetupLiveData carSetupLiveData = new CarSetupLiveData();
+    private final TeamLiveData    teamLiveData    = new TeamLiveData();
     private final ReplayLiveData        replayLiveData        = new ReplayLiveData();
     private final SessionLiveData       sessionLiveData       = new SessionLiveData();
     private final SteeringWheelLiveData steeringWheelLiveData = new SteeringWheelLiveData();

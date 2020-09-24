@@ -16,17 +16,17 @@ import lombok.Data;
 public class YamlFile {
 
     @JsonProperty
-    private WeekendInfoYaml WeekendInfo;
+    private WeekendInfoYaml        WeekendInfo;
     @JsonProperty
-    private SessionInfoYaml SessionInfo;
+    private SessionInfoYaml        SessionInfo;
     @JsonProperty
     private QualifyResultsInfoYaml QualifyResultsInfo;
     @JsonProperty
     private CamerasInfoYaml CameraInfo;
     @JsonProperty
-    private RadiosInfoYaml  RadioInfo;
+    private RadiosInfoYaml    RadioInfo;
     @JsonProperty
-    private DriversInfoYaml DriverInfo;
+    private DriversInfoYaml   DriverInfo;
     @JsonProperty
     private SplitTimeInfoYaml SplitTimeInfo;
 

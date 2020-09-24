@@ -1,4 +1,4 @@
-/*
+package com.joffrey.irsdkjava.sdk;/*
  *    Copyright (C) 2020 Joffrey Bonifay
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,8 +19,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.joffrey.irsdkjava.sdk;
-
+import com.joffrey.irsdkjava.sdk.SdkStarter;
 import com.joffrey.irsdkjava.sdk.defines.VarType;
 import com.joffrey.irsdkjava.sdk.defines.VarTypeBytes;
 import com.joffrey.irsdkjava.sdk.model.VarHeader;
@@ -76,7 +75,7 @@ public class GameVarUtils {
                         case irsdk_char, irsdk_bool -> (sdkStarter.getHeader()
                                                                   .getLatestVarByteBuffer()
                                                                   .getChar(vh.getOffset() + (entry
-                                                                                                 * VarTypeBytes.IRSDK_BOOL.getValue())))
+                                                                                             * VarTypeBytes.IRSDK_BOOL.getValue())))
                                                        != 0;
 
                         case irsdk_int, irsdk_bitField -> (sdkStarter.getHeader()

@@ -21,6 +21,7 @@
 
 package com.joffrey.irsdkjava.library.livedata.model.camera;
 
+
 import com.joffrey.irsdkjava.sdk.defines.CameraState;
 import lombok.Data;
 

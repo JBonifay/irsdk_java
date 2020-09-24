@@ -1,4 +1,4 @@
-/*
+package com.joffrey.irsdkjava.sdk.defines;/*
  *    Copyright (C) 2020 Joffrey Bonifay
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-package com.joffrey.irsdkjava.sdk.defines;
 
 public enum StatusField {
 
