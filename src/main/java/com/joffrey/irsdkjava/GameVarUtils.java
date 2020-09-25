@@ -45,7 +45,7 @@ public class GameVarUtils {
     }
 
     private VarHeader getVarHeaderEntry(int index) {
-        if (sdkStarter.isConnected()) {
+        if (sdkStarter.isRunning()) {
             if (index >= 0 && index < sdkStarter.getHeader().getNumVars()) {
                 return new VarHeader(ByteBuffer.wrap(sdkStarter.getSharedMemory()
                                                                .getByteArray(sdkStarter.getHeader().getVarHeaderOffset()
@@ -65,7 +65,7 @@ public class GameVarUtils {
     }
 
     private boolean getVarBoolean(int idx, int entry) {
-        if (sdkStarter.isConnected()) {
+        if (sdkStarter.isRunning()) {
             VarHeader vh = getVarHeaderEntry(idx);
             if (vh != null) {
                 if (entry >= 0 && entry < vh.getCount()) {
@@ -111,7 +111,7 @@ public class GameVarUtils {
     }
 
     private int getVarInt(int idx, int entry) {
-        if (sdkStarter.isConnected()) {
+        if (sdkStarter.isRunning()) {
             VarHeader vh = getVarHeaderEntry(idx);
             if (vh != null) {
                 if (entry >= 0 && entry < vh.getCount()) {
@@ -154,7 +154,7 @@ public class GameVarUtils {
     }
 
     private float getVarFloat(int idx, int entry) {
-        if (sdkStarter.isConnected()) {
+        if (sdkStarter.isRunning()) {
             VarHeader vh = getVarHeaderEntry(idx);
             if (vh != null) {
                 if (entry >= 0 && entry < vh.getCount()) {
@@ -204,7 +204,7 @@ public class GameVarUtils {
     }
 
     private double getVarDouble(int idx, int entry) {
-        if (sdkStarter.isConnected()) {
+        if (sdkStarter.isRunning()) {
             VarHeader vh = getVarHeaderEntry(idx);
             if (vh != null) {
                 if (entry >= 0 && entry < vh.getCount()) {

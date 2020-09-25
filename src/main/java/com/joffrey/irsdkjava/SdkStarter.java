@@ -28,7 +28,7 @@ public class SdkStarter {
     private boolean wasConnected  = false;
 
 
-    public boolean isConnected() {
+    public boolean isRunning() {
         // keep track of connection status
         boolean isConnected;
 

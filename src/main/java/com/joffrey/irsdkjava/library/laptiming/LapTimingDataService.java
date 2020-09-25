@@ -55,19 +55,25 @@ public class LapTimingDataService {
         lapTimingData.setCarIdxLap(gameVarUtilsHelper.getVarInt("CarIdxLap", carIdx));
         lapTimingData.setCarIdxLapDistPct(gameVarUtilsHelper.getVarFloat("CarIdxLapDistPct", carIdx));
 
-        int sessionNum = gameVarUtilsHelper.getVarInt("SessionNum");
-        if (yamlService.getIrsdkYamlFileBean().getSessionInfo().getSessions().get(sessionNum).getResultsPositions() != null) {
-            yamlService.getIrsdkYamlFileBean()
-                       .getSessionInfo()
-                       .getSessions()
-                       .get(sessionNum)
-                       .getResultsPositions()
-                       .forEach(resultsPositionsYaml -> {
-                           if (resultsPositionsYaml.getCarIdx().equals(String.valueOf(carIdx))) {
-                               lapTimingData.setCarIdxLastLapTime(Float.parseFloat(resultsPositionsYaml.getLastTime()));
-                               lapTimingData.setCarIdxBestLapTime(Float.parseFloat(resultsPositionsYaml.getFastestTime()));
-                           }
-                       });
+        lapTimingData.setCarIdxLastLapTime(gameVarUtilsHelper.getVarFloat("CarIdxLastLapTime", carIdx));
+        lapTimingData.setCarIdxBestLapTime(gameVarUtilsHelper.getVarFloat("CarIdxBestLapTime", carIdx));
+
+        // TODO: 25/09/2020 check this
+        if (lapTimingData.getCarIdxLastLapTime() < 0 && lapTimingData.getCarIdxBestLapTime() < 0) {
+            int sessionNum = gameVarUtilsHelper.getVarInt("SessionNum");
+            if (yamlService.getIrsdkYamlFileBean().getSessionInfo().getSessions().get(sessionNum).getResultsPositions() != null) {
+                yamlService.getIrsdkYamlFileBean()
+                           .getSessionInfo()
+                           .getSessions()
+                           .get(sessionNum)
+                           .getResultsPositions()
+                           .forEach(resultsPositionsYaml -> {
+                               if (resultsPositionsYaml.getCarIdx().equals(String.valueOf(carIdx))) {
+                                   lapTimingData.setCarIdxLastLapTime(Float.parseFloat(resultsPositionsYaml.getLastTime()));
+                                   lapTimingData.setCarIdxBestLapTime(Float.parseFloat(resultsPositionsYaml.getFastestTime()));
+                               }
+                           });
+            }
         }
 
         int carIdxTrackSurface = gameVarUtilsHelper.getVarInt("CarIdxTrackSurface", carIdx);

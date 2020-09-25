@@ -16,14 +16,14 @@ public class YamlService {
     private final SdkStarter sdkStarter;
 
     public String getSessionInfoStr() {
-        if (sdkStarter.isConnected()) {
+        if (sdkStarter.isRunning()) {
             return new String(sdkStarter.getHeader().getSessionInfoByteBuffer().array());
         }
         return "";
     }
 
     public YamlFile getIrsdkYamlFileBean() {
-        if (sdkStarter.isConnected()) {
+        if (sdkStarter.isRunning()) {
             return createYamlObject(getSessionInfoStr());
         }
         return null;

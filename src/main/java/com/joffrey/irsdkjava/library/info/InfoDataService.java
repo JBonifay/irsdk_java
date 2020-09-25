@@ -33,11 +33,10 @@ public class InfoDataService {
 
         WeekendInfoYaml weekendInfo = yamlService.getIrsdkYamlFileBean().getWeekendInfo();
         raceInfo.setTrackDisplayName(weekendInfo.getTrackDisplayName());
-        raceInfo.setTrackName(weekendInfo.getTrackName());
+        raceInfo.setTrackConfigName(weekendInfo.getTrackConfigName());
         raceInfo.setTrackLength(weekendInfo.getTrackLength());
         raceInfo.setTrackCity(weekendInfo.getTrackCity());
         raceInfo.setTrackCountry(weekendInfo.getTrackCountry());
-        raceInfo.setTrackNumTurns(weekendInfo.getTrackNumTurns());
         raceInfo.setEventType(weekendInfo.getEventType());
 
         raceInfo.setRemainingTime(gameVarUtils.getVarFloat("SessionTimeRemain"));
@@ -54,61 +53,6 @@ public class InfoDataService {
                                             .average();
         if (average.isPresent()) {
             raceInfo.setAverageSOF((int) average.getAsDouble());
-        }
-
-        SessionYaml sessionYaml = yamlService.getIrsdkYamlFileBean().getSessionInfo().getSessions().get(0);
-
-        if (sessionYaml.getResultsPositions() != null) {
-
-            Optional<ResultsPositionsYaml> leaderCar = sessionYaml.getResultsPositions()
-                                                                  .stream()
-                                                                  .filter(resultsPositionsYaml -> Integer.parseInt(
-                                                                          resultsPositionsYaml.getPosition()) == 1)
-                                                                  .findFirst();
-
-            if (leaderCar.isPresent()) {
-                raceInfo.setLeaderCarIdx(Integer.parseInt(leaderCar.get().getCarIdx()));
-                raceInfo.setLeaderCarName(yamlService.getIrsdkYamlFileBean()
-                                                     .getDriverInfo()
-                                                     .getDrivers()
-                                                     .get(raceInfo.getLeaderCarIdx())
-                                                     .getUserName());
-                raceInfo.setLeaderCarbestLapTime(Float.parseFloat(leaderCar.get().getFastestTime()));
-            }
-
-            Optional<ResultsPositionsYaml> resultsPositionsYaml = sessionYaml.getResultsPositions()
-                                                                             .stream()
-                                                                             .filter(resultsPositionsYaml1 -> Float.parseFloat(
-                                                                                     resultsPositionsYaml1.getLastTime()) > 0)
-                                                                             .min(Comparator.comparing(ResultsPositionsYaml::getLastTime));
-
-            if (resultsPositionsYaml.isPresent()) {
-                raceInfo.setFastestLastLapCarIdx(Integer.parseInt(resultsPositionsYaml.get().getCarIdx()));
-                raceInfo.setFastestLastLapCarName(yamlService.getIrsdkYamlFileBean()
-                                                             .getDriverInfo()
-                                                             .getDrivers()
-                                                             .get(raceInfo.getFastestLastLapCarIdx())
-                                                             .getUserName());
-                raceInfo.setFastestLastLapTime(Float.parseFloat(resultsPositionsYaml.get().getLastTime()));
-            }
-
-        }
-
-        if (sessionYaml.getResultsFastestLap() != null) {
-
-            ResultsFastestLapYaml resultsFastestLapYaml = sessionYaml.getResultsFastestLap().get(0);
-            raceInfo.setBestLapCarIdx(Integer.parseInt(resultsFastestLapYaml.getCarIdx()));
-            raceInfo.setBestLapTime(Float.parseFloat(resultsFastestLapYaml.getFastestTime()));
-
-            if (yamlService.getIrsdkYamlFileBean().getDriverInfo().getDrivers().size() > raceInfo.getBestLapCarIdx()) {
-
-                raceInfo.setBestLapCarName(yamlService.getIrsdkYamlFileBean()
-                                                      .getDriverInfo()
-                                                      .getDrivers()
-                                                      .get(raceInfo.getBestLapCarIdx())
-                                                      .getUserName());
-            }
-
         }
 
         raceInfo.setPlayerCarIdx(Integer.parseInt(yamlService.getIrsdkYamlFileBean().getDriverInfo().getDriverCarIdx()));

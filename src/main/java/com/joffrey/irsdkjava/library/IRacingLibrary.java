@@ -29,6 +29,8 @@ import com.joffrey.irsdkjava.library.info.model.RaceInfo;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -39,15 +41,13 @@ public class IRacingLibrary implements CommandLineRunner {
     private final LapTimingDataService lapTimingDataService;
     private final InfoDataService      infoDataService;
 
-    @Override
-    public void run(String... args) throws Exception {
-        while (true) {
-            while (sdkStarter.isConnected()) {
-                infoDataService.loadRaceInfo();
-                lapTimingDataService.loadLapTimingDataList();
-            }
-        }
-    }
+    // @Override
+    // public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
+    //     while (sdkStarter.isRunning()) {
+    //         infoDataService.loadRaceInfo();
+    //         lapTimingDataService.loadLapTimingDataList();
+    //     }
+    // }
 
     public Map<Integer, LapTimingData> getLapTimingDataList() {
         return lapTimingDataService.getLapTimingDataList();
@@ -57,5 +57,13 @@ public class IRacingLibrary implements CommandLineRunner {
         return infoDataService.getRaceInfo();
     }
 
-
+    @Override
+    public void run(String... args) throws Exception {
+        while (true) {
+            while (sdkStarter.isRunning()) {
+                infoDataService.loadRaceInfo();
+                lapTimingDataService.loadLapTimingDataList();
+            }
+        }
+    }
 }
