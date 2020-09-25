@@ -8,7 +8,10 @@ import com.joffrey.irsdkjava.library.yaml.irsdkyaml.ResultsFastestLapYaml;
 import com.joffrey.irsdkjava.library.yaml.irsdkyaml.ResultsPositionsYaml;
 import com.joffrey.irsdkjava.library.yaml.irsdkyaml.SessionYaml;
 import com.joffrey.irsdkjava.library.yaml.irsdkyaml.WeekendInfoYaml;
+import java.util.Comparator;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.Synchronized;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +27,7 @@ public class InfoDataService {
     private final RaceInfo        raceInfo = new RaceInfo();
     private       WeekendInfoYaml weekendInfo;
 
+    @Synchronized
     public RaceInfo getRaceInfo() {
         if (sdkStarter.isConnected()) {
 
@@ -67,6 +71,19 @@ public class InfoDataService {
                                                  .get(raceInfo.getLeaderCarIdx())
                                                  .getUserName());
             raceInfo.setLeaderCarbestLapTime(Float.parseFloat(leaderCar.getFastestTime()));
+
+            ResultsPositionsYaml resultsPositionsYaml = sessionYaml.getResultsPositions()
+                                                                   .stream()
+                                                                   .min(Comparator.comparing(ResultsPositionsYaml::getLastTime))
+                                                                   .get();
+
+            raceInfo.setFastestLastLapCarIdx(Integer.parseInt(resultsPositionsYaml.getCarIdx()));
+            raceInfo.setFastestLastLapCarName(yamlService.getIrsdkYamlFileBean()
+                                                         .getDriverInfo()
+                                                         .getDrivers()
+                                                         .get(raceInfo.getFastestLastLapCarIdx())
+                                                         .getUserName());
+            raceInfo.setFastestLastLapTime(Float.parseFloat(resultsPositionsYaml.getLastTime()));
 
             ResultsFastestLapYaml resultsFastestLapYaml = sessionYaml.getResultsFastestLap().get(0);
             raceInfo.setBestLapCarIdx(Integer.parseInt(resultsFastestLapYaml.getCarIdx()));

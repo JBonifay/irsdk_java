@@ -29,6 +29,11 @@ public class RaceInfo {
     private String leaderCarName;
     private float  leaderCarbestLapTime;
 
+    // Fastest Last lap car
+    private int    fastestLastLapCarIdx;
+    private String fastestLastLapCarName;
+    private float  fastestLastLapTime;
+
     // Fastest car
     private int    bestLapCarIdx;
     private String bestLapCarName;
