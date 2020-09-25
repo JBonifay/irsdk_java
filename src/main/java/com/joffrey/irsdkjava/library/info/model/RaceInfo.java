@@ -39,4 +39,7 @@ public class RaceInfo {
     private String bestLapCarName;
     private float  bestLapTime;
 
+    // Useful booleans
+    private int playerCarIdx;
+
 }

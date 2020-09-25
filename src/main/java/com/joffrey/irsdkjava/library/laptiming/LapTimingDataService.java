@@ -35,9 +35,6 @@ public class LapTimingDataService {
         for (int carIdx = 0; carIdx < totalCars; carIdx++) {
             lapTimingDataList.put(carIdx, getLapTimingDataForCarIdx(carIdx));
         }
-
-        String playerCarIdx = yamlService.getIrsdkYamlFileBean().getDriverInfo().getDriverCarIdx();
-        lapTimingDataList.get(Integer.parseInt(playerCarIdx)).setPlayer(true);
     }
 
 
@@ -59,17 +56,19 @@ public class LapTimingDataService {
         lapTimingData.setCarIdxLapDistPct(gameVarUtilsHelper.getVarFloat("CarIdxLapDistPct", carIdx));
 
         int sessionNum = gameVarUtilsHelper.getVarInt("SessionNum");
-        yamlService.getIrsdkYamlFileBean()
-                   .getSessionInfo()
-                   .getSessions()
-                   .get(sessionNum)
-                   .getResultsPositions()
-                   .forEach(resultsPositionsYaml -> {
-                       if (resultsPositionsYaml.getCarIdx().equals(String.valueOf(carIdx))) {
-                           lapTimingData.setCarIdxLastLapTime(Float.parseFloat(resultsPositionsYaml.getLastTime()));
-                           lapTimingData.setCarIdxBestLapTime(Float.parseFloat(resultsPositionsYaml.getFastestTime()));
-                       }
-                   });
+        if (yamlService.getIrsdkYamlFileBean().getSessionInfo().getSessions().get(sessionNum).getResultsPositions() != null) {
+            yamlService.getIrsdkYamlFileBean()
+                       .getSessionInfo()
+                       .getSessions()
+                       .get(sessionNum)
+                       .getResultsPositions()
+                       .forEach(resultsPositionsYaml -> {
+                           if (resultsPositionsYaml.getCarIdx().equals(String.valueOf(carIdx))) {
+                               lapTimingData.setCarIdxLastLapTime(Float.parseFloat(resultsPositionsYaml.getLastTime()));
+                               lapTimingData.setCarIdxBestLapTime(Float.parseFloat(resultsPositionsYaml.getFastestTime()));
+                           }
+                       });
+        }
 
         int carIdxTrackSurface = gameVarUtilsHelper.getVarInt("CarIdxTrackSurface", carIdx);
         lapTimingData.setCarIdxTrackSurface(TrkLoc.valueOf(carIdxTrackSurface));

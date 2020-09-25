@@ -33,8 +33,4 @@ public class LapTimingData {
     private String clubName;
     private String divisionName;
 
-    // Useful booleans
-    private boolean isPlayer;
-
-
 }
