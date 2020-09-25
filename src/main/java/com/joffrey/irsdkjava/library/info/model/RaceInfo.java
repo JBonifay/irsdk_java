@@ -1,4 +1,4 @@
-package com.joffrey.irsdkjava.library.session.model;
+package com.joffrey.irsdkjava.library.info.model;
 
 import lombok.Data;
 

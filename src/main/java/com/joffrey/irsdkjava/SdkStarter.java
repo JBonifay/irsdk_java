@@ -1,6 +1,5 @@
 package com.joffrey.irsdkjava;
 
-import com.joffrey.irsdkjava.library.livedata.service.LiveDataService;
 import com.joffrey.irsdkjava.defines.StatusField;
 import com.joffrey.irsdkjava.model.Header;
 import com.joffrey.irsdkjava.windows.WindowsService;
@@ -9,7 +8,6 @@ import com.sun.jna.platform.win32.WinNT;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -18,9 +16,6 @@ import org.springframework.stereotype.Service;
 public class SdkStarter {
 
     private final WindowsService windowsService;
-
-    @Autowired
-    private LiveDataService liveDataService;
 
     private WinNT.HANDLE memMapFile     = null;
     private WinNT.HANDLE dataValidEvent = null;
