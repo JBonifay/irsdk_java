@@ -10,6 +10,7 @@ import com.joffrey.irsdkjava.library.yaml.irsdkyaml.SessionYaml;
 import com.joffrey.irsdkjava.library.yaml.irsdkyaml.WeekendInfoYaml;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.OptionalDouble;
 import lombok.RequiredArgsConstructor;
 import lombok.Synchronized;
 import lombok.extern.java.Log;
@@ -46,44 +47,47 @@ public class InfoDataService {
             raceInfo.setFuelLevelPct(gameVarUtils.getVarFloat("FuelLevelPct"));
             raceInfo.setFuelUsePerHour(gameVarUtils.getVarFloat("FuelUsePerHour"));
 
-            int averageSOF = yamlService.getIrsdkYamlFileBean()
-                                        .getDriverInfo()
-                                        .getDrivers()
-                                        .stream()
-                                        .mapToInt(value -> Integer.parseInt(value.getIRating()))
-                                        .sum();
-
-            raceInfo.setAverageSOF(averageSOF);
+            OptionalDouble average = yamlService.getIrsdkYamlFileBean()
+                                                .getDriverInfo()
+                                                .getDrivers()
+                                                .stream()
+                                                .mapToInt(value -> Integer.parseInt(value.getIRating()))
+                                                .average();
+            if (average.isPresent()) {
+                raceInfo.setAverageSOF((int) average.getAsDouble());
+            }
 
             SessionYaml sessionYaml = yamlService.getIrsdkYamlFileBean().getSessionInfo().getSessions().get(0);
 
-            ResultsPositionsYaml leaderCar = sessionYaml.getResultsPositions()
-                                                        .stream()
-                                                        .filter(resultsPositionsYaml -> Integer.parseInt(resultsPositionsYaml.getPosition())
-                                                                                        == 1)
-                                                        .findFirst()
-                                                        .get();
+            Optional<ResultsPositionsYaml> leaderCar = sessionYaml.getResultsPositions()
+                                                                  .stream()
+                                                                  .filter(resultsPositionsYaml -> Integer.parseInt(
+                                                                          resultsPositionsYaml.getPosition()) == 1)
+                                                                  .findFirst();
 
-            raceInfo.setLeaderCarIdx(Integer.parseInt(leaderCar.getCarIdx()));
-            raceInfo.setLeaderCarName(yamlService.getIrsdkYamlFileBean()
-                                                 .getDriverInfo()
-                                                 .getDrivers()
-                                                 .get(raceInfo.getLeaderCarIdx())
-                                                 .getUserName());
-            raceInfo.setLeaderCarbestLapTime(Float.parseFloat(leaderCar.getFastestTime()));
+            if (leaderCar.isPresent()) {
+                raceInfo.setLeaderCarIdx(Integer.parseInt(leaderCar.get().getCarIdx()));
+                raceInfo.setLeaderCarName(yamlService.getIrsdkYamlFileBean()
+                                                     .getDriverInfo()
+                                                     .getDrivers()
+                                                     .get(raceInfo.getLeaderCarIdx())
+                                                     .getUserName());
+                raceInfo.setLeaderCarbestLapTime(Float.parseFloat(leaderCar.get().getFastestTime()));
+            }
 
-            ResultsPositionsYaml resultsPositionsYaml = sessionYaml.getResultsPositions()
-                                                                   .stream()
-                                                                   .min(Comparator.comparing(ResultsPositionsYaml::getLastTime))
-                                                                   .get();
+            Optional<ResultsPositionsYaml> resultsPositionsYaml = sessionYaml.getResultsPositions().stream()
+                    .filter(resultsPositionsYaml1 -> Float.parseFloat(resultsPositionsYaml1.getLastTime()) > 0)
+                    .min(Comparator.comparing(ResultsPositionsYaml::getLastTime));
 
-            raceInfo.setFastestLastLapCarIdx(Integer.parseInt(resultsPositionsYaml.getCarIdx()));
-            raceInfo.setFastestLastLapCarName(yamlService.getIrsdkYamlFileBean()
-                                                         .getDriverInfo()
-                                                         .getDrivers()
-                                                         .get(raceInfo.getFastestLastLapCarIdx())
-                                                         .getUserName());
-            raceInfo.setFastestLastLapTime(Float.parseFloat(resultsPositionsYaml.getLastTime()));
+            if (resultsPositionsYaml.isPresent()) {
+                raceInfo.setFastestLastLapCarIdx(Integer.parseInt(resultsPositionsYaml.get().getCarIdx()));
+                raceInfo.setFastestLastLapCarName(yamlService.getIrsdkYamlFileBean()
+                                                             .getDriverInfo()
+                                                             .getDrivers()
+                                                             .get(raceInfo.getFastestLastLapCarIdx())
+                                                             .getUserName());
+                raceInfo.setFastestLastLapTime(Float.parseFloat(resultsPositionsYaml.get().getLastTime()));
+            }
 
             ResultsFastestLapYaml resultsFastestLapYaml = sessionYaml.getResultsFastestLap().get(0);
             raceInfo.setBestLapCarIdx(Integer.parseInt(resultsFastestLapYaml.getCarIdx()));
