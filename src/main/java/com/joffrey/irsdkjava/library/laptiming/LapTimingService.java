@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class LapTimingDataService {
+public class LapTimingService {
 
     private final YamlService  yamlService;
     private final GameVarUtils gameVarUtilsHelper;

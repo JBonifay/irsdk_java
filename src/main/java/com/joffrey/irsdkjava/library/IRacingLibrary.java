@@ -23,23 +23,24 @@ package com.joffrey.irsdkjava.library;
 
 import com.joffrey.irsdkjava.SdkStarter;
 import com.joffrey.irsdkjava.library.info.InfoDataService;
-import com.joffrey.irsdkjava.library.laptiming.LapTimingDataService;
+import com.joffrey.irsdkjava.library.laptiming.LapTimingService;
 import com.joffrey.irsdkjava.library.laptiming.model.LapTimingData;
 import com.joffrey.irsdkjava.library.info.model.RaceInfo;
+import com.joffrey.irsdkjava.library.telemetry.model.TelemetryData;
+import com.joffrey.irsdkjava.library.telemetry.service.TelemetryService;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
 public class IRacingLibrary implements CommandLineRunner {
 
-    private final SdkStarter           sdkStarter;
-    private final LapTimingDataService lapTimingDataService;
-    private final InfoDataService      infoDataService;
+    private final SdkStarter       sdkStarter;
+    private final LapTimingService lapTimingService;
+    private final InfoDataService  infoDataService;
+    private final TelemetryService telemetryService;
 
     // @Override
     // public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
@@ -50,19 +51,24 @@ public class IRacingLibrary implements CommandLineRunner {
     // }
 
     public Map<Integer, LapTimingData> getLapTimingDataList() {
-        return lapTimingDataService.getLapTimingDataList();
+        return lapTimingService.getLapTimingDataList();
     }
 
     public RaceInfo getRaceInfo() {
         return infoDataService.getRaceInfo();
     }
 
+    public TelemetryData getTelemetryData() {
+        return telemetryService.getTelemetryData();
+    }
+
     @Override
     public void run(String... args) throws Exception {
         while (true) {
             while (sdkStarter.isRunning()) {
-                infoDataService.loadRaceInfo();
-                lapTimingDataService.loadLapTimingDataList();
+                // infoDataService.loadRaceInfo();
+                // lapTimingService.loadLapTimingDataList();
+                telemetryService.loadTelemetryData();
             }
         }
     }
