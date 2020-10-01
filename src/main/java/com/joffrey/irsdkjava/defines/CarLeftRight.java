@@ -22,7 +22,8 @@
 package com.joffrey.irsdkjava.defines;
 
 public enum CarLeftRight {
-    irsdk_LROff, irsdk_LRClear,            // no cars around us.
+    irsdk_LROff,
+    irsdk_LRClear,            // no cars around us.
     irsdk_LRCarLeft,        // there is a car to our left.
     irsdk_LRCarRight,        // there is a car to our right.
     irsdk_LRCarLeftRight,    // there are cars on each side.

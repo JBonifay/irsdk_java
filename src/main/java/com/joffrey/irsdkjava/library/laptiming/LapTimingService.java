@@ -1,13 +1,12 @@
 package com.joffrey.irsdkjava.library.laptiming;
 
+import com.joffrey.irsdkjava.GameVarUtils;
+import com.joffrey.irsdkjava.defines.TrkLoc;
 import com.joffrey.irsdkjava.library.laptiming.model.LapTimingData;
 import com.joffrey.irsdkjava.library.yaml.YamlService;
 import com.joffrey.irsdkjava.library.yaml.irsdkyaml.DriverInfoYaml;
-import com.joffrey.irsdkjava.GameVarUtils;
-import com.joffrey.irsdkjava.defines.TrkLoc;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Synchronized;
 import org.springframework.stereotype.Service;
@@ -19,22 +18,20 @@ public class LapTimingService {
     private final YamlService  yamlService;
     private final GameVarUtils gameVarUtilsHelper;
 
-    @Getter
     private final Map<Integer, LapTimingData> lapTimingDataList = new HashMap<>();
-
 
     /**
      * Get a list of {@link LapTimingData} object filled with each car data
      */
     @Synchronized
-    public void loadLapTimingDataList() {
-
+    public Map<Integer, LapTimingData> loadLapTimingDataList() {
         int totalCars = yamlService.getIrsdkYamlFileBean().getDriverInfo().getDrivers().size();
 
         // TODO: 25/09/2020 create a new Thread for each car for parallel
         for (int carIdx = 0; carIdx < totalCars; carIdx++) {
             lapTimingDataList.put(carIdx, getLapTimingDataForCarIdx(carIdx));
         }
+        return lapTimingDataList;
     }
 
 
@@ -44,7 +41,6 @@ public class LapTimingService {
      * @param carIdx the car idx
      * @return {@link LapTimingData} filled with values
      */
-    @Synchronized
     private LapTimingData getLapTimingDataForCarIdx(int carIdx) {
         LapTimingData lapTimingData = new LapTimingData();
 

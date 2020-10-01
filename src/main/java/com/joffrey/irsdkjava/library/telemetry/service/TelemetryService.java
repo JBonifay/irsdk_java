@@ -2,7 +2,6 @@ package com.joffrey.irsdkjava.library.telemetry.service;
 
 import com.joffrey.irsdkjava.GameVarUtils;
 import com.joffrey.irsdkjava.library.telemetry.model.TelemetryData;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +11,9 @@ public class TelemetryService {
 
     private final GameVarUtils gameVarUtilsHelper;
 
-    @Getter
     private final TelemetryData telemetryData = new TelemetryData();
 
-    public void loadTelemetryData() {
+    public TelemetryData loadTelemetryData() {
         telemetryData.setThrottle(gameVarUtilsHelper.getVarFloat("Throttle"));
         telemetryData.setBrake(gameVarUtilsHelper.getVarFloat("Brake"));
         telemetryData.setClutch(gameVarUtilsHelper.getVarFloat("Clutch"));
@@ -71,6 +69,8 @@ public class TelemetryService {
         telemetryData.setSessionTimeRemain(gameVarUtilsHelper.getVarDouble("SessionTimeRemain"));
         telemetryData.setLapBestLap(gameVarUtilsHelper.getVarInt("LapBestLap"));
         telemetryData.setLapBestLapTime(gameVarUtilsHelper.getVarFloat("LapBestLapTime"));
+
+        return telemetryData;
     }
 
 

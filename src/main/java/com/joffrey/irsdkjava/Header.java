@@ -1,4 +1,4 @@
-package com.joffrey.irsdkjava.model;/*
+package com.joffrey.irsdkjava;/*
  *    Copyright (C) 2020 Joffrey Bonifay
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,28 +31,30 @@ public class Header {
     public static final int HEADER_SIZE = 112; // All fields are int (4 bytes), there are 28 fields (28 * 4) = 112
     public final static int VARBUF_SIZE = 4 * 4;
 
-    private Pointer       sharedMemory;
-    private ByteBuffer    byteBuffer;
-    private DiskSubHeader diskSubHeader;
+    private Pointer    sharedMemory;
+    private ByteBuffer byteBuffer;
 
     public Header(Pointer sharedMemory) {
         this.sharedMemory = sharedMemory;
     }
 
     public ByteBuffer getHeaderByteBuffer() {
-        ByteBuffer headerByteBuffer = ByteBuffer.wrap(sharedMemory.getByteArray(0, Header.HEADER_SIZE));
+        ByteBuffer headerByteBuffer = ByteBuffer.allocateDirect(HEADER_SIZE);
+        headerByteBuffer.put(sharedMemory.getByteArray(0, Header.HEADER_SIZE));
         headerByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
         return headerByteBuffer;
     }
 
     public ByteBuffer getSessionInfoByteBuffer() {
-        ByteBuffer sessionInfoByteBuffer = ByteBuffer.wrap(sharedMemory.getByteArray(getSessionInfoOffset(), getSessionInfoLen()));
+        ByteBuffer sessionInfoByteBuffer = ByteBuffer.wrap(sharedMemory.getByteArray(getSessionInfoOffset(),
+                                                                                     getSessionInfoLen()));
         sessionInfoByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
         return sessionInfoByteBuffer;
     }
 
     public ByteBuffer getVarHeaderByteBuffer() {
-        ByteBuffer varHeaderByteBuffer = ByteBuffer.wrap(sharedMemory.getByteArray(getVarHeaderOffset(), getNumVars() * HEADER_SIZE));
+        ByteBuffer varHeaderByteBuffer = ByteBuffer.wrap(sharedMemory.getByteArray(getVarHeaderOffset(),
+                                                                                   getNumVars() * HEADER_SIZE));
         varHeaderByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
         return varHeaderByteBuffer;
     }
@@ -64,7 +66,8 @@ public class Header {
     }
 
     public ByteBuffer getLatestVarByteBuffer() {
-        ByteBuffer varHeaderByteBuffer = ByteBuffer.wrap(sharedMemory.getByteArray(getVarBuf_BufOffset(getLatestVarBuffIdx()), getBufLen()));
+        ByteBuffer varHeaderByteBuffer = ByteBuffer.wrap(sharedMemory.getByteArray(getVarBuf_BufOffset(getLatestVarBuffIdx()),
+                                                                                   getBufLen()));
         varHeaderByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
         return varHeaderByteBuffer;
     }

@@ -3,6 +3,7 @@ package com.joffrey.irsdkjava.library.yaml;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.joffrey.irsdkjava.SdkStarter;
+import com.joffrey.irsdkjava.library.yaml.irsdkyaml.YamlFile;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
@@ -16,17 +17,11 @@ public class YamlService {
     private final SdkStarter sdkStarter;
 
     public String getSessionInfoStr() {
-        if (sdkStarter.isRunning()) {
-            return new String(sdkStarter.getHeader().getSessionInfoByteBuffer().array());
-        }
-        return "";
+        return new String(sdkStarter.getHeader().getSessionInfoByteBuffer().array());
     }
 
     public YamlFile getIrsdkYamlFileBean() {
-        if (sdkStarter.isRunning()) {
-            return createYamlObject(getSessionInfoStr());
-        }
-        return null;
+        return createYamlObject(getSessionInfoStr());
     }
 
     private YamlFile createYamlObject(String yamlString) {

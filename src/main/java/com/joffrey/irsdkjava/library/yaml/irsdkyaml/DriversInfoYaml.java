@@ -10,41 +10,41 @@ import lombok.Data;
 public class DriversInfoYaml {
 
     @JsonProperty
-    private String           DriverCarIdx            = "";
+    private String               DriverCarIdx            = "";
     @JsonProperty
-    private String           DriverHeadPosX          = "";
+    private String               DriverHeadPosX          = "";
     @JsonProperty
-    private String           DriverHeadPosY          = "";
+    private String               DriverHeadPosY          = "";
     @JsonProperty
-    private String           DriverHeadPosZ          = "";
+    private String               DriverHeadPosZ          = "";
     @JsonProperty
-    private String           DriverCarIdleRPM        = "";
+    private String               DriverCarIdleRPM        = "";
     @JsonProperty
-    private String           DriverCarRedLine        = "";
+    private String               DriverCarRedLine        = "";
     @JsonProperty
-    private String           DriverCarFuelKgPerLtr   = "";
+    private String               DriverCarFuelKgPerLtr   = "";
     @JsonProperty
-    private String           DriverCarFuelMaxLtr     = "";
+    private String               DriverCarFuelMaxLtr     = "";
     @JsonProperty
-    private String           DriverCarMaxFuelPct     = "";
+    private String               DriverCarMaxFuelPct     = "";
     @JsonProperty
-    private String           DriverCarSLFirstRPM     = "";
+    private String               DriverCarSLFirstRPM     = "";
     @JsonProperty
-    private String           DriverCarSLShiftRPM     = "";
+    private String               DriverCarSLShiftRPM     = "";
     @JsonProperty
-    private String           DriverCarSLLastRPM      = "";
+    private String               DriverCarSLLastRPM      = "";
     @JsonProperty
-    private String           DriverCarSLBlinkRPM     = "";
+    private String               DriverCarSLBlinkRPM     = "";
     @JsonProperty
-    private String           DriverPitTrkPct         = "";
+    private String               DriverPitTrkPct         = "";
     @JsonProperty
-    private String           DriverCarEstLapTime     = "";
+    private String               DriverCarEstLapTime     = "";
     @JsonProperty
-    private String           DriverSetupName         = "";
+    private String               DriverSetupName         = "";
     @JsonProperty
-    private String           DriverSetupIsModified   = "";
+    private String               DriverSetupIsModified   = "";
     @JsonProperty
-    private String           DriverSetupLoadTypeName = "";
+    private String               DriverSetupLoadTypeName = "";
     @JsonProperty
     private String               DriverSetupPassedTech   = "";
     @JsonProperty

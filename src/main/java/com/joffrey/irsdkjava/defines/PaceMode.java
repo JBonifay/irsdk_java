@@ -34,20 +34,21 @@ public enum PaceMode {
     ;
 
     private static final Map<Integer, PaceMode> paceModeMap = new HashMap();
-    private final        int                        value;
-
-    PaceMode(int value) {
-        this.value = value;
-    }
-
-
-    public static PaceMode get(int code) {
-        return (PaceMode) paceModeMap.get(code);
-    }
 
     static {
         for (PaceMode paceMode : EnumSet.allOf(PaceMode.class)) {
             paceModeMap.put(paceMode.value, paceMode);
         }
+    }
+
+    private final int value;
+
+
+    PaceMode(int value) {
+        this.value = value;
+    }
+
+    public static PaceMode get(int code) {
+        return paceModeMap.get(code);
     }
 }

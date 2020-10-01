@@ -28,7 +28,7 @@ public enum TelemCommandMode {
     irsdk_TelemCommand_Restart(2),
     ;            // Write current file to disk and start a new one
 
-    private int value;
+    private final int value;
 
     TelemCommandMode(int value) {
         this.value = value;

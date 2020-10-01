@@ -95,6 +95,7 @@ public class WindowsService {
 
     /**
      * C++ MAKELONG for Java
+     *
      * @param lowWord
      * @param highWord
      */

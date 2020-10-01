@@ -10,91 +10,91 @@ import lombok.Data;
 public class WeekendInfoYaml {
 
     @JsonProperty
-    private String           TrackName = "";
+    private String               TrackName              = "";
     @JsonProperty
-    private String           TrackID = "";
+    private String               TrackID                = "";
     @JsonProperty
-    private String           TrackLength = "";
+    private String               TrackLength            = "";
     @JsonProperty
-    private String           TrackDisplayName = "";
+    private String               TrackDisplayName       = "";
     @JsonProperty
-    private String           TrackDisplayShortName = "";
+    private String               TrackDisplayShortName  = "";
     @JsonProperty
-    private String           TrackConfigName = "";
+    private String               TrackConfigName        = "";
     @JsonProperty
-    private String           TrackCity = "";
+    private String               TrackCity              = "";
     @JsonProperty
-    private String           TrackCountry = "";
+    private String               TrackCountry           = "";
     @JsonProperty
-    private String           TrackAltitude = "";
+    private String               TrackAltitude          = "";
     @JsonProperty
-    private String           TrackLatitude = "";
+    private String               TrackLatitude          = "";
     @JsonProperty
-    private String           TrackLongitude = "";
+    private String               TrackLongitude         = "";
     @JsonProperty
-    private String           TrackNorthOffset = "";
+    private String               TrackNorthOffset       = "";
     @JsonProperty
-    private String           TrackNumTurns = "";
+    private String               TrackNumTurns          = "";
     @JsonProperty
-    private String           TrackPitSpeedLimit = "";
+    private String               TrackPitSpeedLimit     = "";
     @JsonProperty
-    private String           TrackType = "";
+    private String               TrackType              = "";
     @JsonProperty
-    private String           TrackWeatherType = "";
+    private String               TrackWeatherType       = "";
     @JsonProperty
-    private String           TrackSkies = "";
+    private String               TrackSkies             = "";
     @JsonProperty
-    private String           TrackSurfaceTemp = "";
+    private String               TrackSurfaceTemp       = "";
     @JsonProperty
-    private String           TrackAirTemp = "";
+    private String               TrackAirTemp           = "";
     @JsonProperty
-    private String           TrackAirPressure = "";
+    private String               TrackAirPressure       = "";
     @JsonProperty
-    private String           TrackWindVel = "";
+    private String               TrackWindVel           = "";
     @JsonProperty
-    private String           TrackWindDir = "";
+    private String               TrackWindDir           = "";
     @JsonProperty
-    private String           TrackRelativeHumidity = "";
+    private String               TrackRelativeHumidity  = "";
     @JsonProperty
-    private String           TrackFogLevel = "";
+    private String               TrackFogLevel          = "";
     @JsonProperty
-    private String           TrackCleanup = "";
+    private String               TrackCleanup           = "";
     @JsonProperty
-    private String           TrackDynamicTrack = "";
+    private String               TrackDynamicTrack      = "";
     @JsonProperty
-    private String           SeriesID = "";
+    private String               SeriesID               = "";
     @JsonProperty
-    private String           SeasonID = "";
+    private String               SeasonID               = "";
     @JsonProperty
-    private String           SessionID = "";
+    private String               SessionID              = "";
     @JsonProperty
-    private String           SubSessionID = "";
+    private String               SubSessionID           = "";
     @JsonProperty
-    private String           LeagueID = "";
+    private String               LeagueID               = "";
     @JsonProperty
-    private String           Official = "";
+    private String               Official               = "";
     @JsonProperty
-    private String           RaceWeek = "";
+    private String               RaceWeek               = "";
     @JsonProperty
-    private String           EventType = "";
+    private String               EventType              = "";
     @JsonProperty
-    private String           Category = "";
+    private String               Category               = "";
     @JsonProperty
-    private String           SimMode = "";
+    private String               SimMode                = "";
     @JsonProperty
-    private String           TeamRacing = "";
+    private String               TeamRacing             = "";
     @JsonProperty
-    private String           MinDrivers = "";
+    private String               MinDrivers             = "";
     @JsonProperty
-    private String           MaxDrivers = "";
+    private String               MaxDrivers             = "";
     @JsonProperty
-    private String           DCRuleSet = "";
+    private String               DCRuleSet              = "";
     @JsonProperty
-    private String           QualifierMustStartRace = "";
+    private String               QualifierMustStartRace = "";
     @JsonProperty
-    private String           NumCarClasses = "";
+    private String               NumCarClasses          = "";
     @JsonProperty
-    private String               NumCarTypes = "";
+    private String               NumCarTypes            = "";
     @JsonProperty
     private WeekendOptionsYaml   WeekendOptions;
     @JsonProperty

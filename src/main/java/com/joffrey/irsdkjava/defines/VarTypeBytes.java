@@ -34,24 +34,25 @@ public enum VarTypeBytes {
     ;
 
     private static final Map<Integer, VarTypeBytes> varTypeBytesMap = new HashMap();
-    private final        int                        value;
-
-    VarTypeBytes(int value) {
-        this.value = value;
-    }
-
-    public int getValue() {
-        return this.value;
-    }
-
-    public static VarTypeBytes get(int code) {
-        return (VarTypeBytes) varTypeBytesMap.get(code);
-    }
 
     static {
         for (VarTypeBytes varTypeBytes : EnumSet.allOf(VarTypeBytes.class)) {
             varTypeBytesMap.put(varTypeBytes.value, varTypeBytes);
         }
+    }
+
+    private final int value;
+
+    VarTypeBytes(int value) {
+        this.value = value;
+    }
+
+    public static VarTypeBytes get(int code) {
+        return varTypeBytesMap.get(code);
+    }
+
+    public int getValue() {
+        return this.value;
     }
 
 }

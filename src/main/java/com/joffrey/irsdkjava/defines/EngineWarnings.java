@@ -30,7 +30,7 @@ public enum EngineWarnings {
     irsdk_revLimiterActive((byte) 0x20),
     ;
 
-    private int value;
+    private final int value;
 
     EngineWarnings(byte value) {
         this.value = value;

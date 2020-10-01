@@ -23,6 +23,10 @@ package com.joffrey.irsdkjava.defines;
 
 public enum YamlState {
 
-    space, key, keysep, value, newline,
+    space,
+    key,
+    keysep,
+    value,
+    newline,
 
 }

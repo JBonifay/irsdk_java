@@ -54,7 +54,7 @@ public enum Flags {
     irsdk_startGo(0x80000000),
     ;
 
-    private int value;
+    private final int value;
 
     Flags(int value) {
         this.value = value;

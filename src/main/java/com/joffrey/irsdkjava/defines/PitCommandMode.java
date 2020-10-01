@@ -37,7 +37,7 @@ public enum PitCommandMode {
     irsdk_PitCommand_ClearFuel(11),
     ;               // Uncheck add fuel
 
-    private int value;
+    private final int value;
 
     PitCommandMode(int value) {
         this.value = value;

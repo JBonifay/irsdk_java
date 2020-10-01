@@ -6,7 +6,7 @@ package com.joffrey.irsdkjava.windows;/*
  *    You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- *      
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -26,7 +26,7 @@ import com.sun.jna.win32.W32APIOptions;
 
 public interface Kernel32Impl extends com.sun.jna.platform.win32.Kernel32 {
 
-    static final Kernel32Impl KERNEL_32 = Native.load("kernel32", Kernel32Impl.class, W32APIOptions.DEFAULT_OPTIONS);
+    Kernel32Impl KERNEL_32 = Native.load("kernel32", Kernel32Impl.class, W32APIOptions.DEFAULT_OPTIONS);
 
     HANDLE OpenFileMapping(int lfProtect, boolean bInherit, String lpName);
 

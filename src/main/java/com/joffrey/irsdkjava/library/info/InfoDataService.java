@@ -3,14 +3,8 @@ package com.joffrey.irsdkjava.library.info;
 import com.joffrey.irsdkjava.GameVarUtils;
 import com.joffrey.irsdkjava.library.info.model.RaceInfo;
 import com.joffrey.irsdkjava.library.yaml.YamlService;
-import com.joffrey.irsdkjava.library.yaml.irsdkyaml.ResultsFastestLapYaml;
-import com.joffrey.irsdkjava.library.yaml.irsdkyaml.ResultsPositionsYaml;
-import com.joffrey.irsdkjava.library.yaml.irsdkyaml.SessionYaml;
 import com.joffrey.irsdkjava.library.yaml.irsdkyaml.WeekendInfoYaml;
-import java.util.Comparator;
-import java.util.Optional;
 import java.util.OptionalDouble;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Synchronized;
 import lombok.extern.java.Log;
@@ -24,11 +18,10 @@ public class InfoDataService {
     private final YamlService  yamlService;
     private final GameVarUtils gameVarUtils;
 
-    @Getter
     private final RaceInfo raceInfo = new RaceInfo();
 
     @Synchronized
-    public void loadRaceInfo() {
+    public RaceInfo loadRaceInfo() {
         // todo create separated thread for fastest traitment
 
         WeekendInfoYaml weekendInfo = yamlService.getIrsdkYamlFileBean().getWeekendInfo();
@@ -57,6 +50,7 @@ public class InfoDataService {
 
         raceInfo.setPlayerCarIdx(Integer.parseInt(yamlService.getIrsdkYamlFileBean().getDriverInfo().getDriverCarIdx()));
 
+        return raceInfo;
     }
 
 
