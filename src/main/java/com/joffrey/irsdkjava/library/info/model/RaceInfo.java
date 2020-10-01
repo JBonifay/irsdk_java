@@ -14,11 +14,11 @@ public class RaceInfo {
     private String eventType;
 
     // Info on remaining
-    private float remainingTime;  // SessionTimeRemain
-    private int   remainingLaps;  // SessionLapsRemain
-    private float fuelLevel;      // FuelLevel
-    private float fuelLevelPct;   // FuelLevelPct
-    private float fuelUsePerHour; // FuelUsePerHour
+    private double remainingTime;  // SessionTimeRemain
+    private int    remainingLaps;  // SessionLapsRemain
+    private float  fuelLevel;      // FuelLevel
+    private float  fuelLevelPct;   // FuelLevelPct
+    private float  fuelUsePerHour; // FuelUsePerHour
 
     // Rating
     private int averageSOF;

@@ -32,7 +32,7 @@ public class InfoDataService {
         raceInfo.setTrackCountry(weekendInfo.getTrackCountry());
         raceInfo.setEventType(weekendInfo.getEventType());
 
-        raceInfo.setRemainingTime(gameVarUtils.getVarFloat("SessionTimeRemain"));
+        raceInfo.setRemainingTime(gameVarUtils.getVarDouble("SessionTimeRemain"));
         raceInfo.setRemainingLaps(gameVarUtils.getVarInt("SessionLapsRemain"));
         raceInfo.setFuelLevel(gameVarUtils.getVarFloat("FuelLevel"));
         raceInfo.setFuelLevelPct(gameVarUtils.getVarFloat("FuelLevelPct"));
