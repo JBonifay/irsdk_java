@@ -35,7 +35,7 @@ public class YamlService {
                 log.warning(e.getMessage());
             }
         }
-        return null;
+        return new YamlFile();
     }
 
 }

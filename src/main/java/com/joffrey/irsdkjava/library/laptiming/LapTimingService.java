@@ -1,37 +1,49 @@
 package com.joffrey.irsdkjava.library.laptiming;
 
 import com.joffrey.irsdkjava.GameVarUtils;
-import com.joffrey.irsdkjava.defines.TrkLoc;
 import com.joffrey.irsdkjava.library.laptiming.model.LapTimingData;
+import com.joffrey.irsdkjava.library.utils.LapTimingUtils;
 import com.joffrey.irsdkjava.library.yaml.YamlService;
-import com.joffrey.irsdkjava.library.yaml.irsdkyaml.DriverInfoYaml;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.Synchronized;
+import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
+@Log
 @Service
 public class LapTimingService {
 
     private final YamlService  yamlService;
     private final GameVarUtils gameVarUtilsHelper;
 
-    private final Map<Integer, LapTimingData> lapTimingDataList = new HashMap<>();
+    public final Flux<List<LapTimingData>> listLapTimingDataFlux = Flux.interval(Duration.ofMillis(1))
+                                                                       .map(aLong -> loadLapTimingDataList())
+                                                                       .cache();
+
+    public Flux<List<LapTimingData>> getLapTimingDataListFlux() {
+        return listLapTimingDataFlux;
+    }
 
     /**
      * Get a list of {@link LapTimingData} object filled with each car data
+     *
+     * @return
      */
-    @Synchronized
-    public Map<Integer, LapTimingData> loadLapTimingDataList() {
+    private List<LapTimingData> loadLapTimingDataList() {
+
+        List<LapTimingData> lapTimingDataList = new ArrayList<>();
         int totalCars = yamlService.getIrsdkYamlFileBean().getDriverInfo().getDrivers().size();
 
-        // TODO: 25/09/2020 create a new Thread for each car for parallel
-        for (int carIdx = 0; carIdx < totalCars; carIdx++) {
-            lapTimingDataList.put(carIdx, getLapTimingDataForCarIdx(carIdx));
+        for (int i = 0; i < totalCars; i++) {
+            lapTimingDataList.add(getLapTimingDataForCarIdx(i));
         }
-        return lapTimingDataList;
+
+        return LapTimingUtils.sortLapTimingEntries(lapTimingDataList);
     }
 
 
@@ -44,49 +56,40 @@ public class LapTimingService {
     private LapTimingData getLapTimingDataForCarIdx(int carIdx) {
         LapTimingData lapTimingData = new LapTimingData();
 
-        lapTimingData.setCarIdxPosition(gameVarUtilsHelper.getVarInt("CarIdxPosition", carIdx));
-        lapTimingData.setCarIdxClassPosition(gameVarUtilsHelper.getVarInt("CarIdxClassPosition", carIdx));
-        lapTimingData.setCarIdxEstTime(gameVarUtilsHelper.getVarFloat("CarIdxEstTime", carIdx));
-        lapTimingData.setCarIdxF2Time(gameVarUtilsHelper.getVarFloat("CarIdxF2Time", carIdx));
-        lapTimingData.setCarIdxLap(gameVarUtilsHelper.getVarInt("CarIdxLap", carIdx));
-        lapTimingData.setCarIdxLapDistPct(gameVarUtilsHelper.getVarFloat("CarIdxLapDistPct", carIdx));
+        Flux.zip(Mono.just(gameVarUtilsHelper.getVarInt("CarIdxPosition", carIdx)),
+                 Mono.just(gameVarUtilsHelper.getVarInt("CarIdxClassPosition", carIdx)),
+                 Mono.just(gameVarUtilsHelper.getVarFloat("CarIdxEstTime", carIdx)),
+                 Mono.just(gameVarUtilsHelper.getVarFloat("CarIdxF2Time", carIdx)),
+                 Mono.just(gameVarUtilsHelper.getVarInt("CarIdxLap", carIdx)),
+                 Mono.just(gameVarUtilsHelper.getVarFloat("CarIdxLapDistPct", carIdx)),
+                 Mono.just(gameVarUtilsHelper.getVarFloat("CarIdxLastLapTime", carIdx)),
+                 Mono.just(gameVarUtilsHelper.getVarFloat("CarIdxBestLapTime", carIdx))).map(tuple -> {
+            lapTimingData.setCarIdxPosition(tuple.getT1());
+            lapTimingData.setCarIdxClassPosition(tuple.getT2());
+            lapTimingData.setCarIdxEstTime(tuple.getT3());
+            lapTimingData.setCarIdxF2Time(tuple.getT4());
+            lapTimingData.setCarIdxLap(tuple.getT5());
+            lapTimingData.setCarIdxLapDistPct(tuple.getT6());
+            lapTimingData.setCarIdxLastLapTime(tuple.getT7());
+            lapTimingData.setCarIdxBestLapTime(tuple.getT8());
+            return lapTimingData;
+        }).subscribe();
 
-        lapTimingData.setCarIdxLastLapTime(gameVarUtilsHelper.getVarFloat("CarIdxLastLapTime", carIdx));
-        lapTimingData.setCarIdxBestLapTime(gameVarUtilsHelper.getVarFloat("CarIdxBestLapTime", carIdx));
-
-        // TODO: 25/09/2020 check this
-        if (lapTimingData.getCarIdxLastLapTime() < 0 && lapTimingData.getCarIdxBestLapTime() < 0) {
-            int sessionNum = gameVarUtilsHelper.getVarInt("SessionNum");
-            if (yamlService.getIrsdkYamlFileBean().getSessionInfo().getSessions().get(sessionNum).getResultsPositions() != null) {
-                yamlService.getIrsdkYamlFileBean()
-                           .getSessionInfo()
-                           .getSessions()
-                           .get(sessionNum)
-                           .getResultsPositions()
-                           .forEach(resultsPositionsYaml -> {
-                               if (resultsPositionsYaml.getCarIdx().equals(String.valueOf(carIdx))) {
-                                   lapTimingData.setCarIdxLastLapTime(Float.parseFloat(resultsPositionsYaml.getLastTime()));
-                                   lapTimingData.setCarIdxBestLapTime(Float.parseFloat(resultsPositionsYaml.getFastestTime()));
-                               }
-                           });
-            }
-        }
-
-        int carIdxTrackSurface = gameVarUtilsHelper.getVarInt("CarIdxTrackSurface", carIdx);
-        lapTimingData.setCarIdxTrackSurface(TrkLoc.valueOf(carIdxTrackSurface));
-
-        DriverInfoYaml driverInfoYaml = yamlService.getIrsdkYamlFileBean().getDriverInfo().getDrivers().get(carIdx);
-        lapTimingData.setCarIdx(Integer.parseInt(driverInfoYaml.getCarIdx()));
-        lapTimingData.setUserName(driverInfoYaml.getUserName());
-        lapTimingData.setTeamName(driverInfoYaml.getTeamName());
-        lapTimingData.setCarNumber(driverInfoYaml.getCarNumber());
-        lapTimingData.setIRating(driverInfoYaml.getIRating());
-        lapTimingData.setLicLevel(driverInfoYaml.getLicLevel());
-        lapTimingData.setLicString(driverInfoYaml.getLicString());
-        lapTimingData.setLicColor(driverInfoYaml.getLicColor());
-        lapTimingData.setIsSpectator(driverInfoYaml.getIsSpectator());
-        lapTimingData.setClubName(driverInfoYaml.getClubName());
-        lapTimingData.setDivisionName(driverInfoYaml.getDivisionName());
+        Flux.zip(Mono.just(gameVarUtilsHelper.getVarInt("CarIdxTrackSurface", carIdx)),
+                 Mono.just(yamlService.getIrsdkYamlFileBean().getDriverInfo().getDrivers().get(carIdx))).map(tuple -> {
+            lapTimingData.setCarIdx(Integer.parseInt(tuple.getT2().getCarIdx()));
+            lapTimingData.setUserName(tuple.getT2().getUserName());
+            lapTimingData.setTeamName(tuple.getT2().getTeamName());
+            lapTimingData.setCarNumber(tuple.getT2().getCarNumber());
+            lapTimingData.setIRating(tuple.getT2().getIRating());
+            lapTimingData.setLicLevel(tuple.getT2().getLicLevel());
+            lapTimingData.setLicString(tuple.getT2().getLicString());
+            lapTimingData.setLicColor(tuple.getT2().getLicColor());
+            lapTimingData.setIsSpectator(tuple.getT2().getIsSpectator());
+            lapTimingData.setClubName(tuple.getT2().getClubName());
+            lapTimingData.setDivisionName(tuple.getT2().getDivisionName());
+            return lapTimingData;
+        }).subscribe();
 
         return lapTimingData;
     }

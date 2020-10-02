@@ -15,7 +15,6 @@ public class LapTimingData {
     private float   carIdxF2Time;
     private int     carIdxLap;
     private float   carIdxLapDistPct;
-    private boolean carIdxOnPitRoad;
     private float   carIdxLastLapTime;
     private float   carIdxBestLapTime;
     // Use this for know if car is in world

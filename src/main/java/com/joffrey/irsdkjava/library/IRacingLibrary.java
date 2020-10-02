@@ -29,11 +29,14 @@ import com.joffrey.irsdkjava.library.laptiming.LapTimingService;
 import com.joffrey.irsdkjava.library.laptiming.model.LapTimingData;
 import com.joffrey.irsdkjava.library.telemetry.model.TelemetryData;
 import com.joffrey.irsdkjava.library.telemetry.service.TelemetryService;
-import java.util.Map;
+import com.joffrey.irsdkjava.library.trackmaptracker.TrackmapTrackerService;
+import com.joffrey.irsdkjava.library.trackmaptracker.model.TrackmapTracker;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 
 @RequiredArgsConstructor
 @Component
@@ -45,27 +48,34 @@ public class IRacingLibrary implements ApplicationListener<ApplicationReadyEvent
     private final LapTimingService lapTimingService;
     private final InfoDataService  infoDataService;
     private final TelemetryService telemetryService;
+    private final TrackmapTrackerService trackmapTrackerService;
+    private boolean init = false;
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        while (true) {
+        while (!init) {
             if (sdkStarter.isReady()) {
                 if (sdkStarter.isRunning()) {
                     gameVarUtils.fetchVars();
+                    init = true;
                 }
             }
         }
     }
 
-    public Map<Integer, LapTimingData> getLapTimingDataList() {
-        return lapTimingService.loadLapTimingDataList();
+    public Flux<List<TrackmapTracker>> getTrackmapTrackerList() {
+        return trackmapTrackerService.getTrackmapTrackerListFlux();
     }
 
-    public RaceInfo getRaceInfo() {
-        return infoDataService.loadRaceInfo();
+    public Flux<List<LapTimingData>> getLapTimingDataList() {
+        return lapTimingService.getLapTimingDataListFlux();
     }
 
-    public TelemetryData getTelemetryData() {
-        return telemetryService.loadTelemetryData();
+    public Flux<RaceInfo> getRaceInfo() {
+        return infoDataService.getRaceInfoFlux();
+    }
+
+    public Flux<TelemetryData> getTelemetryData() {
+        return telemetryService.getTelemetryDataFlux();
     }
 }
