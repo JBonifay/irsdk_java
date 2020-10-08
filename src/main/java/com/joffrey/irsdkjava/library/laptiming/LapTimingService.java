@@ -1,6 +1,6 @@
 package com.joffrey.irsdkjava.library.laptiming;
 
-import com.joffrey.irsdkjava.GameVarUtils;
+import com.joffrey.irsdkjava.SdkStarter;
 import com.joffrey.irsdkjava.library.laptiming.model.LapTimingData;
 import com.joffrey.irsdkjava.library.utils.LapTimingUtils;
 import com.joffrey.irsdkjava.library.yaml.YamlService;
@@ -10,6 +10,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.ConnectableFlux;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -18,15 +19,15 @@ import reactor.core.publisher.Mono;
 @Service
 public class LapTimingService {
 
-    private final YamlService  yamlService;
-    private final GameVarUtils gameVarUtilsHelper;
+    private final SdkStarter  sdkStarter;
+    private final YamlService yamlService;
 
-    public final Flux<List<LapTimingData>> listLapTimingDataFlux = Flux.interval(Duration.ofMillis(1))
-                                                                       .map(aLong -> loadLapTimingDataList())
-                                                                       .cache();
+    public final ConnectableFlux<List<LapTimingData>> listLapTimingDataFlux = Flux.interval(Duration.ofSeconds(1))
+                                                                                  .map(aLong -> loadLapTimingDataList())
+                                                                                  .publish();
 
     public Flux<List<LapTimingData>> getLapTimingDataListFlux() {
-        return listLapTimingDataFlux;
+        return listLapTimingDataFlux.autoConnect();
     }
 
     /**
@@ -35,12 +36,14 @@ public class LapTimingService {
      * @return
      */
     private List<LapTimingData> loadLapTimingDataList() {
-
         List<LapTimingData> lapTimingDataList = new ArrayList<>();
-        int totalCars = yamlService.getIrsdkYamlFileBean().getDriverInfo().getDrivers().size();
 
-        for (int i = 0; i < totalCars; i++) {
-            lapTimingDataList.add(getLapTimingDataForCarIdx(i));
+        if (sdkStarter.isRunning()) {
+            int totalCars = yamlService.getIrsdkYamlFileBean().getDriverInfo().getDrivers().size();
+
+            for (int i = 0; i < totalCars; i++) {
+                lapTimingDataList.add(getLapTimingDataForCarIdx(i));
+            }
         }
 
         return LapTimingUtils.sortLapTimingEntries(lapTimingDataList);
@@ -56,14 +59,14 @@ public class LapTimingService {
     private LapTimingData getLapTimingDataForCarIdx(int carIdx) {
         LapTimingData lapTimingData = new LapTimingData();
 
-        Flux.zip(Mono.just(gameVarUtilsHelper.getVarInt("CarIdxPosition", carIdx)),
-                 Mono.just(gameVarUtilsHelper.getVarInt("CarIdxClassPosition", carIdx)),
-                 Mono.just(gameVarUtilsHelper.getVarFloat("CarIdxEstTime", carIdx)),
-                 Mono.just(gameVarUtilsHelper.getVarFloat("CarIdxF2Time", carIdx)),
-                 Mono.just(gameVarUtilsHelper.getVarInt("CarIdxLap", carIdx)),
-                 Mono.just(gameVarUtilsHelper.getVarFloat("CarIdxLapDistPct", carIdx)),
-                 Mono.just(gameVarUtilsHelper.getVarFloat("CarIdxLastLapTime", carIdx)),
-                 Mono.just(gameVarUtilsHelper.getVarFloat("CarIdxBestLapTime", carIdx))).map(tuple -> {
+        Flux.zip(Mono.just(sdkStarter.getVarInt("CarIdxPosition", carIdx)),
+                 Mono.just(sdkStarter.getVarInt("CarIdxClassPosition", carIdx)),
+                 Mono.just(sdkStarter.getVarFloat("CarIdxEstTime", carIdx)),
+                 Mono.just(sdkStarter.getVarFloat("CarIdxF2Time", carIdx)),
+                 Mono.just(sdkStarter.getVarInt("CarIdxLap", carIdx)),
+                 Mono.just(sdkStarter.getVarFloat("CarIdxLapDistPct", carIdx)),
+                 Mono.just(sdkStarter.getVarFloat("CarIdxLastLapTime", carIdx)),
+                 Mono.just(sdkStarter.getVarFloat("CarIdxBestLapTime", carIdx))).map(tuple -> {
             lapTimingData.setCarIdxPosition(tuple.getT1());
             lapTimingData.setCarIdxClassPosition(tuple.getT2());
             lapTimingData.setCarIdxEstTime(tuple.getT3());
@@ -75,7 +78,7 @@ public class LapTimingService {
             return lapTimingData;
         }).subscribe();
 
-        Flux.zip(Mono.just(gameVarUtilsHelper.getVarInt("CarIdxTrackSurface", carIdx)),
+        Flux.zip(Mono.just(sdkStarter.getVarInt("CarIdxTrackSurface", carIdx)),
                  Mono.just(yamlService.getIrsdkYamlFileBean().getDriverInfo().getDrivers().get(carIdx))).map(tuple -> {
             lapTimingData.setCarIdx(Integer.parseInt(tuple.getT2().getCarIdx()));
             lapTimingData.setUserName(tuple.getT2().getUserName());

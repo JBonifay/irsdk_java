@@ -1,6 +1,6 @@
 package com.joffrey.irsdkjava.library.trackmaptracker;
 
-import com.joffrey.irsdkjava.GameVarUtils;
+import com.joffrey.irsdkjava.SdkStarter;
 import com.joffrey.irsdkjava.library.trackmaptracker.model.TrackmapTracker;
 import com.joffrey.irsdkjava.library.yaml.YamlService;
 import com.joffrey.irsdkjava.library.yaml.irsdkyaml.DriverInfoYaml;
@@ -11,6 +11,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.ConnectableFlux;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.ParallelFlux;
@@ -21,26 +22,30 @@ import reactor.core.scheduler.Schedulers;
 @Service
 public class TrackmapTrackerService {
 
-    private final GameVarUtils gameVarUtilsHelper;
-    private final YamlService  yamlService;
+    private final SdkStarter  sdkStarter;
+    private final YamlService yamlService;
 
     // Average 12ms
-    public final Flux<List<TrackmapTracker>> trackmapTrackerListFlux = Flux.interval(Duration.ofMillis(1))
-                                                                           .map(aLong -> loadTrackmapTrackerDataList())
-                                                                           .cache();
+    public final ConnectableFlux<List<TrackmapTracker>> trackmapTrackerListFlux = Flux.interval(Duration.ofMillis(50))
+                                                                                      .map(aLong -> loadTrackmapTrackerDataList())
+                                                                                      .publish();
 
     public Flux<List<TrackmapTracker>> getTrackmapTrackerListFlux() {
-        return trackmapTrackerListFlux;
+        return trackmapTrackerListFlux.autoConnect();
     }
 
     private List<TrackmapTracker> loadTrackmapTrackerDataList() {
         List<TrackmapTracker> trackmapTrackerList = new ArrayList<>();
-        List<DriverInfoYaml> drivers = yamlService.getIrsdkYamlFileBean().getDriverInfo().getDrivers();
 
-        ParallelFlux.from(Flux.fromStream(drivers.stream())
-                              .map(driverInfoYaml -> trackmapTrackerList.add(getTrackmapTrackerCarIdx(driverInfoYaml))))
-                    .runOn(Schedulers.parallel())
-                    .subscribe();
+        if (sdkStarter.isRunning()) {
+
+            List<DriverInfoYaml> drivers = yamlService.getIrsdkYamlFileBean().getDriverInfo().getDrivers();
+
+            ParallelFlux.from(Flux.fromStream(drivers.stream())
+                                  .map(driverInfoYaml -> trackmapTrackerList.add(getTrackmapTrackerCarIdx(driverInfoYaml))))
+                        .runOn(Schedulers.parallel())
+                        .subscribe();
+        }
 
         return trackmapTrackerList;
     }
@@ -64,12 +69,10 @@ public class TrackmapTrackerService {
             return trackmapTracker;
         }).subscribe();
 
-        Mono.just(gameVarUtilsHelper.getVarFloat("CarIdxLapDistPct", Integer.parseInt(driverInfoYaml.getCarIdx())))
-            .map(aFloat -> {
-                trackmapTracker.setDriverDistPct(aFloat);
-                return trackmapTracker;
-            })
-            .subscribe();
+        Mono.just(sdkStarter.getVarFloat("CarIdxLapDistPct", Integer.parseInt(driverInfoYaml.getCarIdx()))).map(aFloat -> {
+            trackmapTracker.setDriverDistPct(aFloat);
+            return trackmapTracker;
+        }).subscribe();
 
         return trackmapTracker;
     }

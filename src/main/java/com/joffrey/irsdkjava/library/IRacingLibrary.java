@@ -21,7 +21,6 @@
 
 package com.joffrey.irsdkjava.library;
 
-import com.joffrey.irsdkjava.GameVarUtils;
 import com.joffrey.irsdkjava.SdkStarter;
 import com.joffrey.irsdkjava.library.info.InfoDataService;
 import com.joffrey.irsdkjava.library.info.model.RaceInfo;
@@ -33,35 +32,20 @@ import com.joffrey.irsdkjava.library.trackmaptracker.TrackmapTrackerService;
 import com.joffrey.irsdkjava.library.trackmaptracker.model.TrackmapTracker;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
 @RequiredArgsConstructor
 @Component
-public class IRacingLibrary implements ApplicationListener<ApplicationReadyEvent> {
+public class IRacingLibrary {
 
     private final SdkStarter   sdkStarter;
-    private final GameVarUtils gameVarUtils;
 
     private final LapTimingService lapTimingService;
     private final InfoDataService  infoDataService;
     private final TelemetryService telemetryService;
     private final TrackmapTrackerService trackmapTrackerService;
-    private boolean init = false;
 
-    @Override
-    public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        while (!init) {
-            if (sdkStarter.isReady()) {
-                if (sdkStarter.isRunning()) {
-                    gameVarUtils.fetchVars();
-                    init = true;
-                }
-            }
-        }
-    }
 
     public Flux<List<TrackmapTracker>> getTrackmapTrackerList() {
         return trackmapTrackerService.getTrackmapTrackerListFlux();
