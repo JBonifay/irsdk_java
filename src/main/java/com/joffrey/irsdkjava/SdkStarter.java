@@ -46,8 +46,6 @@ public class SdkStarter {
 
                     if (header.getByteBuffer() == null) {
                         return false;
-                    } else {
-                        fetchVars();
                     }
 
                 }
@@ -59,13 +57,14 @@ public class SdkStarter {
                 }
 
                 if (dataValidEvent != null) {
+                    fetchVars();
                     isInitialized = true;
                     return true;
                 }
 
                 return false;
             }
-
+            return false;
         }
         return true;
     }
