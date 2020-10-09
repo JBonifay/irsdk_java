@@ -69,16 +69,14 @@ public class TelemetryService {
                                                           Mono.just(sdkStarter.getVarFloat("windDir")),
                                                           Mono.just(sdkStarter.getVarFloat("windVel")),
                                                           Mono.just(sdkStarter.getVarInt("WeatherType")))
-                                                     .map(o -> new Weather(o.getT1(), o.getT2(), o.getT3(), switch (o.getT4()) {
-                                                         case 0 -> "Clear";
-                                                         case 1, 2 -> "Cloudy";
-                                                         case 3 -> "Overcast";
-                                                         default -> "";
-                                                     }, o.getT5(), o.getT6(), o.getT7(), switch (o.getT8()) {
-                                                         case 0 -> "Constant";
-                                                         case 1 -> "Dynamic";
-                                                         default -> "";
-                                                     }));
+                                                     .map(o -> new Weather(o.getT1(),
+                                                                           o.getT2(),
+                                                                           o.getT3(),
+                                                                           getSkies(o.getT4()),
+                                                                           o.getT5(),
+                                                                           o.getT6(),
+                                                                           o.getT7(),
+                                                                           getWeatherType(o.getT8())));
 
         Flux<TelemetryData.Session> fourthGroup = Flux.zip(Mono.just(sdkStarter.getVarDouble("SessionTime")),
                                                            Mono.just(sdkStarter.getVarDouble("SessionTimeRemain")),
@@ -172,6 +170,28 @@ public class TelemetryService {
             return telemetryData;
         });
 
+    }
+
+    private String getWeatherType(Integer t8) {
+        if (t8 == 0) {
+            return "Constant";
+        } else if (t8 == 1) {
+            return "Dynamic";
+        } else {
+            return "";
+        }
+    }
+
+    private String getSkies(Integer t4) {
+        if (t4 == 0) {
+            return "Clear";
+        } else if (t4 == 1 || t4 == 2) {
+            return "Cloudy";
+        } else if (t4 == 3) {
+            return "Overcast";
+        } else {
+            return "";
+        }
     }
 
 
