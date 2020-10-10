@@ -172,10 +172,10 @@ public class TelemetryService {
 
     }
 
-    private String getWeatherType(Integer t8) {
-        if (t8 == 0) {
+    private String getWeatherType(Integer weatherIntVal) {
+        if (weatherIntVal == 0) {
             return "Constant";
-        } else if (t8 == 1) {
+        } else if (weatherIntVal == 1) {
             return "Dynamic";
         } else {
             return "";

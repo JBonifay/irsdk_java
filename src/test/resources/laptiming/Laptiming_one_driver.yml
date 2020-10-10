@@ -1,0 +1,68 @@
+DriverInfo:
+  DriverCarIdx: 63
+  DriverUserID: 518750
+  PaceCarIdx: -1
+  DriverHeadPosX: -0.416
+  DriverHeadPosY: 0.344
+  DriverHeadPosZ: 0.660
+  DriverCarIdleRPM: 875.000
+  DriverCarRedLine: 7525.000
+  DriverCarEngCylinderCount: 4
+  DriverCarFuelKgPerLtr: 0.750
+  DriverCarFuelMaxLtr: 44.987
+  DriverCarMaxFuelPct: 1.000
+  DriverCarSLFirstRPM: 5600.000
+  DriverCarSLShiftRPM: 7200.000
+  DriverCarSLLastRPM: 7200.000
+  DriverCarSLBlinkRPM: 7700.000
+  DriverCarVersion: 2020.06.04.01
+  DriverPitTrkPct: 0.990912
+  DriverCarEstLapTime: 61.9235
+  DriverSetupName: baseline.sto
+  DriverSetupIsModified: 0
+  DriverSetupLoadTypeName: user
+  DriverSetupPassedTech: 1
+  DriverIncidentCount: 0
+  Drivers:
+    - CarIdx: 63
+      UserName: Joffrey Bonifay
+      AbbrevName:
+      Initials:
+      UserID: 518750
+      TeamID: 0
+      TeamName: Joffrey Bonifay
+      CarNumber: ""
+      CarNumberRaw: -1
+      CarPath: mx5 mx52016
+      CarClassID: 74
+      CarID: 67
+      CarIsPaceCar: 0
+      CarIsAI: 0
+      CarScreenName: Mazda MX-5 Cup
+      CarScreenNameShort: MX-5 Cup
+      CarClassShortName: MX5 Cup 2016
+      CarClassRelSpeed: 33
+      CarClassLicenseLevel: 0
+      CarClassMaxFuelPct: 1.000 %
+      CarClassWeightPenalty: 0.000 kg
+      CarClassPowerAdjust: 0.000 %
+      CarClassDryTireSetLimit: 0 %
+      CarClassColor: 0xffffff
+      IRating: 876
+      LicLevel: 7
+      LicSubLevel: 341
+      LicString: D 3.41
+      LicColor: 0xfc8a27
+      IsSpectator: 1
+      CarDesignStr: 1,5e5e5e,135324,111111
+      HelmetDesignStr: 42,ef8e26,ffffff,000000
+      SuitDesignStr: 1,ef9126,000000,ffffff
+      CarNumberDesignStr: 0,0,ffffff,777777,000000
+      CarSponsor_1: 0
+      CarSponsor_2: 0
+      ClubName: France
+      DivisionName: Division 1
+      CurDriverIncidentCount: 0
+      TeamIncidentCount: 0
+
+...

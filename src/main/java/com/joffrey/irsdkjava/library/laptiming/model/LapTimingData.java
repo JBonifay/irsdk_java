@@ -9,8 +9,10 @@ public class LapTimingData {
     // Yaml Idx
     private int carIdx;
 
-    // Live data
+    // Calculated +> Not from iRacing
     private int   carIdxLivePosition;
+
+    // Live data
     private int   carIdxPosition;
     private int   carIdxClassPosition;
     private float carIdxEstTime;

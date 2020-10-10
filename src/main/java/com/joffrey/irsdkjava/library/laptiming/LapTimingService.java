@@ -94,9 +94,6 @@ public class LapTimingService {
         return Flux.zip(firstGroup, secondGroup, (liveData, yamlData) -> {
             LapTimingData lapTimingData = new LapTimingData();
             lapTimingData.setCarIdx(carIdx);
-
-            lapTimingData.setCarIdxLivePosition(0);
-
             lapTimingData.setCarIdxPosition(liveData.getCarIdxPosition());
             lapTimingData.setCarIdxClassPosition(liveData.getCarIdxClassPosition());
             lapTimingData.setCarIdxEstTime(liveData.getCarIdxEstTime());
