@@ -23,10 +23,9 @@ public class LapTimingData {
     private float carIdxLastLapTime;
     private float carIdxBestLapTime;
 
-    // Use this for know if car is in world
-    private String carIdxTrackSurface;
-
-    // Player info
+    private String carIdxTrackSurface; // Use this for know if car is in world
+    private String carIsPaceCar;
+    private String carIsAI;
     private String userName;
     private String teamName;
     private String carNumber;
@@ -57,9 +56,9 @@ public class LapTimingData {
     @Data
     public static class YamlData {
 
-        // Use this for know if car is in world
-        private String carIdxTrackSurface;
-        // Player info
+        private String carIdxTrackSurface; // Use this for know if car is in world
+        private String carIsPaceCar;
+        private String carIsAI;
         private String userName;
         private String teamName;
         private String carNumber;

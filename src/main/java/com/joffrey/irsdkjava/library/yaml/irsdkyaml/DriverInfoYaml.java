@@ -33,6 +33,10 @@ public class DriverInfoYaml {
     @JsonProperty
     private String CarID                 = "";
     @JsonProperty
+    private String CarIsPaceCar          = "";
+    @JsonProperty
+    private String CarIsAI               = "";
+    @JsonProperty
     private String CarScreenName         = "";
     @JsonProperty
     private String CarScreenNameShort    = "";

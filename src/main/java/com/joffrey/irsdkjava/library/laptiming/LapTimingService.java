@@ -81,6 +81,8 @@ public class LapTimingService {
                                                             Mono.just(yamlService.getYamlFile().getDriverInfo().getDrivers()
                                                                                  .get(carIdx)))
                                                        .map(o -> new YamlData(TrkLoc.valueOf(o.getT1()),
+                                                                              o.getT2().getCarIsPaceCar(),
+                                                                              o.getT2().getCarIsAI(),
                                                                               o.getT2().getUserName(),
                                                                               o.getT2().getTeamName(),
                                                                               o.getT2().getCarNumber(),
@@ -104,6 +106,8 @@ public class LapTimingService {
             lapTimingData.setCarIdxLastLapTime(liveData.getCarIdxLastLapTime());
             lapTimingData.setCarIdxBestLapTime(liveData.getCarIdxBestLapTime());
             lapTimingData.setCarIdxTrackSurface(yamlData.getCarIdxTrackSurface());
+            lapTimingData.setCarIsPaceCar(yamlData.getCarIsPaceCar());
+            lapTimingData.setCarIsAI(yamlData.getCarIsAI());
             lapTimingData.setUserName(yamlData.getUserName());
             lapTimingData.setTeamName(yamlData.getTeamName());
             lapTimingData.setCarNumber(yamlData.getCarNumber());
