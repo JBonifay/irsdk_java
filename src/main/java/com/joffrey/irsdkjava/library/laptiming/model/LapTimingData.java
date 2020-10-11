@@ -10,7 +10,8 @@ public class LapTimingData {
     private int carIdx;
 
     // Calculated +> Not from iRacing
-    private int   carIdxLivePosition;
+    private int   carLivePosition;
+    private float carIntervalWithPreviousCar;
 
     // Live data
     private int   carIdxPosition;

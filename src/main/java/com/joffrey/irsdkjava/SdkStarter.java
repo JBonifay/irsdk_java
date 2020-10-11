@@ -57,7 +57,6 @@ public class SdkStarter {
                 }
 
                 if (dataValidEvent != null) {
-                    fetchVars();
                     isInitialized = true;
                     return true;
                 }
@@ -82,6 +81,7 @@ public class SdkStarter {
         if (wasConnected != isConnected) {
             if (isConnected) {
                 log.info("Connected to iRacing.");
+                fetchVars();
             } else {
                 log.info("Lost connection to iRacing");
             }
@@ -139,6 +139,7 @@ public class SdkStarter {
     }
 
     public float getVarFloat(String varName, int entry) {
+
         VarHeader vh = vars.get(varName);
         if (vh != null) {
             if (entry >= 0 && entry < vh.getCount()) {

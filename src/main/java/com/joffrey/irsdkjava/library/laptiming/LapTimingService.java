@@ -48,7 +48,8 @@ public class LapTimingService {
     private Flux<List<LapTimingData>> loadLapTimingDataList() {
         int totalSize = yamlService.getYamlFile().getDriverInfo().getDrivers().size();
         return Flux.range(0, totalSize).subscribeOn(Schedulers.parallel()).flatMap(this::getLapTimingDataForCarIdx)
-                   .sort(getLapTimingDataComparator()).buffer(totalSize).map(this::setDriverNewPosition);
+                   .sort(getLapTimingDataComparator()).buffer(totalSize).map(this::setDriversNewPosition)
+                   .map(this::setDriversInterval);
     }
 
     /**
@@ -124,24 +125,20 @@ public class LapTimingService {
      */
     private Comparator<LapTimingData> getLapTimingDataComparator() {
         return (o1, o2) -> {
-            int a = o1.getCarIdxPosition();
-            int b = o2.getCarIdxPosition();
-            // Put all pos = 0 at end of array
-            if (a == 0 && b == 0) {
-                return 0;
-            }
-            if (a == 0) {
-                return 1;
-            }
-            if (b == 0) {
+            // Check for drivers track pct
+            if (o1.getCarIdxLap() == o2.getCarIdxLap()) {
+                if (o1.getCarIdxLapDistPct() < o2.getCarIdxLapDistPct()) {
+                    return 1;
+                }
+                return -1;
+
+            } else {
+                // Put all pos = 0 at end of array
+                if (o1.getCarIdxLap() > o2.getCarIdxLap()) {
+                    return 1;
+                }
                 return -1;
             }
-
-            // Check for drivers track pct
-            if (o1.getCarIdxLapDistPct() < o2.getCarIdxLapDistPct() && o1.getCarIdxLap() == o2.getCarIdxLap()) {
-                return o1.getCarIdxPosition() + o2.getCarIdxPosition();
-            }
-            return o1.getCarIdxPosition() - o2.getCarIdxPosition();
         };
     }
 
@@ -151,11 +148,27 @@ public class LapTimingService {
      * @param lapTimingData the {@link LapTimingData} list to modify
      * @return a {@link LapTimingData} list modified
      */
-    private List<LapTimingData> setDriverNewPosition(List<LapTimingData> lapTimingData) {
-        int bound = lapTimingData.size();
-        IntStream.range(0, bound).forEachOrdered(i -> lapTimingData.get(i).setCarIdxLivePosition(i +1));
+    private List<LapTimingData> setDriversNewPosition(List<LapTimingData> lapTimingData) {
+        IntStream.range(0, lapTimingData.size()).forEachOrdered(i -> lapTimingData.get(i).setCarLivePosition(i + 1));
         return lapTimingData;
     }
 
+    /**
+     * Set the interval between drivers
+     * @param lapTimingData the list containing all drivers
+     * @return the entry list filled with interval values
+     */
+    private List<LapTimingData> setDriversInterval(List<LapTimingData> lapTimingData) {
+        IntStream.range(0, lapTimingData.size()).forEachOrdered(i -> {
+            float time = 0.0f;
+            if (i != 0) {
+                LapTimingData prevDriver = lapTimingData.get(i - 1);
+                time = prevDriver.getCarIdxEstTime() -lapTimingData.get(i).getCarIdxEstTime();
+            }
+            lapTimingData.get(i).setCarIntervalWithPreviousCar(time);
+        });
+
+        return lapTimingData;
+    }
 
 }
