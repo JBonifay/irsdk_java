@@ -68,8 +68,7 @@ public class LapTimingServiceUT {
         return objectMapper.readValue(yamlString, YamlFile.class);
     }
 
-    // Check if value taken from Yaml and Memory mapped file is ok
-    @DisplayName("getLapTimingDataListFlux() - One Driver: Check if values are good, values are simulated from a custom yaml, and Mocked Memory Mapped File")
+    @DisplayName("getLapTimingDataListFlux() - One Driver: Check if values from MemMapFile and Yaml are ok, values are simulated from a custom yaml, and Mock method calling Memory Mapped File")
     @Test
     void Given_OneDriverWithData_When_SubscribingToLapTimingFlux_Then_ShouldReturnFluxOfOneDriverWithValidData() {
         // Generate Fake data for replace data from MemoryMappedFile
@@ -115,7 +114,7 @@ public class LapTimingServiceUT {
     }
 
     // getLapTimingDataComparator()
-    @DisplayName("getLapTimingDataComparator() - Should sort player positions by pct ")
+    @DisplayName("getLapTimingDataComparator() - Should sort player positions by lapPct ")
     @ParameterizedTest
     @CsvSource({"30.0f, 80.0f, 70.0f, 60.0f, 3, 0, 1, 2",
                 "90.0f, 30.0f, 70.0f, 60.0f, 0, 3, 1, 2",
@@ -148,14 +147,15 @@ public class LapTimingServiceUT {
           .hasNotDroppedElements();
     }
 
-    @DisplayName("getLapTimingDataComparator() - Should sort player positions by pct with differents drivers laps ")
+    @DisplayName("getLapTimingDataComparator() - Should sort player positions by pct, drivers are on different laps ")
     @ParameterizedTest
     @CsvSource({"30.0f, 80.0f, 70.0f, 60.0f,    2, 3, 0, 1,     1, 2, 1, 1",
                 "90.0f, 30.0f, 70.0f, 60.0f,    3, 2, 0, 1,     2, 1, 1, 1",
                 "90.0f, 80.0f, 30.0f, 60.0f,    2, 0, 3, 1,     2, 1, 2, 1",
                 "90.0f, 80.0f, 70.0f, 30.0f,    1, 2, 3, 0,     2, 2, 2, 1"})
-    void Given_DriversListWithDifferentsLapIdx_When_GettingFlux_DriversShouldBeOrderedByLivePositions(float firstPct, float secondPct, float thirdPct,
-            float fourthPct, int firstIdxExpected, int secondIdxExpected, int thirdIdxExpected, int fourthIdxExpected,
+    void Given_DriversListWithDifferentsLapIdx_When_GettingFlux_DriversShouldBeOrderedByLivePositions(
+            float firstPct, float secondPct, float thirdPct, float fourthPct,
+            int firstIdxExpected, int secondIdxExpected, int thirdIdxExpected, int fourthIdxExpected,
             int firstPlayerLap, int secondPlayerLap, int thirdPlayerLap, int fourthPlayerLap) {
         byteBufferYamlFile = createByteBufferYamlFile("laptiming/Laptiming_four_driver.yml");
 
@@ -206,7 +206,7 @@ public class LapTimingServiceUT {
 
     @DisplayName("setDriversInterval() - Two Drivers: When list of player is created, the interval between players should be set from EstTime difference")
     @ParameterizedTest
-    @CsvSource({"10.0f,  0.0f,  10.0f",
+    @CsvSource({"10.0f,   0.0f,  10.0f",
                 "40.0f,  30.0f,  10.0f",
                 "99.9f,  10.0f,  89.9f"})
     void Given_TwoDriversEstimatedTimeValues_When_GettingFlux_Then_IntervalShouldBeSetAndEqualsToDriversEstTimeSubtraction(
@@ -216,6 +216,7 @@ public class LapTimingServiceUT {
         Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 0)).thenReturn(firstDriverEstTime);
         Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 1)).thenReturn(secondDriverEstTime);
 
+        // Set drivers a CarIdxLapDistPct for simulate ordering -> list is sorted by CarIdxLapDistPct
         Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 0)).thenReturn(10.0f);
         Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 1)).thenReturn(9.0f);
 
@@ -246,6 +247,7 @@ public class LapTimingServiceUT {
         Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 2)).thenReturn(thirdDriverEstTime);
         Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 3)).thenReturn(fourthDriverEstTime);
 
+        // Set drivers a CarIdxLapDistPct for simulate ordering -> list is sorted by CarIdxLapDistPct
         Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 0)).thenReturn(10.0f);
         Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 1)).thenReturn(9.0f);
         Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 2)).thenReturn(8.0f);
