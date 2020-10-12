@@ -133,16 +133,20 @@ public class LapTimingService {
             if (o1.getCarIdxLap() == o2.getCarIdxLap()) {
                 if (o1.getCarIdxLapDistPct() < o2.getCarIdxLapDistPct()) {
                     return 1;
+                } else if (o1.getCarIdxLapDistPct() == o2.getCarIdxLapDistPct()) {
+                    return 0;
                 }
-                return -1;
-
             } else {
                 // Put all pos = 0 at end of array
                 if (o1.getCarIdxLap() > o2.getCarIdxLap()) {
+                    return -1;
+                } else if (o1.getCarIdxLap() == o2.getCarIdxLap()) {
+                    return 0;
+                } else {
                     return 1;
                 }
-                return -1;
             }
+            return -1;
         };
     }
 
@@ -167,7 +171,7 @@ public class LapTimingService {
             float time = 0.0f;
             if (i != 0) {
                 LapTimingData prevDriver = lapTimingData.get(i - 1);
-                time = prevDriver.getCarIdxEstTime() -lapTimingData.get(i).getCarIdxEstTime();
+                time = Math.abs(prevDriver.getCarIdxEstTime() - lapTimingData.get(i).getCarIdxEstTime());
             }
             lapTimingData.get(i).setCarIntervalWithPreviousCar(time);
         });
