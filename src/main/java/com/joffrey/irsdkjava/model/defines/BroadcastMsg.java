@@ -1,5 +1,5 @@
-package com.joffrey.irsdkjava.model.defines;
 /*
+ *
  *    Copyright (C) 2020 Joffrey Bonifay
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,10 @@ package com.joffrey.irsdkjava.model.defines;
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  */
+
+package com.joffrey.irsdkjava.model.defines;
 
 
 public enum BroadcastMsg {

@@ -1,4 +1,5 @@
 /*
+ *
  *    Copyright (C) 2020 Joffrey Bonifay
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,13 +18,13 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 
 package com.joffrey.irsdkjava.model.defines;
 
 public enum CarLeftRight {
-    irsdk_LROff,
-    irsdk_LRClear,            // no cars around us.
+    irsdk_LROff, irsdk_LRClear,            // no cars around us.
     irsdk_LRCarLeft,        // there is a car to our left.
     irsdk_LRCarRight,        // there is a car to our right.
     irsdk_LRCarLeftRight,    // there are cars on each side.

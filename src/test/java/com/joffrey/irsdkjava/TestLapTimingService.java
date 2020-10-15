@@ -1,20 +1,38 @@
+/*
+ *
+ *    Copyright (C) 2020 Joffrey Bonifay
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
 package com.joffrey.irsdkjava;
 
-import static com.joffrey.irsdkjava.YamlHelperTest.*;
 import static com.joffrey.irsdkjava.YamlHelperTest.createByteBufferYamlFile;
+import static com.joffrey.irsdkjava.YamlHelperTest.loadYamlObject;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.joffrey.irsdkjava.YamlHelperTest;
 import com.joffrey.irsdkjava.laptiming.LapTimingService;
 import com.joffrey.irsdkjava.model.Header;
 import com.joffrey.irsdkjava.model.SdkStarter;
 import com.joffrey.irsdkjava.yaml.YamlService;
 import com.joffrey.irsdkjava.yaml.irsdkyaml.YamlFile;
-import java.io.File;
 import java.nio.ByteBuffer;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,9 +41,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.util.FileCopyUtils;
 import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
@@ -105,12 +121,11 @@ class TestLapTimingService {
     @DisplayName("getLapTimingDataComparator() - Should sort player positions by lapPct ")
     @ParameterizedTest
     @CsvSource({"30.0f, 80.0f, 70.0f, 60.0f, 3, 0, 1, 2",
-                "90.0f, 30.0f, 70.0f, 60.0f, 0, 3, 1, 2",
-                "90.0f, 80.0f, 30.0f, 60.0f, 0, 1, 3, 2",
-                "90.0f, 80.0f, 70.0f, 30.0f, 0, 1, 2, 3"})
-    void Given_DriversList_When_GettingFlux_DriversShouldBeOrderedByLivePositions(
-            float firstPct, float secondPct, float thirdPct, float fourthPct,
-            int firstIdxExpected, int secondIdxExpected, int thirdIdxExpected, int fourthIdxExpected) {
+            "90.0f, 30.0f, 70.0f, 60.0f, 0, 3, 1, 2",
+            "90.0f, 80.0f, 30.0f, 60.0f, 0, 1, 3, 2",
+            "90.0f, 80.0f, 70.0f, 30.0f, 0, 1, 2, 3"})
+    void Given_DriversList_When_GettingFlux_DriversShouldBeOrderedByLivePositions(float firstPct, float secondPct, float thirdPct,
+            float fourthPct, int firstIdxExpected, int secondIdxExpected, int thirdIdxExpected, int fourthIdxExpected) {
         byteBufferYamlFile = createByteBufferYamlFile("laptiming/Laptiming_four_driver.yml");
 
         Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 0)).thenReturn(firstPct);
@@ -130,21 +145,18 @@ class TestLapTimingService {
             assertThat(lapTimingData.get(secondIdxExpected).getCarIdxLapDistPct()).isEqualTo(secondPct);
             assertThat(lapTimingData.get(thirdIdxExpected).getCarIdxLapDistPct()).isEqualTo(thirdPct);
             assertThat(lapTimingData.get(fourthIdxExpected).getCarIdxLapDistPct()).isEqualTo(fourthPct);
-        }).thenCancel()
-          .verifyThenAssertThat()
-          .hasNotDroppedElements();
+        }).thenCancel().verifyThenAssertThat().hasNotDroppedElements();
     }
 
     @DisplayName("getLapTimingDataComparator() - Should sort player positions by pct, drivers are on different laps ")
     @ParameterizedTest
     @CsvSource({"30.0f, 80.0f, 70.0f, 60.0f,    1, 2, 3, 0,     1, 2, 1, 1",
-                "90.0f, 30.0f, 70.0f, 60.0f,    0, 2, 3, 1,     2, 1, 1, 1",
-                "90.0f, 80.0f, 30.0f, 60.0f,    0, 2, 1, 3,     2, 1, 2, 1",
-                "90.0f, 80.0f, 70.0f, 30.0f,    1, 2, 3, 0,     1, 2, 2, 2"})
-    void Given_DriversListWithDifferentsLapIdx_When_GettingFlux_DriversShouldBeOrderedByLivePositions(
-            float firstPct, float secondPct, float thirdPct, float fourthPct,
-            int firstIdxExpected, int secondIdxExpected, int thirdIdxExpected, int fourthIdxExpected,
-            int firstPlayerLap, int secondPlayerLap, int thirdPlayerLap, int fourthPlayerLap) {
+            "90.0f, 30.0f, 70.0f, 60.0f,    0, 2, 3, 1,     2, 1, 1, 1",
+            "90.0f, 80.0f, 30.0f, 60.0f,    0, 2, 1, 3,     2, 1, 2, 1",
+            "90.0f, 80.0f, 70.0f, 30.0f,    1, 2, 3, 0,     1, 2, 2, 2"})
+    void Given_DriversListWithDifferentsLapIdx_When_GettingFlux_DriversShouldBeOrderedByLivePositions(float firstPct,
+            float secondPct, float thirdPct, float fourthPct, int firstIdxExpected, int secondIdxExpected, int thirdIdxExpected,
+            int fourthIdxExpected, int firstPlayerLap, int secondPlayerLap, int thirdPlayerLap, int fourthPlayerLap) {
         byteBufferYamlFile = createByteBufferYamlFile("laptiming/Laptiming_four_driver.yml");
 
         Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 0)).thenReturn(firstPct);
@@ -183,16 +195,12 @@ class TestLapTimingService {
         StepVerifier.create(lapTimingService.getLapTimingDataListFlux()).assertNext(lapTimingData -> {
             // Assert That the leader interval (idx = 0) is equals to zero
             assertThat(lapTimingData.get(0).getCarIntervalWithPreviousCar()).isEqualTo(0.0f);
-        }).thenCancel()
-          .verifyThenAssertThat()
-          .hasNotDroppedElements();
+        }).thenCancel().verifyThenAssertThat().hasNotDroppedElements();
     }
 
     @DisplayName("setDriversInterval() - Two Drivers: When list of player is created, the interval between players should be set from EstTime difference")
     @ParameterizedTest
-    @CsvSource({"10.0f,   0.0f,  10.0f",
-                "40.0f,  30.0f,  10.0f",
-                "99.9f,  10.0f,  89.9f"})
+    @CsvSource({"10.0f,   0.0f,  10.0f", "40.0f,  30.0f,  10.0f", "99.9f,  10.0f,  89.9f"})
     void Given_TwoDriversEstimatedTimeValues_When_GettingFlux_Then_IntervalShouldBeSetAndEqualsToDriversEstTimeSubtraction(
             float firstDriverEstTime, float secondDriverEstTime, float realInterval) {
         byteBufferYamlFile = createByteBufferYamlFile("laptiming/Laptiming_two_driver.yml");
@@ -212,16 +220,12 @@ class TestLapTimingService {
 
             // Assert that the interval as been set
             assertThat(lapTimingData.get(1).getCarIntervalWithPreviousCar()).isEqualTo(realInterval);
-        }).thenCancel()
-          .verifyThenAssertThat()
-          .hasNotDroppedElements();
+        }).thenCancel().verifyThenAssertThat().hasNotDroppedElements();
     }
 
     @DisplayName("setDriversInterval() - Four Drivers: When list of player is created, the interval between players should be set from EstTime difference")
     @ParameterizedTest
-    @CsvSource({"40.0f,  30.0f,  20.0f, 10.0f",
-                "90.0f,  70.0f,  50.0f, 10.0f",
-                "41.0f,  40.0f,  39.9f, 39.8f"})
+    @CsvSource({"40.0f,  30.0f,  20.0f, 10.0f", "90.0f,  70.0f,  50.0f, 10.0f", "41.0f,  40.0f,  39.9f, 39.8f"})
     void Given_FourDriversEstimatedTimeValues_When_GettingFlux_Then_IntervalShouldBeSetAndEqualsToDriversEstTimeSubtraction(
             float firstDriverEstTime, float secondDriverEstTime, float thirdDriverEstTime, float fourthDriverEstTime) {
         byteBufferYamlFile = createByteBufferYamlFile("laptiming/Laptiming_four_driver.yml");
@@ -255,84 +259,71 @@ class TestLapTimingService {
 
         setupGeneral();
 
-        StepVerifier.create(lapTimingService.getLapTimingDataListFlux())
-                    .then(this::startingLine)
-                    .assertNext(lapTimingData -> {
-                        assertThat(lapTimingData.get(0).getCarIdx()).isEqualTo(0);
-                        assertThat(lapTimingData.get(0).getCarIntervalWithPreviousCar()).isEqualTo(0.0f);
-                        assertThat(lapTimingData.get(0).getCarLivePosition()).isEqualTo(1);
+        StepVerifier.create(lapTimingService.getLapTimingDataListFlux()).then(this::startingLine).assertNext(lapTimingData -> {
+            assertThat(lapTimingData.get(0).getCarIdx()).isEqualTo(0);
+            assertThat(lapTimingData.get(0).getCarIntervalWithPreviousCar()).isEqualTo(0.0f);
+            assertThat(lapTimingData.get(0).getCarLivePosition()).isEqualTo(1);
 
-                        assertThat(lapTimingData.get(1).getCarIdx()).isEqualTo(1);
-                        assertThat(lapTimingData.get(1).getCarIntervalWithPreviousCar()).isEqualTo(0.5f);
-                        assertThat(lapTimingData.get(1).getCarLivePosition()).isEqualTo(2);
+            assertThat(lapTimingData.get(1).getCarIdx()).isEqualTo(1);
+            assertThat(lapTimingData.get(1).getCarIntervalWithPreviousCar()).isEqualTo(0.5f);
+            assertThat(lapTimingData.get(1).getCarLivePosition()).isEqualTo(2);
 
-                        assertThat(lapTimingData.get(2).getCarIdx()).isEqualTo(2);
-                        assertThat(lapTimingData.get(2).getCarIntervalWithPreviousCar()).isEqualTo(0.5f);
-                        assertThat(lapTimingData.get(2).getCarLivePosition()).isEqualTo(3);
+            assertThat(lapTimingData.get(2).getCarIdx()).isEqualTo(2);
+            assertThat(lapTimingData.get(2).getCarIntervalWithPreviousCar()).isEqualTo(0.5f);
+            assertThat(lapTimingData.get(2).getCarLivePosition()).isEqualTo(3);
 
-                        assertThat(lapTimingData.get(3).getCarIdx()).isEqualTo(3);
-                        assertThat(lapTimingData.get(3).getCarIntervalWithPreviousCar()).isEqualTo(0.5f);
-                        assertThat(lapTimingData.get(3).getCarLivePosition()).isEqualTo(4);
-                    })
-                    .then(this::lapOne)
-                    .assertNext(lapTimingData -> {
-                        assertThat(lapTimingData.get(0).getCarIdx()).isEqualTo(0);
-                        assertThat(lapTimingData.get(0).getCarIntervalWithPreviousCar()).isEqualTo(0.0f);
-                        assertThat(lapTimingData.get(0).getCarLivePosition()).isEqualTo(1);
+            assertThat(lapTimingData.get(3).getCarIdx()).isEqualTo(3);
+            assertThat(lapTimingData.get(3).getCarIntervalWithPreviousCar()).isEqualTo(0.5f);
+            assertThat(lapTimingData.get(3).getCarLivePosition()).isEqualTo(4);
+        }).then(this::lapOne).assertNext(lapTimingData -> {
+            assertThat(lapTimingData.get(0).getCarIdx()).isEqualTo(0);
+            assertThat(lapTimingData.get(0).getCarIntervalWithPreviousCar()).isEqualTo(0.0f);
+            assertThat(lapTimingData.get(0).getCarLivePosition()).isEqualTo(1);
 
-                        assertThat(lapTimingData.get(1).getCarIdx()).isEqualTo(1);
-                        assertThat(lapTimingData.get(1).getCarIntervalWithPreviousCar()).isEqualTo(5.0f);
-                        assertThat(lapTimingData.get(1).getCarLivePosition()).isEqualTo(2);
+            assertThat(lapTimingData.get(1).getCarIdx()).isEqualTo(1);
+            assertThat(lapTimingData.get(1).getCarIntervalWithPreviousCar()).isEqualTo(5.0f);
+            assertThat(lapTimingData.get(1).getCarLivePosition()).isEqualTo(2);
 
-                        assertThat(lapTimingData.get(2).getCarIdx()).isEqualTo(3);
-                        assertThat(lapTimingData.get(2).getCarIntervalWithPreviousCar()).isEqualTo(1.0f);
-                        assertThat(lapTimingData.get(2).getCarLivePosition()).isEqualTo(3);
+            assertThat(lapTimingData.get(2).getCarIdx()).isEqualTo(3);
+            assertThat(lapTimingData.get(2).getCarIntervalWithPreviousCar()).isEqualTo(1.0f);
+            assertThat(lapTimingData.get(2).getCarLivePosition()).isEqualTo(3);
 
-                        assertThat(lapTimingData.get(3).getCarIdx()).isEqualTo(2);
-                        assertThat(lapTimingData.get(3).getCarIntervalWithPreviousCar()).isEqualTo(1.0f);
-                        assertThat(lapTimingData.get(3).getCarLivePosition()).isEqualTo(4);
-                    })
-                    .then(this::lapTwo)
-                    .assertNext(lapTimingData -> {
-                        assertThat(lapTimingData.get(0).getCarIdx()).isEqualTo(3);
-                        assertThat(lapTimingData.get(0).getCarIntervalWithPreviousCar()).isEqualTo(0.0f);
-                        assertThat(lapTimingData.get(0).getCarLivePosition()).isEqualTo(1);
+            assertThat(lapTimingData.get(3).getCarIdx()).isEqualTo(2);
+            assertThat(lapTimingData.get(3).getCarIntervalWithPreviousCar()).isEqualTo(1.0f);
+            assertThat(lapTimingData.get(3).getCarLivePosition()).isEqualTo(4);
+        }).then(this::lapTwo).assertNext(lapTimingData -> {
+            assertThat(lapTimingData.get(0).getCarIdx()).isEqualTo(3);
+            assertThat(lapTimingData.get(0).getCarIntervalWithPreviousCar()).isEqualTo(0.0f);
+            assertThat(lapTimingData.get(0).getCarLivePosition()).isEqualTo(1);
 
-                        assertThat(lapTimingData.get(1).getCarIdx()).isEqualTo(2);
-                        assertThat(lapTimingData.get(1).getCarIntervalWithPreviousCar()).isEqualTo(40.0f);
-                        assertThat(lapTimingData.get(1).getCarLivePosition()).isEqualTo(2);
+            assertThat(lapTimingData.get(1).getCarIdx()).isEqualTo(2);
+            assertThat(lapTimingData.get(1).getCarIntervalWithPreviousCar()).isEqualTo(40.0f);
+            assertThat(lapTimingData.get(1).getCarLivePosition()).isEqualTo(2);
 
-                        assertThat(lapTimingData.get(2).getCarIdx()).isEqualTo(1);
-                        assertThat(lapTimingData.get(2).getCarIntervalWithPreviousCar()).isEqualTo(20.0f);
-                        assertThat(lapTimingData.get(2).getCarLivePosition()).isEqualTo(3);
+            assertThat(lapTimingData.get(2).getCarIdx()).isEqualTo(1);
+            assertThat(lapTimingData.get(2).getCarIntervalWithPreviousCar()).isEqualTo(20.0f);
+            assertThat(lapTimingData.get(2).getCarLivePosition()).isEqualTo(3);
 
-                        assertThat(lapTimingData.get(3).getCarIdx()).isEqualTo(0);
-                        assertThat(lapTimingData.get(3).getCarIntervalWithPreviousCar()).isEqualTo(20.0f);
-                        assertThat(lapTimingData.get(3).getCarLivePosition()).isEqualTo(4);
-                    })
-                    .then(this::lapThree)
-                    .assertNext(lapTimingData -> {
-                        assertThat(lapTimingData.get(0).getCarIdx()).isEqualTo(0);
-                        assertThat(lapTimingData.get(0).getCarIntervalWithPreviousCar()).isEqualTo(0.0f);
-                        assertThat(lapTimingData.get(0).getCarLivePosition()).isEqualTo(1);
+            assertThat(lapTimingData.get(3).getCarIdx()).isEqualTo(0);
+            assertThat(lapTimingData.get(3).getCarIntervalWithPreviousCar()).isEqualTo(20.0f);
+            assertThat(lapTimingData.get(3).getCarLivePosition()).isEqualTo(4);
+        }).then(this::lapThree).assertNext(lapTimingData -> {
+            assertThat(lapTimingData.get(0).getCarIdx()).isEqualTo(0);
+            assertThat(lapTimingData.get(0).getCarIntervalWithPreviousCar()).isEqualTo(0.0f);
+            assertThat(lapTimingData.get(0).getCarLivePosition()).isEqualTo(1);
 
-                        assertThat(lapTimingData.get(1).getCarIdx()).isEqualTo(2);
-                        assertThat(lapTimingData.get(1).getCarIntervalWithPreviousCar()).isEqualTo(3.0f);
-                        assertThat(lapTimingData.get(1).getCarLivePosition()).isEqualTo(2);
+            assertThat(lapTimingData.get(1).getCarIdx()).isEqualTo(2);
+            assertThat(lapTimingData.get(1).getCarIntervalWithPreviousCar()).isEqualTo(3.0f);
+            assertThat(lapTimingData.get(1).getCarLivePosition()).isEqualTo(2);
 
-                        assertThat(lapTimingData.get(2).getCarIdx()).isEqualTo(3);
-                        assertThat(lapTimingData.get(2).getCarIntervalWithPreviousCar()).isEqualTo(14.0f);
-                        assertThat(lapTimingData.get(2).getCarLivePosition()).isEqualTo(3);
+            assertThat(lapTimingData.get(2).getCarIdx()).isEqualTo(3);
+            assertThat(lapTimingData.get(2).getCarIntervalWithPreviousCar()).isEqualTo(14.0f);
+            assertThat(lapTimingData.get(2).getCarLivePosition()).isEqualTo(3);
 
-                        assertThat(lapTimingData.get(3).getCarIdx()).isEqualTo(1);
-                        assertThat(lapTimingData.get(3).getCarIntervalWithPreviousCar()).isEqualTo(22.0f);
-                        assertThat(lapTimingData.get(3).getCarLivePosition()).isEqualTo(4);
-                    })
-                    .thenCancel()
-                    .verifyThenAssertThat()
-                    .hasNotDroppedErrors()
-                    .hasNotDroppedElements()
-                    .hasNotDiscardedElements();
+            assertThat(lapTimingData.get(3).getCarIdx()).isEqualTo(1);
+            assertThat(lapTimingData.get(3).getCarIntervalWithPreviousCar()).isEqualTo(22.0f);
+            assertThat(lapTimingData.get(3).getCarLivePosition()).isEqualTo(4);
+        }).thenCancel().verifyThenAssertThat().hasNotDroppedErrors().hasNotDroppedElements().hasNotDiscardedElements();
     }
 
     private void startingLine() {

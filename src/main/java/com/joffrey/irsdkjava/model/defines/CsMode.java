@@ -1,4 +1,5 @@
 /*
+ *
  *    Copyright (C) 2020 Joffrey Bonifay
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +18,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 
 package com.joffrey.irsdkjava.model.defines;
@@ -25,9 +27,7 @@ package com.joffrey.irsdkjava.model.defines;
 // pass these in for the first parameter to select the 'focus at' types in the camera system.
 public enum CsMode {
 
-    irsdk_csFocusAtIncident(-3),
-    irsdk_csFocusAtLeader(-2),
-    irsdk_csFocusAtExiting(-1),
+    irsdk_csFocusAtIncident(-3), irsdk_csFocusAtLeader(-2), irsdk_csFocusAtExiting(-1),
 
     // ctFocusAtDriver + car number...
     irsdk_csFocusAtDriver(0),
