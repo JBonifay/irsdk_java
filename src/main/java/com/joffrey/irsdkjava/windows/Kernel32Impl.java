@@ -32,10 +32,4 @@ public interface Kernel32Impl extends com.sun.jna.platform.win32.Kernel32 {
 
     HANDLE OpenEvent(int i, boolean bManualReset, String lpName);
 
-    boolean SetConsoleTitle(String lpTitle);
-
-    boolean PurgeComm(HANDLE hFile, WinNT.DWORD dwFlags);
-
-    boolean EscapeCommFunction(HANDLE hFile, WinNT.DWORD dwFunc);
-
 }

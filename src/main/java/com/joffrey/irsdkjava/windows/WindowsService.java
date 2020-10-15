@@ -92,7 +92,6 @@ public class WindowsService {
         return false;
     }
 
-
     /**
      * C++ MAKELONG for Java
      *

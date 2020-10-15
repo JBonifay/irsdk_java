@@ -21,8 +21,7 @@ public class TrackmapTrackerService {
     private final SdkStarter  sdkStarter;
     private final YamlService yamlService;
 
-    // Average 12ms
-    public final ConnectableFlux<List<TrackmapTracker>> trackmapTrackerListFlux;
+    private final ConnectableFlux<List<TrackmapTracker>> trackmapTrackerListFlux;
 
     public TrackmapTrackerService(SdkStarter sdkStarter, YamlService yamlService) {
         this.sdkStarter = sdkStarter;
