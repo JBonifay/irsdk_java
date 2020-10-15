@@ -1,9 +1,13 @@
-package com.joffrey.irsdkjava.laptiming;
+package com.joffrey.irsdkjava;
 
+import static com.joffrey.irsdkjava.YamlHelperTest.*;
+import static com.joffrey.irsdkjava.YamlHelperTest.createByteBufferYamlFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.joffrey.irsdkjava.YamlHelperTest;
+import com.joffrey.irsdkjava.laptiming.LapTimingService;
 import com.joffrey.irsdkjava.model.Header;
 import com.joffrey.irsdkjava.model.SdkStarter;
 import com.joffrey.irsdkjava.yaml.YamlService;
@@ -42,7 +46,7 @@ class TestLapTimingService {
 
     void setupGeneral() {
         lapTimingService = new LapTimingService(sdkStarter, yamlService);
-        YamlFile yamlFile = loadYamlObject();
+        YamlFile yamlFile = loadYamlObject(byteBufferYamlFile);
 
         Mockito.when(sdkStarter.getHeader()).thenReturn(header);
         Mockito.when(sdkStarter.getHeader().getSessionInfoByteBuffer()).thenReturn(byteBufferYamlFile);
@@ -51,19 +55,6 @@ class TestLapTimingService {
 
     }
 
-    @SneakyThrows
-    ByteBuffer createByteBufferYamlFile(String file) {
-        File yamlFile = new ClassPathResource(file).getFile();
-        return ByteBuffer.wrap(FileCopyUtils.copyToByteArray(yamlFile));
-    }
-
-    @SneakyThrows
-    YamlFile loadYamlObject() {
-        ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
-        String yamlString = new String(byteBufferYamlFile.array());
-        yamlString = yamlString.substring(0, yamlString.indexOf("...") + 3);
-        return objectMapper.readValue(yamlString, YamlFile.class);
-    }
 
     @DisplayName("getLapTimingDataListFlux() - One Driver: Check if values from MemMapFile and Yaml are ok, values are simulated from a custom yaml, and Mock method calling Memory Mapped File")
     @Test

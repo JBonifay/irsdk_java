@@ -14,7 +14,7 @@ public class CameraService {
     private final SdkStarter  sdkStarter;
     private final YamlService yamlService;
 
-    public final Flux<CameraPacket> cameraPacketFlux;
+    private final Flux<CameraPacket> cameraPacketFlux;
 
     public CameraService(SdkStarter sdkStarter, YamlService yamlService) {
         this.sdkStarter = sdkStarter;

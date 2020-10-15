@@ -1,9 +1,10 @@
-package com.joffrey.irsdkjava.telemetry;
+package com.joffrey.irsdkjava;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.joffrey.irsdkjava.model.Header;
 import com.joffrey.irsdkjava.model.SdkStarter;
+import com.joffrey.irsdkjava.telemetry.TelemetryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
