@@ -24,6 +24,7 @@
 package com.joffrey.irsdkjava;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
 
 import com.joffrey.irsdkjava.model.Header;
 import com.joffrey.irsdkjava.model.SdkStarter;
@@ -57,37 +58,37 @@ class TestTelemetryService {
     @DisplayName("loadTelemetryData() -> Test that all fetched vars are ok")
     @Test
     void Given_DataSimulatingMemMapFile_When_loadingDataPacket_ShouldReturnGoodValues() {
-        Mockito.when(sdkStarter.getVarFloat("Throttle")).thenReturn(100.0f);
-        Mockito.when(sdkStarter.getVarFloat("Brake")).thenReturn(50.0f);
-        Mockito.when(sdkStarter.getVarFloat("Clutch")).thenReturn(90.0f);
-        Mockito.when(sdkStarter.getVarInt("Gear")).thenReturn(5);
-        Mockito.when(sdkStarter.getVarFloat("ShiftGrindRPM")).thenReturn(50.0f);
-        Mockito.when(sdkStarter.getVarFloat("RPM")).thenReturn(4000.0f);
-        Mockito.when(sdkStarter.getVarFloat("Speed")).thenReturn(260.0f);
+        doReturn(100.0f).when(sdkStarter).getVarFloat("Throttle");
+        doReturn(50.0f).when(sdkStarter).getVarFloat("Brake");
+        doReturn(90.0f).when(sdkStarter).getVarFloat("Clutch");
+        doReturn(5).when(sdkStarter).getVarInt("Gear");
+        doReturn(50.0f).when(sdkStarter).getVarFloat("ShiftGrindRPM");
+        doReturn(4000.0f).when(sdkStarter).getVarFloat("RPM");
+        doReturn(260.0f).when(sdkStarter).getVarFloat("Speed");
 
-        Mockito.when(sdkStarter.getVarFloat("FuelLevel")).thenReturn(90.0f);
-        Mockito.when(sdkStarter.getVarFloat("FuelLevelPct")).thenReturn(67.0f);
-        Mockito.when(sdkStarter.getVarFloat("FuelUsePerHour")).thenReturn(5.5f);
-        Mockito.when(sdkStarter.getVarFloat("LatAccel")).thenReturn(3.0f);
-        Mockito.when(sdkStarter.getVarFloat("LongAccel")).thenReturn(2.0f);
-        Mockito.when(sdkStarter.getVarFloat("SteeringWheelAngle")).thenReturn(90.0f);
+        doReturn(90.0f).when(sdkStarter).getVarFloat("FuelLevel");
+        doReturn(67.0f).when(sdkStarter).getVarFloat("FuelLevelPct");
+        doReturn(5.5f).when(sdkStarter).getVarFloat("FuelUsePerHour");
+        doReturn(3.0f).when(sdkStarter).getVarFloat("LatAccel");
+        doReturn(2.0f).when(sdkStarter).getVarFloat("LongAccel");
+        doReturn(90.0f).when(sdkStarter).getVarFloat("SteeringWheelAngle");
 
-        Mockito.when(sdkStarter.getVarFloat("AirPressure")).thenReturn(60.0f);
-        Mockito.when(sdkStarter.getVarFloat("AirTemp")).thenReturn(40.0f);
-        Mockito.when(sdkStarter.getVarFloat("RelativeHumidity")).thenReturn(10.0f);
-        Mockito.when(sdkStarter.getVarInt("Skies")).thenReturn(1);
-        Mockito.when(sdkStarter.getVarFloat("TrackTemp")).thenReturn(15.0f);
-        Mockito.when(sdkStarter.getVarFloat("WindDir")).thenReturn(5.0f);
-        Mockito.when(sdkStarter.getVarFloat("WindVel")).thenReturn(1.0f);
-        Mockito.when(sdkStarter.getVarInt("WeatherType")).thenReturn(1);
+        doReturn(60.0f).when(sdkStarter).getVarFloat("AirPressure");
+        doReturn(40.0f).when(sdkStarter).getVarFloat("AirTemp");
+        doReturn(10.0f).when(sdkStarter).getVarFloat("RelativeHumidity");
+        doReturn(1).when(sdkStarter).getVarInt("Skies");
+        doReturn(15.0f).when(sdkStarter).getVarFloat("TrackTemp");
+        doReturn(5.0f).when(sdkStarter).getVarFloat("WindDir");
+        doReturn(1.0f).when(sdkStarter).getVarFloat("WindVel");
+        doReturn(1).when(sdkStarter).getVarInt("WeatherType");
 
-        Mockito.when(sdkStarter.getVarDouble("SessionTime")).thenReturn(54321d);
-        Mockito.when(sdkStarter.getVarDouble("SessionTimeRemain")).thenReturn(9999d);
-        Mockito.when(sdkStarter.getVarFloat("LapBestLapTime")).thenReturn(10.50f);
-        Mockito.when(sdkStarter.getVarInt("Lap")).thenReturn(11);
-        Mockito.when(sdkStarter.getVarFloat("LapCurrentLapTime")).thenReturn(30.0f);
-        Mockito.when(sdkStarter.getVarInt("LapBestLap")).thenReturn(2);
-        Mockito.when(sdkStarter.getVarFloat("LapDistPct")).thenReturn(90.0f);
+        doReturn(54321d).when(sdkStarter).getVarDouble("SessionTime");
+        doReturn(9999d).when(sdkStarter).getVarDouble("SessionTimeRemain");
+        doReturn(10.50f).when(sdkStarter).getVarFloat("LapBestLapTime");
+        doReturn(11).when(sdkStarter).getVarInt("Lap");
+        doReturn(30.0f).when(sdkStarter).getVarFloat("LapCurrentLapTime");
+        doReturn(2).when(sdkStarter).getVarInt("LapBestLap");
+        doReturn(90.0f).when(sdkStarter).getVarFloat("LapDistPct");
 
         StepVerifier.create(telemetryService.getTelemetryDataFlux()).assertNext(telemetryData -> {
             assertThat(telemetryData.getThrottle()).isEqualTo(100.0f);

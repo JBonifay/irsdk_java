@@ -26,6 +26,7 @@ package com.joffrey.irsdkjava;
 import static com.joffrey.irsdkjava.YamlHelperTest.createByteBufferYamlFile;
 import static com.joffrey.irsdkjava.YamlHelperTest.loadYamlObject;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
 
 import com.joffrey.irsdkjava.laptiming.LapTimingService;
 import com.joffrey.irsdkjava.model.Header;
@@ -78,15 +79,15 @@ class TestLapTimingService {
         // Generate Fake data for replace data from MemoryMappedFile
         byteBufferYamlFile = createByteBufferYamlFile("laptiming/Laptiming_one_driver.yml");
 
-        Mockito.when(sdkStarter.getVarInt("CarIdxPosition", 0)).thenReturn(1);
-        Mockito.when(sdkStarter.getVarInt("CarIdxClassPosition", 0)).thenReturn(1);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 0)).thenReturn(0.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxF2Time", 0)).thenReturn(0.0f);
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 0)).thenReturn(1);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 0)).thenReturn(30.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLastLapTime", 0)).thenReturn(0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxBestLapTime", 0)).thenReturn(0f);
-        Mockito.when(sdkStarter.getVarInt("CarIdxTrackSurface", 0)).thenReturn(0);
+        doReturn(1).when(sdkStarter).getVarInt("CarIdxPosition", 0);
+        doReturn(1).when(sdkStarter).getVarInt("CarIdxClassPosition", 0);
+        doReturn(0.0f).when(sdkStarter).getVarFloat("CarIdxEstTime", 0);
+        doReturn(0.0f).when(sdkStarter).getVarFloat("CarIdxF2Time", 0);
+        doReturn(1).when(sdkStarter).getVarInt("CarIdxLap", 0);
+        doReturn(30.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 0);
+        doReturn(0f).when(sdkStarter).getVarFloat("CarIdxLastLapTime", 0);
+        doReturn(0f).when(sdkStarter).getVarFloat("CarIdxBestLapTime", 0);
+        doReturn(0).when(sdkStarter).getVarInt("CarIdxTrackSurface", 0);
 
         setupGeneral();
 
@@ -128,10 +129,10 @@ class TestLapTimingService {
             float fourthPct, int firstIdxExpected, int secondIdxExpected, int thirdIdxExpected, int fourthIdxExpected) {
         byteBufferYamlFile = createByteBufferYamlFile("laptiming/Laptiming_four_driver.yml");
 
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 0)).thenReturn(firstPct);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 1)).thenReturn(secondPct);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 2)).thenReturn(thirdPct);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 3)).thenReturn(fourthPct);
+        doReturn(firstPct).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 0);
+        doReturn(secondPct).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 1);
+        doReturn(thirdPct).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 2);
+        doReturn(fourthPct).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 3);
 
         setupGeneral();
 
@@ -159,15 +160,15 @@ class TestLapTimingService {
             int fourthIdxExpected, int firstPlayerLap, int secondPlayerLap, int thirdPlayerLap, int fourthPlayerLap) {
         byteBufferYamlFile = createByteBufferYamlFile("laptiming/Laptiming_four_driver.yml");
 
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 0)).thenReturn(firstPct);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 1)).thenReturn(secondPct);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 2)).thenReturn(thirdPct);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 3)).thenReturn(fourthPct);
+        doReturn(firstPct).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 0);
+        doReturn(secondPct).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 1);
+        doReturn(thirdPct).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 2);
+        doReturn(fourthPct).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 3);
 
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 0)).thenReturn(firstPlayerLap);
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 1)).thenReturn(secondPlayerLap);
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 2)).thenReturn(thirdPlayerLap);
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 3)).thenReturn(fourthPlayerLap);
+        doReturn(firstPlayerLap).when(sdkStarter).getVarInt("CarIdxLap", 0);
+        doReturn(secondPlayerLap).when(sdkStarter).getVarInt("CarIdxLap", 1);
+        doReturn(thirdPlayerLap).when(sdkStarter).getVarInt("CarIdxLap", 2);
+        doReturn(fourthPlayerLap).when(sdkStarter).getVarInt("CarIdxLap", 3);
 
         setupGeneral();
 
@@ -188,7 +189,7 @@ class TestLapTimingService {
             float firstDriverEstTime) {
         byteBufferYamlFile = createByteBufferYamlFile("laptiming/Laptiming_one_driver.yml");
 
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 0)).thenReturn(firstDriverEstTime);
+        doReturn(firstDriverEstTime).when(sdkStarter).getVarFloat("CarIdxEstTime", 0);
 
         setupGeneral();
 
@@ -205,12 +206,12 @@ class TestLapTimingService {
             float firstDriverEstTime, float secondDriverEstTime, float realInterval) {
         byteBufferYamlFile = createByteBufferYamlFile("laptiming/Laptiming_two_driver.yml");
 
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 0)).thenReturn(firstDriverEstTime);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 1)).thenReturn(secondDriverEstTime);
+        doReturn(firstDriverEstTime).when(sdkStarter).getVarFloat("CarIdxEstTime", 0);
+        doReturn(secondDriverEstTime).when(sdkStarter).getVarFloat("CarIdxEstTime", 1);
 
         // Set drivers a CarIdxLapDistPct for simulate ordering -> list is sorted by CarIdxLapDistPct
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 0)).thenReturn(10.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 1)).thenReturn(9.0f);
+        doReturn(10.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 0);
+        doReturn(9.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 1);
 
         setupGeneral();
 
@@ -230,16 +231,16 @@ class TestLapTimingService {
             float firstDriverEstTime, float secondDriverEstTime, float thirdDriverEstTime, float fourthDriverEstTime) {
         byteBufferYamlFile = createByteBufferYamlFile("laptiming/Laptiming_four_driver.yml");
 
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 0)).thenReturn(firstDriverEstTime);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 1)).thenReturn(secondDriverEstTime);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 2)).thenReturn(thirdDriverEstTime);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 3)).thenReturn(fourthDriverEstTime);
+        doReturn(firstDriverEstTime).when(sdkStarter).getVarFloat("CarIdxEstTime", 0);
+        doReturn(secondDriverEstTime).when(sdkStarter).getVarFloat("CarIdxEstTime", 1);
+        doReturn(thirdDriverEstTime).when(sdkStarter).getVarFloat("CarIdxEstTime", 2);
+        doReturn(fourthDriverEstTime).when(sdkStarter).getVarFloat("CarIdxEstTime", 3);
 
         // Set drivers a CarIdxLapDistPct for simulate ordering -> list is sorted by CarIdxLapDistPct
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 0)).thenReturn(10.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 1)).thenReturn(9.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 2)).thenReturn(8.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 3)).thenReturn(7.0f);
+        doReturn(10.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 0);
+        doReturn(9.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 1);
+        doReturn(8.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 2);
+        doReturn(7.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 3);
 
         setupGeneral();
 
@@ -327,54 +328,54 @@ class TestLapTimingService {
     }
 
     private void startingLine() {
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 0)).thenReturn(0.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 1)).thenReturn(-0.5f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 2)).thenReturn(-1.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 3)).thenReturn(-1.5f);
+        doReturn(0.0f).when(sdkStarter).getVarFloat("CarIdxEstTime", 0);
+        doReturn(-0.5f).when(sdkStarter).getVarFloat("CarIdxEstTime", 1);
+        doReturn(-1.0f).when(sdkStarter).getVarFloat("CarIdxEstTime", 2);
+        doReturn(-1.5f).when(sdkStarter).getVarFloat("CarIdxEstTime", 3);
 
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 0)).thenReturn(0);
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 0)).thenReturn(0);
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 2)).thenReturn(0);
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 3)).thenReturn(0);
+        doReturn(0).when(sdkStarter).getVarInt("CarIdxLap", 0);
+        doReturn(0).when(sdkStarter).getVarInt("CarIdxLap", 0);
+        doReturn(0).when(sdkStarter).getVarInt("CarIdxLap", 2);
+        doReturn(0).when(sdkStarter).getVarInt("CarIdxLap", 3);
 
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 0)).thenReturn(1.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 1)).thenReturn(0.6f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 2)).thenReturn(0.3f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 3)).thenReturn(0.0f);
+        doReturn(1.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 0);
+        doReturn(0.6f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 1);
+        doReturn(0.3f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 2);
+        doReturn(0.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 3);
     }
 
     private void lapOne() {
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 0)).thenReturn(10.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 1)).thenReturn(5.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 2)).thenReturn(3.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 3)).thenReturn(4.0f);
+        doReturn(10.0f).when(sdkStarter).getVarFloat("CarIdxEstTime", 0);
+        doReturn(5.0f).when(sdkStarter).getVarFloat("CarIdxEstTime", 1);
+        doReturn(3.0f).when(sdkStarter).getVarFloat("CarIdxEstTime", 2);
+        doReturn(4.0f).when(sdkStarter).getVarFloat("CarIdxEstTime", 3);
 
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 0)).thenReturn(1);
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 1)).thenReturn(1);
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 2)).thenReturn(1);
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 3)).thenReturn(1);
+        doReturn(1).when(sdkStarter).getVarInt("CarIdxLap", 0);
+        doReturn(1).when(sdkStarter).getVarInt("CarIdxLap", 1);
+        doReturn(1).when(sdkStarter).getVarInt("CarIdxLap", 2);
+        doReturn(1).when(sdkStarter).getVarInt("CarIdxLap", 3);
 
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 0)).thenReturn(15.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 1)).thenReturn(10.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 2)).thenReturn(8.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 3)).thenReturn(9.0f);
+        doReturn(15.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 0);
+        doReturn(10.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 1);
+        doReturn(8.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 2);
+        doReturn(9.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 3);
     }
 
     private void lapTwo() {
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 0)).thenReturn(10.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 1)).thenReturn(30.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 2)).thenReturn(50.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 3)).thenReturn(90.0f);
+        doReturn(10.0f).when(sdkStarter).getVarFloat("CarIdxEstTime", 0);
+        doReturn(30.0f).when(sdkStarter).getVarFloat("CarIdxEstTime", 1);
+        doReturn(50.0f).when(sdkStarter).getVarFloat("CarIdxEstTime", 2);
+        doReturn(90.0f).when(sdkStarter).getVarFloat("CarIdxEstTime", 3);
 
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 0)).thenReturn(2);
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 1)).thenReturn(2);
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 2)).thenReturn(2);
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 3)).thenReturn(2);
+        doReturn(2).when(sdkStarter).getVarInt("CarIdxLap", 0);
+        doReturn(2).when(sdkStarter).getVarInt("CarIdxLap", 1);
+        doReturn(2).when(sdkStarter).getVarInt("CarIdxLap", 2);
+        doReturn(2).when(sdkStarter).getVarInt("CarIdxLap", 3);
 
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 0)).thenReturn(10.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 1)).thenReturn(30.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 2)).thenReturn(50.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 3)).thenReturn(90.0f);
+        doReturn(10.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 0);
+        doReturn(30.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 1);
+        doReturn(50.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 2);
+        doReturn(90.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 3);
     }
 
     /*
@@ -382,20 +383,20 @@ class TestLapTimingService {
      *
      */
     private void lapThree() {
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 0)).thenReturn(60.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 1)).thenReturn(65.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 2)).thenReturn(57.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxEstTime", 3)).thenReturn(43.0f);
+        doReturn(60.0f).when(sdkStarter).getVarFloat("CarIdxEstTime", 0);
+        doReturn(65.0f).when(sdkStarter).getVarFloat("CarIdxEstTime", 1);
+        doReturn(57.0f).when(sdkStarter).getVarFloat("CarIdxEstTime", 2);
+        doReturn(43.0f).when(sdkStarter).getVarFloat("CarIdxEstTime", 3);
 
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 0)).thenReturn(4);
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 1)).thenReturn(3);
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 2)).thenReturn(4);
-        Mockito.when(sdkStarter.getVarInt("CarIdxLap", 3)).thenReturn(4);
+        doReturn(4).when(sdkStarter).getVarInt("CarIdxLap", 0);
+        doReturn(3).when(sdkStarter).getVarInt("CarIdxLap", 1);
+        doReturn(4).when(sdkStarter).getVarInt("CarIdxLap", 2);
+        doReturn(4).when(sdkStarter).getVarInt("CarIdxLap", 3);
 
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 0)).thenReturn(60.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 1)).thenReturn(65.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 2)).thenReturn(57.0f);
-        Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 3)).thenReturn(43.0f);
+        doReturn(60.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 0);
+        doReturn(65.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 1);
+        doReturn(57.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 2);
+        doReturn(43.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 3);
     }
 
 

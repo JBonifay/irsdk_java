@@ -24,11 +24,36 @@
 
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <groupId>org.springframework.boot</groupId>
+    <relativePath/>
+    <version>2.3.1.RELEASE</version> <!-- lookup parent from repository -->
+  </parent>
+
+  <description>Unofficial Irsdk Java</description>
+  <groupId>com.joffrey</groupId>
   <artifactId>irsdk_java</artifactId>
-  <version>0.5.0</version>
+  <version>1.0.0-SNAPSHOT</version>
   <name>irsdk_java</name>
-  <description>Irsdk-java dev version, used has a library</description>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>Unofficial Irsdk Java</name>
+      <url>https://maven.pkg.github.com/JBonifay/irsdk_java</url>
+    </repository>
+  </distributionManagement>
 
   <properties>
     <java.version>11</java.version>
@@ -101,22 +126,5 @@
     </dependency>
 
   </dependencies>
-
-  <description>Irsdk-java dev version, used has a library</description>
-  <groupId>com.joffrey</groupId>
-  <modelVersion>4.0.0</modelVersion>
-  <name>irsdk_java</name>
-  <parent>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <groupId>org.springframework.boot</groupId>
-    <relativePath/>
-    <version>2.3.1.RELEASE</version> <!-- lookup parent from repository -->
-  </parent>
-
-  <properties>
-    <java.version>11</java.version>
-  </properties>
-
-  <version>1.0.0</version>
 
 </project>

@@ -1,7 +1,13 @@
 ![iRacing image](https://www.jayski.com/wp-content/uploads/sites/31/2020/03/14/iRacing.png)
 
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/JBonifay/irsdk_java)
+![Maven CI/CD](https://github.com/JBonifay/irsdk_java/workflows/Maven%20CI/CD/badge.svg)
+![GitHub](https://img.shields.io/github/license/JBonifay/irsdk_java)
+![GitHub Repo stars](https://img.shields.io/github/stars/JBonifay/irsdk_java?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/JBonifay/irsdk_java?style=social)
+
 # iRacing java SDK  
-Unofficial [iRacing](https://www.iracing.com/) SDK implementation for Java
+Unofficial [iRacing](https://www.iracing.com/) SDK implementation for Java :checkered_flag:
 
 The sdk provide API for fetching simulator data through [reactor Flux](https://projectreactor.io/) 
 

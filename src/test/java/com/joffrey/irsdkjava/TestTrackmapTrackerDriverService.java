@@ -26,6 +26,7 @@ package com.joffrey.irsdkjava;
 import static com.joffrey.irsdkjava.YamlHelperTest.createByteBufferYamlFile;
 import static com.joffrey.irsdkjava.YamlHelperTest.loadYamlObject;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
 
 import com.joffrey.irsdkjava.model.Header;
 import com.joffrey.irsdkjava.model.SdkStarter;
@@ -33,6 +34,7 @@ import com.joffrey.irsdkjava.trackmaptracker.TrackmapTrackerService;
 import com.joffrey.irsdkjava.yaml.YamlService;
 import com.joffrey.irsdkjava.yaml.irsdkyaml.YamlFile;
 import java.nio.ByteBuffer;
+import lombok.extern.java.Log;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,8 +44,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.test.StepVerifier;
 
+@Log
 @ExtendWith(SpringExtension.class)
-public class TestTrackmapTrackerDriverService {
+class TestTrackmapTrackerDriverService {
 
     @MockBean
     private SdkStarter  sdkStarter;
@@ -75,13 +78,12 @@ public class TestTrackmapTrackerDriverService {
     @Test
     void Given_ValidDataFromYamlAndMemMapFile_When_CallingFlux_Then_SHouldReturnGoodDataInFlux() {
 
-        StepVerifier.create(trackmapTrackerService.getTrackmapTrackerListFlux()).then(() -> {
-            Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 63)).thenReturn(0.0f);
-            Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 12)).thenReturn(0.0f);
-            Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 23)).thenReturn(0.0f);
-            Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 49)).thenReturn(0.0f);
-        }).assertNext(trackmapTrackers -> {
+        doReturn(0.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 63);
+        doReturn(0.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 12);
+        doReturn(0.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 23);
+        doReturn(0.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 49);
 
+        StepVerifier.create(trackmapTrackerService.getTrackmapTrackerListFlux()).assertNext(trackmapTrackers -> {
             assertThat(trackmapTrackers.get(0).getDriverIdx()).isEqualTo(63);
             assertThat(trackmapTrackers.get(0).getDriverCarNbr()).isEqualTo(63);
             assertThat(trackmapTrackers.get(0).getDriverInitials()).isEqualTo("JO");
@@ -102,13 +104,20 @@ public class TestTrackmapTrackerDriverService {
             assertThat(trackmapTrackers.get(3).getDriverInitials()).isEqualTo("DF");
             assertThat(trackmapTrackers.get(3).getDriverDistPct()).isEqualTo(0.0f);
 
+        }).thenCancel().verifyThenAssertThat().hasNotDroppedElements().hasNotDroppedErrors().hasNotDiscardedElements();
 
-        }).then(() -> {
-            Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 63)).thenReturn(10.0f);
-            Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 12)).thenReturn(20.0f);
-            Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 23)).thenReturn(30.0f);
-            Mockito.when(sdkStarter.getVarFloat("CarIdxLapDistPct", 49)).thenReturn(40.0f);
-        }).assertNext(trackmapTrackers -> {
+    }
+
+    @DisplayName("getTrackmapTrackerListFlux() new values - Test if data where good fetched from yaml and fake MemMapFile")
+    @Test
+    void Given_OthersValidDataFromYamlAndMemMapFile_When_CallingFlux_Then_SHouldReturnGoodDataInFlux() {
+
+        doReturn(10.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 63);
+        doReturn(20.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 12);
+        doReturn(30.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 23);
+        doReturn(40.0f).when(sdkStarter).getVarFloat("CarIdxLapDistPct", 49);
+
+        StepVerifier.create(trackmapTrackerService.getTrackmapTrackerListFlux()).assertNext(trackmapTrackers -> {
 
             assertThat(trackmapTrackers.get(0).getDriverIdx()).isEqualTo(63);
             assertThat(trackmapTrackers.get(0).getDriverCarNbr()).isEqualTo(63);
@@ -129,10 +138,10 @@ public class TestTrackmapTrackerDriverService {
             assertThat(trackmapTrackers.get(3).getDriverCarNbr()).isEqualTo(49);
             assertThat(trackmapTrackers.get(3).getDriverInitials()).isEqualTo("DF");
             assertThat(trackmapTrackers.get(3).getDriverDistPct()).isEqualTo(40.0f);
+
         }).thenCancel().verifyThenAssertThat().hasNotDroppedElements().hasNotDroppedErrors().hasNotDiscardedElements();
 
 
     }
-
 
 }

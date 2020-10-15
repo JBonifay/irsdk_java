@@ -26,6 +26,7 @@ package com.joffrey.irsdkjava;
 import static com.joffrey.irsdkjava.YamlHelperTest.createByteBufferYamlFile;
 import static com.joffrey.irsdkjava.YamlHelperTest.loadYamlObject;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
 
 import com.joffrey.irsdkjava.model.Header;
 import com.joffrey.irsdkjava.model.SdkStarter;
@@ -69,11 +70,11 @@ public class TestRaceInfoService {
         Mockito.when(sdkStarter.isRunning()).thenReturn(true);
         Mockito.when(yamlService.getYamlFile()).thenReturn(yamlFile);
 
-        Mockito.when(sdkStarter.getVarDouble("SessionTimeRemain")).thenReturn(9999d);
-        Mockito.when(sdkStarter.getVarInt("SessionLapsRemain")).thenReturn(100);
-        Mockito.when(sdkStarter.getVarFloat("FuelLevel")).thenReturn(50.0f);
-        Mockito.when(sdkStarter.getVarFloat("FuelLevelPct")).thenReturn(13.7f);
-        Mockito.when(sdkStarter.getVarFloat("FuelUsePerHour")).thenReturn(9.9f);
+        doReturn(9999d).when(sdkStarter).getVarDouble("SessionTimeRemain");
+        doReturn(100).when(sdkStarter).getVarInt("SessionLapsRemain");
+        doReturn(50.0f).when(sdkStarter).getVarFloat("FuelLevel");
+        doReturn(13.7f).when(sdkStarter).getVarFloat("FuelLevelPct");
+        doReturn(9.9f).when(sdkStarter).getVarFloat("FuelUsePerHour");
     }
 
 
