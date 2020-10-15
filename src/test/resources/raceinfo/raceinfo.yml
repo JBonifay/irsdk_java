@@ -1,0 +1,270 @@
+WeekendInfo:
+  TrackName: okayama short
+  TrackID: 167
+  TrackLength: 1.93 km
+  TrackDisplayName: Okayama International Circuit
+  TrackDisplayShortName: Okayama
+  TrackConfigName: Short
+  TrackCity: Okayama
+  TrackCountry: Japan
+  TrackAltitude: 265.84 m
+  TrackLatitude: 34.914295 m
+  TrackLongitude: 134.218936 m
+  TrackNorthOffset: 3.0612 rad
+  TrackNumTurns: 7
+  TrackPitSpeedLimit: 60.00 kph
+  TrackType: road course
+  TrackDirection: neutral
+  TrackWeatherType: Specified / Dynamic Sky
+  TrackSkies: Partly Cloudy
+  TrackSurfaceTemp: 39.74 C
+  TrackAirTemp: 25.49 C
+  TrackAirPressure: 28.99 Hg
+  TrackWindVel: 0.89 m/s
+  TrackWindDir: 0.00 rad
+  TrackRelativeHumidity: 55 %
+  TrackFogLevel: 0 %
+  TrackCleanup: 1
+  TrackDynamicTrack: 1
+  TrackVersion: 2020.05.22.01
+  SeriesID: 139
+  SeasonID: 2823
+  SessionID: 135235422
+  SubSessionID: 33687029
+  LeagueID: 0
+  Official: 1
+  RaceWeek: 7
+  EventType: Practice
+  Category: Road
+  SimMode: full
+  TeamRacing: 0
+  MinDrivers: 0
+  MaxDrivers: 1
+  DCRuleSet: None
+  QualifierMustStartRace: 0
+  NumCarClasses: 1
+  NumCarTypes: 1
+  HeatRacing: 0
+  BuildType: Release
+  BuildTarget: Members
+  BuildVersion: 2020.07.22.03
+  WeekendOptions:
+    NumStarters: 12
+    StartingGrid: 2x2 inline pole on left
+    QualifyScoring: best lap
+    CourseCautions: off
+    StandingStart: 1
+    ShortParadeLap: 0
+    Restarts: single file
+    WeatherType: Specified / Dynamic Sky
+    Skies: Partly Cloudy
+    WindDirection: N
+    WindSpeed: 3.22 km/h
+    WeatherTemp: 25.56 C
+    RelativeHumidity: 55 %
+    FogLevel: 0 %
+    TimeOfDay: 2:05 pm
+    Date: 2019-05-20
+    EarthRotationSpeedupFactor: 1
+    Unofficial: 0
+    CommercialMode: consumer
+    NightMode: variable
+    IsFixedSetup: 0
+    StrictLapsChecking: default
+    HasOpenRegistration: 1
+    HardcoreLevel: 1
+    NumJokerLaps: 0
+    IncidentLimit: unlimited
+    FastRepairsLimit: 1
+    GreenWhiteCheckeredLimit: 0
+  TelemetryOptions:
+    TelemetryDiskFile: ""
+
+DriverInfo:
+  DriverCarIdx: 63
+  DriverUserID: 518750
+  PaceCarIdx: -1
+  DriverHeadPosX: -0.416
+  DriverHeadPosY: 0.344
+  DriverHeadPosZ: 0.660
+  DriverCarIdleRPM: 875.000
+  DriverCarRedLine: 7525.000
+  DriverCarEngCylinderCount: 4
+  DriverCarFuelKgPerLtr: 0.750
+  DriverCarFuelMaxLtr: 44.987
+  DriverCarMaxFuelPct: 1.000
+  DriverCarSLFirstRPM: 5600.000
+  DriverCarSLShiftRPM: 7200.000
+  DriverCarSLLastRPM: 7200.000
+  DriverCarSLBlinkRPM: 7700.000
+  DriverCarVersion: 2020.06.04.01
+  DriverPitTrkPct: 0.990912
+  DriverCarEstLapTime: 61.9235
+  DriverSetupName: baseline.sto
+  DriverSetupIsModified: 0
+  DriverSetupLoadTypeName: user
+  DriverSetupPassedTech: 1
+  DriverIncidentCount: 0
+  Drivers:
+    - CarIdx: 63
+      UserName: Joffrey Bonifay
+      AbbrevName:
+      Initials:
+      UserID: 518750
+      TeamID: 0
+      TeamName: Joffrey Bonifay
+      CarNumber: ""
+      CarNumberRaw: -1
+      CarPath: mx5 mx52016
+      CarClassID: 74
+      CarID: 67
+      CarIsPaceCar: 0
+      CarIsAI: 0
+      CarScreenName: Mazda MX-5 Cup
+      CarScreenNameShort: MX-5 Cup
+      CarClassShortName: MX5 Cup 2016
+      CarClassRelSpeed: 33
+      CarClassLicenseLevel: 0
+      CarClassMaxFuelPct: 1.000 %
+      CarClassWeightPenalty: 0.000 kg
+      CarClassPowerAdjust: 0.000 %
+      CarClassDryTireSetLimit: 0 %
+      CarClassColor: 0xffffff
+      IRating: 876
+      LicLevel: 7
+      LicSubLevel: 341
+      LicString: D 3.41
+      LicColor: 0xfc8a27
+      IsSpectator: 1
+      CarDesignStr: 1,5e5e5e,135324,111111
+      HelmetDesignStr: 42,ef8e26,ffffff,000000
+      SuitDesignStr: 1,ef9126,000000,ffffff
+      CarNumberDesignStr: 0,0,ffffff,777777,000000
+      CarSponsor_1: 0
+      CarSponsor_2: 0
+      ClubName: France
+      DivisionName: Division 1
+      CurDriverIncidentCount: 0
+      TeamIncidentCount: 0
+    - CarIdx: 1
+      UserName: Driver Two
+      AbbrevName: DriverTwo
+      Initials: DT
+      UserID: 0
+      TeamID: 0
+      TeamName: DriverTwo
+      CarNumber: "0"
+      CarNumberRaw: -1
+      CarPath: mx5 mx52016
+      CarClassID: 74
+      CarID: 67
+      CarIsPaceCar: 0
+      CarIsAI: 0
+      CarScreenName: Mazda MX-5 Cup
+      CarScreenNameShort: MX-5 Cup
+      CarClassShortName: MX5 Cup 2016
+      CarClassRelSpeed: 33
+      CarClassLicenseLevel: 0
+      CarClassMaxFuelPct: 1.000 %
+      CarClassWeightPenalty: 0.000 kg
+      CarClassPowerAdjust: 0.000 %
+      CarClassDryTireSetLimit: 0 %
+      CarClassColor: 0xffffff
+      IRating: 0
+      LicLevel: 0
+      LicSubLevel: 0
+      LicString: A 5.00
+      LicColor: 0x000000
+      IsSpectator: 0
+      CarDesignStr: 1,5e5e5e,135324,111111
+      HelmetDesignStr: 42,ef8e26,ffffff,000000
+      SuitDesignStr: 1,ef9126,000000,ffffff
+      CarNumberDesignStr: 0,0,ffffff,777777,000000
+      CarSponsor_1: 0
+      CarSponsor_2: 0
+      ClubName: France
+      DivisionName: Division 1
+      CurDriverIncidentCount: 0
+      TeamIncidentCount: 0
+    - CarIdx: 2
+      UserName: Driver Three
+      AbbrevName: DriverThree
+      Initials: DT
+      UserID: 1
+      TeamID: 0
+      TeamName: DriverThree
+      CarNumber: ""
+      CarNumberRaw: -1
+      CarPath: mx5 mx52016
+      CarClassID: 74
+      CarID: 67
+      CarIsPaceCar: 0
+      CarIsAI: 0
+      CarScreenName: Mazda MX-5 Cup
+      CarScreenNameShort: MX-5 Cup
+      CarClassShortName: MX5 Cup 2016
+      CarClassRelSpeed: 33
+      CarClassLicenseLevel: 0
+      CarClassMaxFuelPct: 1.000 %
+      CarClassWeightPenalty: 0.000 kg
+      CarClassPowerAdjust: 0.000 %
+      CarClassDryTireSetLimit: 0 %
+      CarClassColor: 0xffffff
+      IRating: 0
+      LicLevel: 0
+      LicSubLevel: 0
+      LicString: A 5.00
+      LicColor: 0xfc8a27
+      IsSpectator: 1
+      CarDesignStr: 1,5e5e5e,135324,111111
+      HelmetDesignStr: 42,ef8e26,ffffff,000000
+      SuitDesignStr: 1,ef9126,000000,ffffff
+      CarNumberDesignStr: 0,0,ffffff,777777,000000
+      CarSponsor_1: 0
+      CarSponsor_2: 0
+      ClubName: France
+      DivisionName: Division 1
+      CurDriverIncidentCount: 0
+      TeamIncidentCount: 0
+    - CarIdx: 3
+      UserName: Driver Four
+      AbbrevName: DriverFour
+      Initials: DF
+      UserID: 0
+      TeamID: 0
+      TeamName: Driver Four
+      CarNumber: ""
+      CarNumberRaw: -1
+      CarPath: mx5 mx52016
+      CarClassID: 74
+      CarID: 67
+      CarIsPaceCar: 0
+      CarIsAI: 0
+      CarScreenName: Mazda MX-5 Cup
+      CarScreenNameShort: MX-5 Cup
+      CarClassShortName: MX5 Cup 2016
+      CarClassRelSpeed: 33
+      CarClassLicenseLevel: 0
+      CarClassMaxFuelPct: 1.000 %
+      CarClassWeightPenalty: 0.000 kg
+      CarClassPowerAdjust: 0.000 %
+      CarClassDryTireSetLimit: 0 %
+      CarClassColor: 0xffffff
+      IRating: 0
+      LicLevel: 0
+      LicSubLevel: 0
+      LicString: A 5.00
+      LicColor: 0xfc8a27
+      IsSpectator: 1
+      CarDesignStr: 1,5e5e5e,135324,111111
+      HelmetDesignStr: 42,ef8e26,ffffff,000000
+      SuitDesignStr: 1,ef9126,000000,ffffff
+      CarNumberDesignStr: 0,0,ffffff,777777,000000
+      CarSponsor_1: 0
+      CarSponsor_2: 0
+      ClubName: France
+      DivisionName: Division 1
+      CurDriverIncidentCount: 0
+      TeamIncidentCount: 0
+
+...

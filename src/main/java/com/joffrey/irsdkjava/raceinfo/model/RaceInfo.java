@@ -1,4 +1,4 @@
-package com.joffrey.irsdkjava.info.model;
+package com.joffrey.irsdkjava.raceinfo.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -25,8 +25,8 @@ import com.joffrey.irsdkjava.model.defines.BroadcastMsg;
 import com.joffrey.irsdkjava.model.defines.Constant;
 import com.joffrey.irsdkjava.camera.CameraService;
 import com.joffrey.irsdkjava.camera.model.CameraPacket;
-import com.joffrey.irsdkjava.info.InfoDataService;
-import com.joffrey.irsdkjava.info.model.RaceInfo;
+import com.joffrey.irsdkjava.raceinfo.RaceInfoService;
+import com.joffrey.irsdkjava.raceinfo.model.RaceInfo;
 import com.joffrey.irsdkjava.laptiming.LapTimingService;
 import com.joffrey.irsdkjava.laptiming.model.LapTimingData;
 import com.joffrey.irsdkjava.telemetry.TelemetryService;
@@ -43,9 +43,9 @@ import reactor.core.publisher.Flux;
 @Component
 public class IRacingLibrary {
 
-    private final LapTimingService       lapTimingService;
-    private final InfoDataService        infoDataService;
-    private final TelemetryService       telemetryService;
+    private final LapTimingService lapTimingService;
+    private final RaceInfoService  raceInfoService;
+    private final TelemetryService telemetryService;
     private final TrackmapTrackerService trackmapTrackerService;
     private final CameraService          cameraService;
     private final WindowsService         windowsService;
@@ -60,7 +60,7 @@ public class IRacingLibrary {
     }
 
     public Flux<RaceInfo> getRaceInfo() {
-        return infoDataService.getRaceInfoFlux();
+        return raceInfoService.getRaceInfoFlux();
     }
 
     public Flux<TelemetryData> getTelemetryData() {

@@ -1,9 +1,9 @@
-package com.joffrey.irsdkjava.info;
+package com.joffrey.irsdkjava.raceinfo;
 
 import com.joffrey.irsdkjava.model.SdkStarter;
-import com.joffrey.irsdkjava.info.model.RaceInfo;
-import com.joffrey.irsdkjava.info.model.RaceInfo.LiveData;
-import com.joffrey.irsdkjava.info.model.RaceInfo.YamlData;
+import com.joffrey.irsdkjava.raceinfo.model.RaceInfo;
+import com.joffrey.irsdkjava.raceinfo.model.RaceInfo.LiveData;
+import com.joffrey.irsdkjava.raceinfo.model.RaceInfo.YamlData;
 import com.joffrey.irsdkjava.yaml.YamlService;
 import java.time.Duration;
 import lombok.extern.java.Log;
@@ -13,14 +13,14 @@ import reactor.core.publisher.Mono;
 
 @Log
 @Service
-public class InfoDataService {
+public class RaceInfoService {
 
     private final SdkStarter  sdkStarter;
     private final YamlService yamlService;
 
-    public final Flux<RaceInfo> raceInfoFlux;
+    private final Flux<RaceInfo> raceInfoFlux;
 
-    public InfoDataService(SdkStarter sdkStarter, YamlService yamlService) {
+    public RaceInfoService(SdkStarter sdkStarter, YamlService yamlService) {
         this.sdkStarter = sdkStarter;
         this.yamlService = yamlService;
         this.raceInfoFlux =
