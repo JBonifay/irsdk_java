@@ -33,9 +33,9 @@ public enum PitCommandMode {
     irsdk_PitCommand_ClearTires(7),              // Clear tire pit checkboxes
     irsdk_PitCommand_FR(8),                      // Request a fast repair
     irsdk_PitCommand_ClearWS(9),                 // Uncheck Clean the winshield checkbox
-    irsdk_PitCommand_ClearFR(10),                 // Uncheck request a fast repair
-    irsdk_PitCommand_ClearFuel(11),
-    ;               // Uncheck add fuel
+    irsdk_PitCommand_ClearFR(10),                // Uncheck request a fast repair
+    irsdk_PitCommand_ClearFuel(11),              // Uncheck add fuel
+    ;
 
     private final int value;
 

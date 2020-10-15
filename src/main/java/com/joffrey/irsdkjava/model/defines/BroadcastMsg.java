@@ -1,4 +1,5 @@
-package com.joffrey.irsdkjava.model.defines;/*
+package com.joffrey.irsdkjava.model.defines;
+/*
  *    Copyright (C) 2020 Joffrey Bonifay
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,10 +33,10 @@ public enum BroadcastMsg {
     irsdk_BroadcastReloadTextures(7),                   // irsdk_ReloadTexturesMode, carIdx, unused
     irsdk_BroadcastChatComand(8),                       // irsdk_ChatCommandMode, subCommand, unused
     irsdk_BroadcastPitCommand(9),                       // irsdk_PitCommandMode, parameter
-    irsdk_BroadcastTelemCommand(10),                     // irsdk_TelemCommandMode, unused, unused
-    irsdk_BroadcastFFBCommand(11),                       // irsdk_FFBCommandMode, value (float, high, low)
-    irsdk_BroadcastReplaySearchSessionTime(12),          // sessionNum, sessionTimeMS (high, low)
-    irsdk_BroadcastLast(13),                              // unused placeholder
+    irsdk_BroadcastTelemCommand(10),                    // irsdk_TelemCommandMode, unused, unused
+    irsdk_BroadcastFFBCommand(11),                      // irsdk_FFBCommandMode, value (float, high, low)
+    irsdk_BroadcastReplaySearchSessionTime(12),         // sessionNum, sessionTimeMS (high, low)
+    irsdk_BroadcastLast(13),                            // unused placeholder
     ;
 
     private final int value;

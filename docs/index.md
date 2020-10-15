@@ -1,37 +1,180 @@
-## Welcome to GitHub Pages
+![iRacing image](https://www.jayski.com/wp-content/uploads/sites/31/2020/03/14/iRacing.png)
 
-You can use the [editor on GitHub](https://github.com/JBonifay/irsdk_java/edit/master/docs/index.md) to maintain and preview the content for your website in Markdown files.
+# iRacing java SDK  
+Unofficial [iRacing](https://www.iracing.com/) SDK implementation for Java
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+The sdk provide API for fetching simulator data through [reactor Flux](https://projectreactor.io/) 
 
-### Markdown
+* [Github repository](https://github.com/JBonifay/irsdk_java)  
+* [Documentation](https://jbonifay.github.io/irsdk_java/)  
+* [Forum thread](https://members.iracing.com/jforum/posts/list/3749393.page#12148089)  
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+# How does it work ?
+#### Sdk Dependencies
+The irsdk_java deliver fast data from simulator thanks to:
+- **[Spring boot](https://spring.io/)** for DI
+- **[Reactor](reactor.io)** for Reactive flux
+- **[JNA](https://github.com/java-native-access/jna)** for communication with windows (Memory mapped files, Broadcast messages, etc)  
+_have a look at [WindowsService](../src/main/java/com/joffrey/irsdkjava/windows/WindowsService.java) for details_
+- **[Jackson](https://github.com/FasterXML/jackson)** for yaml parsing
 
-```markdown
-Syntax highlighted code block
+#### Sdk initialization
+The Sdk initialize itself after the first API call.
+The init is donne in [SdkStarter](../src/main/java/com/joffrey/irsdkjava/model/SdkStarter.java)  
 
-# Header 1
-## Header 2
-### Header 3
+Each call of an API check first if Sdk is initialized with memorymapped files, irsdk_header with sharedMemory,...  
+then vars from header are populated in `private final Map<String, VarHeader> vars = new HashMap<>();`
+when a value from shared memory is needed (see `public int getVarInt(String varName, int entry)` for example), the var info like position in memory is taken from this hashmap instead of fetching again the memory.
 
-- Bulleted
-- List
+Yaml file object is updated each seconds in [YamlService](../src/main/java/com/joffrey/irsdkjava/yaml/YamlService.java),
+like that when a value is need from yaml, yaml file is already filled with data.
 
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+# Install
+### Maven
+```xml
+    <dependency>
+      <groupId>com.joffrey</groupId>
+      <artifactId>irsdk_java</artifactId>
+      <version>{version}</version>
+    </dependency>
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+### In your main class
+```java
+@SpringBootApplication
+@Import(IRacingLibraryConfiguration.class)
+public class WebAppApplication {
 
-### Jekyll Themes
+    public static void main(String[] args) {
+        SpringApplication.run(WebAppApplication.class, args);
+    }
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/JBonifay/irsdk_java/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+}
+```
 
-### Support or Contact
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+### Dependencies  
+- Java 11  
+- Spring Boot  
+- Maven  
+
+
+# Available API  
+Available data Flux can be find under [IRacingLibrary.java](src/main/java/com/joffrey/irsdkjava/IRacingLibrary.java)
+
+### CameraPacket
+Simple object containing data from Yaml file only:  
+[CamerasGroupsYaml](../src/main/java/com/joffrey/irsdkjava/yaml/irsdkyaml/CamerasGroupsYaml.java)  
+[DriverInfoYaml](../src/main/java/com/joffrey/irsdkjava/yaml/irsdkyaml/DriverInfoYaml.java)  
+
+```java
+public Flux<CameraPacket> getCameraPacket() {
+    return cameraService.getCameraPacketFlux();
+}
+```
+
+
+### LapTimingPacket
+List of [LapTimingData](../src/main/java/com/joffrey/irsdkjava/laptiming/model/LapTimingData.java) objects representing en entry used for La Timing,  
+LapTimingData content are a mix between live data (CarPosition, CarLivePosition, etc, etc)  
+with data from yaml file used to fetch info of the driver 
+```java
+public Flux<List<LapTimingData>> getLapTimingDataList() {
+    return lapTimingService.getLapTimingDataListFlux();
+}
+```
+
+
+### RaceInfo Packet
+[RaceInfo](../src/main/java/com/joffrey/irsdkjava/raceinfo/model/RaceInfo.java) contain all the data of actual session  
+like track name, weather, actual time, fuel of actual player.
+
+```java
+public Flux<RaceInfo> getRaceInfo() {
+    return raceInfoService.getRaceInfoFlux();
+}
+```
+
+
+### TelemetryData Packet
+the [TelemetryData](../src/main/java/com/joffrey/irsdkjava/telemetry/model/TelemetryData.java) contain all data from telemetry,  vars are organized as the following:  
+- Pedals && Speed  
+- Fuel && Angles  
+- Weather  
+- Session  
+```java
+public Flux<TelemetryData> getTelemetryDataFlux() {
+    return telemetryDataFlux.autoConnect();
+}
+```
+
+### TrackmapTracker Packet
+the [TrackmapTracker](../src/main/java/com/joffrey/irsdkjava/trackmaptracker/model/TrackmapTrackerDriver.java) contain all data from needed fro a race tracker, data returned contain all drivers, with drivers info, and drivers distance on track (pct %).
+```java
+public Flux<List<TrackmapTrackerDriver>> getTrackmapTrackerList() {
+    return trackmapTrackerService.getTrackmapTrackerListFlux();
+}
+```
+
+### Broadcasting messages to simulator
+you'll can find two methods in [IRacingLibrary](../src/main/java/com/joffrey/irsdkjava/IRacingLibrary.java) used to send messages to the simulator.
+```java
+public void broadcastMsg(BroadcastMsg msg, int var1, int var2, int var3) {
+    broadcastMsg(msg, var1, windowsService.MAKELONG(var2, var3));
+}
+
+public void broadcastMsg(BroadcastMsg msg, int var1, float var2) {
+    // multiply by 2^16-1 to move fractional part to the integer part
+    int real = (int) (var2 * 65536.0f);
+
+    broadcastMsg(msg, var1, real);
+}
+```
+
+#### Usage
+Parameters can be found in [BroadcastMsg](../src/main/java/com/joffrey/irsdkjava/model/defines/BroadcastMsg.java).  
+
+Method is working as following:
+|                               |       First parameter     |       Second parameter      |     Third parameter     |
+|------------------------------ |--------------------------	|-----------------------	  |------------------------ |
+| CamSwitchPos                  | CarPosition         	    | Group      	              | Camera       	        |
+| CamSwitchNum                  | Driver#           	    | Group      	              | Camera       	        |
+| CamSetState                   | irsdk_CameraState 	    | unused     	              | unused       	        |
+| ReplaySetPlaySpeed            | Speed             	    | Slowmotion 	              | unused       	        |
+| ReplaySetPlayPosition         | irsdk_RpyPosMode    	    | Frame Number (high, low)    | unused       	        |
+| ReplaySearch                  | irsdk_RpySrchMode    	    | unused                      | unused       	        |
+| ReplaySetState                | irsdk_RpyStateMode   	    | unused                      | unused       	        |
+| ReloadTextures                | irsdk_ReloadTexturesMode  | carIdx                      | unused       	        |
+| ChatComand                    | irsdk_ChatCommandMode     | subCommand                  | unused       	        |
+| PitCommand                    | irsdk_PitCommandMode      | parameter                   | unused       	        |
+| TelemCommand                  | irsdk_TelemCommandMode    | unused                      | unused       	        |
+| FFBCommand                    | irsdk_FFBCommandMode      | value (float, high, low)    | unused       	        |
+| ReplaySearchSessionTime       | sessionNum                | sessionTimeMS (high, low)   | unused       	        |
+
+```java
+iRacingLibrary.broadcastMsg( COMMAND , FIRST_PARAM , SECOND_PARAM, THIRD_PARAM);
+```
+
+##### Example
+- **I want to set** the active camera focus on player with car number 63, cockpit camera (For example group is 2), camera is 0 
+```java
+iRacingLibrary.broadcastMsg(BroadcastMsg.irsdk_BroadcastCamSwitchNum, 63, 2, 0);
+```
+- **I want to set** all tire change at next pit stop 
+```java
+iRacingLibrary.broadcastMsg(BroadcastMsg.irsdk_BroadcastPitCommand, irsdk_PitCommand_ClearTires, 0, 0);
+```
+
+- **I want to set** telemetry on 
+```java
+iRacingLibrary.broadcastMsg(BroadcastMsg.irsdk_BroadcastTelemCommand, irsdk_TelemCommand_Start, 0, 0);
+```
+
+
+## Contributing / Reporting issues
+It can be interresting to add more API with more/less content, facilitate the broadcastMsg API  
+Any help is welcome, it can be fix a bug, code improvement ...   
+[How to contribute / report an issue](CONTRIBUTING.md)
+
+## License
+[Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
