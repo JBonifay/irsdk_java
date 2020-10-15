@@ -15,18 +15,18 @@ The irsdk_java deliver fast data from simulator thanks to:
 - **[Spring boot](https://spring.io/)** for DI
 - **[Reactor](reactor.io)** for Reactive flux
 - **[JNA](https://github.com/java-native-access/jna)** for communication with windows (Memory mapped files, Broadcast messages, etc)  
-_have a look at [WindowsService](../src/main/java/com/joffrey/irsdkjava/windows/WindowsService.java) for details_
+_have a look at [WindowsService](https://github.com/JBonifay/irsdk_java/blob/master/src/main/java/com/joffrey/irsdkjava/windows/WindowsService.java) for details_
 - **[Jackson](https://github.com/FasterXML/jackson)** for yaml parsing
 
 #### Sdk initialization
 The Sdk initialize itself after the first API call.
-The init is donne in [SdkStarter](../src/main/java/com/joffrey/irsdkjava/model/SdkStarter.java)  
+The init is donne in [SdkStarter](https://github.com/JBonifay/irsdk_java/blob/master/src/main/java/com/joffrey/irsdkjava/model/SdkStarter.java)  
 
 Each call of an API check first if Sdk is initialized with memorymapped files, irsdk_header with sharedMemory,...  
 then vars from header are populated in `private final Map<String, VarHeader> vars = new HashMap<>();`
 when a value from shared memory is needed (see `public int getVarInt(String varName, int entry)` for example), the var info like position in memory is taken from this hashmap instead of fetching again the memory.
 
-Yaml file object is updated each seconds in [YamlService](../src/main/java/com/joffrey/irsdkjava/yaml/YamlService.java),
+Yaml file object is updated each seconds in [YamlService](https://github.com/JBonifay/irsdk_java/blob/master/src/main/java/com/joffrey/irsdkjava/yaml/YamlService.java),
 like that when a value is need from yaml, yaml file is already filled with data.
 
 # Install
@@ -60,12 +60,12 @@ public class WebAppApplication {
 
 
 # Available API  
-Available data Flux can be find under [IRacingLibrary.java](src/main/java/com/joffrey/irsdkjava/IRacingLibrary.java)
+Available data Flux can be find under [IRacingLibrary.java](https://github.com/JBonifay/irsdk_java/blob/master/src/main/java/com/joffrey/irsdkjava/IRacingLibrary.java)
 
 ### CameraPacket
 Simple object containing data from Yaml file only:  
-[CamerasGroupsYaml](../src/main/java/com/joffrey/irsdkjava/yaml/irsdkyaml/CamerasGroupsYaml.java)  
-[DriverInfoYaml](../src/main/java/com/joffrey/irsdkjava/yaml/irsdkyaml/DriverInfoYaml.java)  
+[CamerasGroupsYaml](https://github.com/JBonifay/irsdk_java/blob/master/src/main/java/com/joffrey/irsdkjava/yaml/irsdkyaml/CamerasGroupsYaml.java)  
+[DriverInfoYaml](https://github.com/JBonifay/irsdk_java/blob/master/src/main/java/com/joffrey/irsdkjava/yaml/irsdkyaml/DriverInfoYaml.java)  
 
 ```java
 public Flux<CameraPacket> getCameraPacket() {
@@ -75,7 +75,7 @@ public Flux<CameraPacket> getCameraPacket() {
 
 
 ### LapTimingPacket
-List of [LapTimingData](../src/main/java/com/joffrey/irsdkjava/laptiming/model/LapTimingData.java) objects representing en entry used for La Timing,  
+List of [LapTimingData](https://github.com/JBonifay/irsdk_java/blob/master/src/main/java/com/joffrey/irsdkjava/laptiming/model/LapTimingData.java) objects representing en entry used for La Timing,  
 LapTimingData content are a mix between live data (CarPosition, CarLivePosition, etc, etc)  
 with data from yaml file used to fetch info of the driver 
 ```java
@@ -86,7 +86,7 @@ public Flux<List<LapTimingData>> getLapTimingDataList() {
 
 
 ### RaceInfo Packet
-[RaceInfo](../src/main/java/com/joffrey/irsdkjava/raceinfo/model/RaceInfo.java) contain all the data of actual session  
+[RaceInfo](https://github.com/JBonifay/irsdk_java/blob/master/src/main/java/com/joffrey/irsdkjava/raceinfo/model/RaceInfo.java) contain all the data of actual session  
 like track name, weather, actual time, fuel of actual player.
 
 ```java
@@ -97,7 +97,7 @@ public Flux<RaceInfo> getRaceInfo() {
 
 
 ### TelemetryData Packet
-the [TelemetryData](../src/main/java/com/joffrey/irsdkjava/telemetry/model/TelemetryData.java) contain all data from telemetry,  vars are organized as the following:  
+the [TelemetryData](https://github.com/JBonifay/irsdk_java/blob/master/src/main/java/com/joffrey/irsdkjava/telemetry/model/TelemetryData.java) contain all data from telemetry,  vars are organized as the following:  
 - Pedals && Speed  
 - Fuel && Angles  
 - Weather  
@@ -109,7 +109,7 @@ public Flux<TelemetryData> getTelemetryDataFlux() {
 ```
 
 ### TrackmapTracker Packet
-the [TrackmapTracker](../src/main/java/com/joffrey/irsdkjava/trackmaptracker/model/TrackmapTrackerDriver.java) contain all data from needed fro a race tracker, data returned contain all drivers, with drivers info, and drivers distance on track (pct %).
+the [TrackmapTracker](https://github.com/JBonifay/irsdk_java/blob/master/src/main/java/com/joffrey/irsdkjava/trackmaptracker/model/TrackmapTrackerDriver.java) contain all data from needed fro a race tracker, data returned contain all drivers, with drivers info, and drivers distance on track (pct %).
 ```java
 public Flux<List<TrackmapTrackerDriver>> getTrackmapTrackerList() {
     return trackmapTrackerService.getTrackmapTrackerListFlux();
@@ -117,7 +117,7 @@ public Flux<List<TrackmapTrackerDriver>> getTrackmapTrackerList() {
 ```
 
 ### Broadcasting messages to simulator
-you'll can find two methods in [IRacingLibrary](../src/main/java/com/joffrey/irsdkjava/IRacingLibrary.java) used to send messages to the simulator.
+you'll can find two methods in [IRacingLibrary](https://github.com/JBonifay/irsdk_java/blob/master/src/main/java/com/joffrey/irsdkjava/IRacingLibrary.java) used to send messages to the simulator.
 ```java
 public void broadcastMsg(BroadcastMsg msg, int var1, int var2, int var3) {
     broadcastMsg(msg, var1, windowsService.MAKELONG(var2, var3));
@@ -132,7 +132,7 @@ public void broadcastMsg(BroadcastMsg msg, int var1, float var2) {
 ```
 
 #### Usage
-Parameters can be found in [BroadcastMsg](../src/main/java/com/joffrey/irsdkjava/model/defines/BroadcastMsg.java).  
+Parameters can be found in [BroadcastMsg](https://github.com/JBonifay/irsdk_java/blob/master/src/main/java/com/joffrey/irsdkjava/model/defines/BroadcastMsg.java).  
 
 Method is working as following:
 |                               |       First parameter     |       Second parameter      |     Third parameter     |
