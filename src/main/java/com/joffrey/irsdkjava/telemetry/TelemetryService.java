@@ -61,13 +61,13 @@ public class TelemetryService {
                                                                                         o.getT5(),
                                                                                         o.getT6()));
 
-        Flux<TelemetryData.Weather> thirdGroup = Flux.zip(Mono.just(sdkStarter.getVarFloat("airPressure")),
-                                                          Mono.just(sdkStarter.getVarFloat("airTemp")),
-                                                          Mono.just(sdkStarter.getVarFloat("relativeHumidity")),
+        Flux<TelemetryData.Weather> thirdGroup = Flux.zip(Mono.just(sdkStarter.getVarFloat("AirPressure")),
+                                                          Mono.just(sdkStarter.getVarFloat("AirTemp")),
+                                                          Mono.just(sdkStarter.getVarFloat("RelativeHumidity")),
                                                           Mono.just(sdkStarter.getVarInt("Skies")),
-                                                          Mono.just(sdkStarter.getVarFloat("trackTemp")),
-                                                          Mono.just(sdkStarter.getVarFloat("windDir")),
-                                                          Mono.just(sdkStarter.getVarFloat("windVel")),
+                                                          Mono.just(sdkStarter.getVarFloat("TrackTemp")),
+                                                          Mono.just(sdkStarter.getVarFloat("WindDir")),
+                                                          Mono.just(sdkStarter.getVarFloat("WindVel")),
                                                           Mono.just(sdkStarter.getVarInt("WeatherType")))
                                                      .map(o -> new Weather(o.getT1(),
                                                                            o.getT2(),
@@ -178,19 +178,19 @@ public class TelemetryService {
         } else if (weatherIntVal == 1) {
             return "Dynamic";
         } else {
-            return "";
+            return "Unknown";
         }
     }
 
-    private String getSkies(Integer t4) {
-        if (t4 == 0) {
+    private String getSkies(Integer skies) {
+        if (skies == 0) {
             return "Clear";
-        } else if (t4 == 1 || t4 == 2) {
+        } else if (skies == 1 || skies == 2) {
             return "Cloudy";
-        } else if (t4 == 3) {
+        } else if (skies == 3) {
             return "Overcast";
         } else {
-            return "";
+            return "Unknown";
         }
     }
 

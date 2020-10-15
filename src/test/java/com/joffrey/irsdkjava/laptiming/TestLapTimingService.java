@@ -1,10 +1,11 @@
-package com.joffrey.irsdkjava.model;
+package com.joffrey.irsdkjava.laptiming;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.joffrey.irsdkjava.laptiming.LapTimingService;
+import com.joffrey.irsdkjava.model.Header;
+import com.joffrey.irsdkjava.model.SdkStarter;
 import com.joffrey.irsdkjava.yaml.YamlService;
 import com.joffrey.irsdkjava.yaml.irsdkyaml.YamlFile;
 import java.io.File;
@@ -24,7 +25,7 @@ import org.springframework.util.FileCopyUtils;
 import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
-public class LapTimingServiceUT {
+class TestLapTimingService {
 
     @MockBean
     private SdkStarter  sdkStarter;
@@ -34,7 +35,7 @@ public class LapTimingServiceUT {
     private YamlService yamlService;
 
     // Class under test
-    LapTimingService lapTimingService;
+    private LapTimingService lapTimingService;
 
     // Helpers Objects
     private ByteBuffer byteBufferYamlFile;
@@ -46,7 +47,6 @@ public class LapTimingServiceUT {
         Mockito.when(sdkStarter.getHeader()).thenReturn(header);
         Mockito.when(sdkStarter.getHeader().getSessionInfoByteBuffer()).thenReturn(byteBufferYamlFile);
         Mockito.when(sdkStarter.isRunning()).thenReturn(true);
-        Mockito.when(sdkStarter.getHeader()).thenReturn(header);
         Mockito.when(yamlService.getYamlFile()).thenReturn(yamlFile);
 
     }
