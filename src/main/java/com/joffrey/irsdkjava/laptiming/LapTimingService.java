@@ -24,7 +24,7 @@ public class LapTimingService {
     private final SdkStarter  sdkStarter;
     private final YamlService yamlService;
 
-    public final ConnectableFlux<List<LapTimingData>> listLapTimingDataFlux;
+    private final ConnectableFlux<List<LapTimingData>> listLapTimingDataFlux;
 
     public LapTimingService(SdkStarter sdkStarter, YamlService yamlService) {
         this.sdkStarter = sdkStarter;

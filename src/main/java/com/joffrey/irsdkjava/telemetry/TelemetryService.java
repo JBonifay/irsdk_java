@@ -18,7 +18,7 @@ import reactor.core.publisher.Mono;
 public class TelemetryService {
 
     private final SdkStarter                     sdkStarter;
-    public final  ConnectableFlux<TelemetryData> telemetryDataFlux;
+    private final  ConnectableFlux<TelemetryData> telemetryDataFlux;
 
     public TelemetryService(SdkStarter sdkStarter) {
         this.sdkStarter = sdkStarter;

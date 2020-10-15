@@ -1,10 +1,6 @@
 # Contributing Guidelines
 
 Thanks for contributing!
-
-## Getting Started
-The sdk try to be as close as possible to the c ++ sdk.  
-This version is still in beta and can contains bugs.  
 Any help is welcome, it can be on fix bug, add missing samples, code review, code improvement ... 
 
 ## Issue

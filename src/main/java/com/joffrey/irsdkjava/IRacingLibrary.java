@@ -32,7 +32,7 @@ import com.joffrey.irsdkjava.raceinfo.model.RaceInfo;
 import com.joffrey.irsdkjava.telemetry.TelemetryService;
 import com.joffrey.irsdkjava.telemetry.model.TelemetryData;
 import com.joffrey.irsdkjava.trackmaptracker.TrackmapTrackerService;
-import com.joffrey.irsdkjava.trackmaptracker.model.TrackmapTracker;
+import com.joffrey.irsdkjava.trackmaptracker.model.TrackmapTrackerDriver;
 import com.joffrey.irsdkjava.windows.WindowsService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +51,7 @@ public class IRacingLibrary {
     private final WindowsService         windowsService;
 
     // Flux
-    public Flux<List<TrackmapTracker>> getTrackmapTrackerList() {
+    public Flux<List<TrackmapTrackerDriver>> getTrackmapTrackerList() {
         return trackmapTrackerService.getTrackmapTrackerListFlux();
     }
 
