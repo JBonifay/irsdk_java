@@ -21,11 +21,9 @@
 
 package com.joffrey.irsdkjava;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-@RequiredArgsConstructor
 @Configuration
 @ComponentScan
 public class IRacingLibraryConfiguration {
