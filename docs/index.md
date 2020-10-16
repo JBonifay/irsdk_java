@@ -31,12 +31,21 @@ like that when a value is need from yaml, yaml file is already filled with data.
 
 # Install
 ### Maven
+You can find active release [here](https://github.com/JBonifay/irsdk_java/packages/449562)
+Just follow the instructions and you'll be ready
+
+Add this to pom.xml:
 ```xml
-    <dependency>
-      <groupId>com.joffrey</groupId>
-      <artifactId>irsdk_java</artifactId>
-      <version>{version}</version>
-    </dependency>
+<dependency>
+  <groupId>com.joffrey</groupId>
+  <artifactId>irsdk_java</artifactId>
+  <version>{version}</version>
+</dependency>
+```
+
+Run via command line:
+```
+$ mvn install
 ```
 
 ### In your main class

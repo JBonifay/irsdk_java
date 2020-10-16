@@ -17,13 +17,23 @@ The sdk provide API for fetching simulator data through [reactor Flux](https://p
 
 # Install
 ##### Maven
+You can find active release [here](https://github.com/JBonifay/irsdk_java/packages/449562)
+Just follow the instructions and you'll be ready
+
+Add this to pom.xml:
 ```xml
-    <dependency>
-      <groupId>com.joffrey</groupId>
-      <artifactId>irsdk_java</artifactId>
-      <version>{version}</version>
-    </dependency>
+<dependency>
+  <groupId>com.joffrey</groupId>
+  <artifactId>irsdk_java</artifactId>
+  <version>{version}</version>
+</dependency>
 ```
+
+Run via command line:
+```
+$ mvn install
+```
+
 ##### In your app
 ```java
 @SpringBootApplication
