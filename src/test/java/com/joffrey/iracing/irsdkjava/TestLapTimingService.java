@@ -28,6 +28,7 @@ import static com.joffrey.iracing.irsdkjava.YamlHelperTest.loadYamlObject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 
+import com.joffrey.iracing.irsdkjava.config.FluxProperties;
 import com.joffrey.iracing.irsdkjava.laptiming.LapTimingService;
 import com.joffrey.iracing.irsdkjava.model.Header;
 import com.joffrey.iracing.irsdkjava.model.SdkStarter;
@@ -62,7 +63,7 @@ class TestLapTimingService {
     private ByteBuffer byteBufferYamlFile;
 
     void setupGeneral() {
-        lapTimingService = new LapTimingService(sdkStarter, yamlService);
+        lapTimingService = new LapTimingService(new FluxProperties(), sdkStarter, yamlService);
         YamlFile yamlFile = loadYamlObject(byteBufferYamlFile);
 
         Mockito.when(sdkStarter.getHeader()).thenReturn(header);

@@ -23,6 +23,7 @@
 
 package com.joffrey.iracing.irsdkjava.telemetry;
 
+import com.joffrey.iracing.irsdkjava.config.FluxProperties;
 import com.joffrey.iracing.irsdkjava.model.SdkStarter;
 import com.joffrey.iracing.irsdkjava.telemetry.model.TelemetryData;
 import com.joffrey.iracing.irsdkjava.telemetry.model.TelemetryData.FuelAndAngles;
@@ -31,7 +32,6 @@ import com.joffrey.iracing.irsdkjava.telemetry.model.TelemetryData.Session;
 import com.joffrey.iracing.irsdkjava.telemetry.model.TelemetryData.Weather;
 import java.time.Duration;
 import lombok.extern.java.Log;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.ConnectableFlux;
 import reactor.core.publisher.Flux;
@@ -41,16 +41,15 @@ import reactor.core.publisher.Mono;
 @Service
 public class TelemetryService {
 
-    @Value("${irsdkjava.config.flux.interval.telemetry}")
-    private int millis;
-
+    private final FluxProperties                 fluxProperties;
     private final SdkStarter                     sdkStarter;
     private final ConnectableFlux<TelemetryData> telemetryDataFlux;
 
-    public TelemetryService(SdkStarter sdkStarter) {
+    public TelemetryService(FluxProperties fluxProperties, SdkStarter sdkStarter) {
+        this.fluxProperties = fluxProperties;
         this.sdkStarter = sdkStarter;
-        this.telemetryDataFlux = Flux.interval(Duration.ofMillis(millis)).filter(aLong -> sdkStarter.isRunning())
-                                     .flatMap(aLong -> loadTelemetryData()).publish();
+        this.telemetryDataFlux = Flux.interval(Duration.ofMillis(this.fluxProperties.getTelemetryIntervalInMs()))
+                                     .filter(aLong -> sdkStarter.isRunning()).flatMap(aLong -> loadTelemetryData()).publish();
 
     }
 

@@ -25,12 +25,12 @@ package com.joffrey.iracing.irsdkjava.yaml;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.joffrey.iracing.irsdkjava.config.FluxProperties;
 import com.joffrey.iracing.irsdkjava.model.SdkStarter;
 import com.joffrey.iracing.irsdkjava.yaml.irsdkyaml.YamlFile;
 import java.io.IOException;
 import java.time.Duration;
 import lombok.extern.java.Log;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -38,18 +38,18 @@ import reactor.core.publisher.Flux;
 @Service
 public class YamlService {
 
-    @Value("${irsdkjava.config.flux.interval.yaml}")
-    private int millis;
+    private final FluxProperties fluxProperties;
+    private final SdkStarter     sdkStarter;
+    private final ObjectMapper   objectMapper = new ObjectMapper(new YAMLFactory());
+    private       YamlFile       yamlFile;
 
-    private final SdkStarter   sdkStarter;
-    private final ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
-    private       YamlFile     yamlFile;
-
-    public YamlService(SdkStarter sdkStarter) {
+    public YamlService(FluxProperties fluxProperties, SdkStarter sdkStarter) {
+        this.fluxProperties = fluxProperties;
         this.sdkStarter = sdkStarter;
         this.yamlFile = new YamlFile();
-        Flux<YamlFile> map = Flux.interval(Duration.ofMillis(millis)).filter(aLong -> sdkStarter.isRunning())
-                                 .map(aLong -> yamlFile = loadYamlObject());
+        Flux<YamlFile> map =
+                Flux.interval(Duration.ofMillis(fluxProperties.getYamlIntervalInMs())).filter(aLong -> sdkStarter.isRunning())
+                    .map(aLong -> yamlFile = loadYamlObject());
 
         map.subscribe();
     }

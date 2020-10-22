@@ -23,6 +23,7 @@
 
 package com.joffrey.iracing.irsdkjava.raceinfo;
 
+import com.joffrey.iracing.irsdkjava.config.FluxProperties;
 import com.joffrey.iracing.irsdkjava.model.SdkStarter;
 import com.joffrey.iracing.irsdkjava.raceinfo.model.RaceInfo;
 import com.joffrey.iracing.irsdkjava.raceinfo.model.RaceInfo.LiveData;
@@ -30,7 +31,6 @@ import com.joffrey.iracing.irsdkjava.raceinfo.model.RaceInfo.YamlData;
 import com.joffrey.iracing.irsdkjava.yaml.YamlService;
 import java.time.Duration;
 import lombok.extern.java.Log;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -39,20 +39,19 @@ import reactor.core.publisher.Mono;
 @Service
 public class RaceInfoService {
 
-    @Value("${irsdkjava.config.flux.interval.race-info}")
-    private final int millis;
-
-    private final SdkStarter  sdkStarter;
-    private final YamlService yamlService;
+    private final FluxProperties fluxProperties;
+    private final SdkStarter     sdkStarter;
+    private final YamlService    yamlService;
 
     private final Flux<RaceInfo> raceInfoFlux;
 
-    public RaceInfoService(SdkStarter sdkStarter, YamlService yamlService) {
+    public RaceInfoService(FluxProperties fluxProperties, SdkStarter sdkStarter, YamlService yamlService) {
+        this.fluxProperties = fluxProperties;
         this.sdkStarter = sdkStarter;
         this.yamlService = yamlService;
-        millis = 1;
         this.raceInfoFlux =
-                Flux.interval(Duration.ofMillis(millis)).filter(aLong -> sdkStarter.isRunning()).flatMap(aLong -> loadRaceInfo());
+                Flux.interval(Duration.ofMillis(fluxProperties.getRaceInfoIntervalInMs())).filter(aLong -> sdkStarter.isRunning())
+                    .flatMap(aLong -> loadRaceInfo());
     }
 
     public Flux<RaceInfo> getRaceInfoFlux() {

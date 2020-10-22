@@ -24,10 +24,10 @@
 package com.joffrey.iracing.irsdkjava.camera;
 
 import com.joffrey.iracing.irsdkjava.camera.model.CameraPacket;
+import com.joffrey.iracing.irsdkjava.config.FluxProperties;
 import com.joffrey.iracing.irsdkjava.model.SdkStarter;
 import com.joffrey.iracing.irsdkjava.yaml.YamlService;
 import java.time.Duration;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -35,19 +35,19 @@ import reactor.core.publisher.Mono;
 @Service
 public class CameraService {
 
-    @Value("${irsdkjava.config.flux.interval.camera}")
-    private int millis;
-
-    private final SdkStarter  sdkStarter;
-    private final YamlService yamlService;
+    private final FluxProperties fluxProperties;
+    private final SdkStarter     sdkStarter;
+    private final YamlService    yamlService;
 
     private final Flux<CameraPacket> cameraPacketFlux;
 
-    public CameraService(SdkStarter sdkStarter, YamlService yamlService) {
+    public CameraService(FluxProperties fluxProperties, SdkStarter sdkStarter, YamlService yamlService) {
+        this.fluxProperties = fluxProperties;
         this.sdkStarter = sdkStarter;
         this.yamlService = yamlService;
         this.cameraPacketFlux =
-                Flux.interval(Duration.ofMillis(millis)).filter(aLong -> sdkStarter.isRunning()).flatMap(aLong -> loadCameraData());
+                Flux.interval(Duration.ofMillis(fluxProperties.getCameraIntervalInMs())).filter(aLong -> sdkStarter.isRunning())
+                    .flatMap(aLong -> loadCameraData());
     }
 
     public Flux<CameraPacket> getCameraPacketFlux() {

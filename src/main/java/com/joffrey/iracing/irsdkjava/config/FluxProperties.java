@@ -33,31 +33,31 @@ public class FluxProperties {
     /**
      * Set interval for camera flux in ms
      */
-    private long camera = 1000L;
+    private long cameraIntervalInMs = 1000L;
 
     /**
      * Set interval for lap timing flux in ms
      */
-    private long lapTiming = 1000L;
+    private long lapTimingIntervalInMs = 1000L;
 
     /**
      * Set interval for race info flux in ms
      */
-    private long raceInfo = 1000L;
+    private long raceInfoIntervalInMs = 1000L;
 
     /**
      * Set interval for telemetry flux in ms
      */
-    private long telemetry = 100L;
+    private long telemetryIntervalInMs = 100L;
 
     /**
      * Set interval for trackmap tracker flux in ms
      */
-    private long trackmapTracker = 50L;
+    private long trackmapTrackerIntervalInMs = 50L;
 
     /**
      * Set interval for yaml flux in ms
      */
-    private long yaml = 1000L;
+    private long yamlIntervalInMs = 1000L;
 
 }

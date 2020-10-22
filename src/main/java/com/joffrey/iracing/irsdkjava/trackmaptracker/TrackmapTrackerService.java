@@ -23,6 +23,7 @@
 
 package com.joffrey.iracing.irsdkjava.trackmaptracker;
 
+import com.joffrey.iracing.irsdkjava.config.FluxProperties;
 import com.joffrey.iracing.irsdkjava.model.SdkStarter;
 import com.joffrey.iracing.irsdkjava.trackmaptracker.model.TrackmapTrackerDriver;
 import com.joffrey.iracing.irsdkjava.yaml.YamlService;
@@ -31,7 +32,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.java.Log;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.ConnectableFlux;
 import reactor.core.publisher.Flux;
@@ -42,18 +42,18 @@ import reactor.core.scheduler.Schedulers;
 @Service
 public class TrackmapTrackerService {
 
-    @Value("${irsdkjava.config.flux.interval.trackmap-tracker}")
-    private int millis;
-
-    private final SdkStarter  sdkStarter;
-    private final YamlService yamlService;
+    private final FluxProperties fluxProperties;
+    private final SdkStarter     sdkStarter;
+    private final YamlService    yamlService;
 
     private final ConnectableFlux<List<TrackmapTrackerDriver>> trackmapTrackerListFlux;
 
-    public TrackmapTrackerService(SdkStarter sdkStarter, YamlService yamlService) {
+    public TrackmapTrackerService(FluxProperties fluxProperties, SdkStarter sdkStarter, YamlService yamlService) {
+        this.fluxProperties = fluxProperties;
         this.sdkStarter = sdkStarter;
         this.yamlService = yamlService;
-        this.trackmapTrackerListFlux = Flux.interval(Duration.ofMillis(millis)).filter(aLong -> sdkStarter.isRunning())
+        this.trackmapTrackerListFlux = Flux.interval(Duration.ofMillis(fluxProperties.getTrackmapTrackerIntervalInMs()))
+                                           .filter(aLong -> sdkStarter.isRunning())
                                            .flatMap(aLong -> loadTrackmapTrackerDataList()).publish();
     }
 

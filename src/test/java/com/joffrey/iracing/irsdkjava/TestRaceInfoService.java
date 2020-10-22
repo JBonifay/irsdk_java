@@ -28,6 +28,7 @@ import static com.joffrey.iracing.irsdkjava.YamlHelperTest.loadYamlObject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 
+import com.joffrey.iracing.irsdkjava.config.FluxProperties;
 import com.joffrey.iracing.irsdkjava.model.Header;
 import com.joffrey.iracing.irsdkjava.model.SdkStarter;
 import com.joffrey.iracing.irsdkjava.raceinfo.RaceInfoService;
@@ -61,7 +62,7 @@ public class TestRaceInfoService {
 
     @BeforeEach
     void init() {
-        raceInfoService = new RaceInfoService(sdkStarter, yamlService);
+        raceInfoService = new RaceInfoService(new FluxProperties(), sdkStarter, yamlService);
         byteBufferYamlFile = createByteBufferYamlFile("raceinfo/raceinfo.yml");
         YamlFile yamlFile = loadYamlObject(byteBufferYamlFile);
 

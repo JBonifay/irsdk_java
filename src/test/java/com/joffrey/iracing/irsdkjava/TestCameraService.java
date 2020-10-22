@@ -28,6 +28,7 @@ import static com.joffrey.iracing.irsdkjava.YamlHelperTest.loadYamlObject;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.joffrey.iracing.irsdkjava.camera.CameraService;
+import com.joffrey.iracing.irsdkjava.config.FluxProperties;
 import com.joffrey.iracing.irsdkjava.model.Header;
 import com.joffrey.iracing.irsdkjava.model.SdkStarter;
 import com.joffrey.iracing.irsdkjava.yaml.YamlService;
@@ -62,7 +63,7 @@ class TestCameraService {
 
     @BeforeEach
     void init() {
-        cameraService = new CameraService(sdkStarter, yamlService);
+        cameraService = new CameraService(new FluxProperties(), sdkStarter, yamlService);
         byteBufferYamlFile = createByteBufferYamlFile("camera/cameras.yml");
         YamlFile yamlFile = loadYamlObject(byteBufferYamlFile);
 

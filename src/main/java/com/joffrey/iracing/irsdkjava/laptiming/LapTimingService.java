@@ -23,6 +23,7 @@
 
 package com.joffrey.iracing.irsdkjava.laptiming;
 
+import com.joffrey.iracing.irsdkjava.config.FluxProperties;
 import com.joffrey.iracing.irsdkjava.laptiming.model.LapTimingData;
 import com.joffrey.iracing.irsdkjava.laptiming.model.LapTimingData.LiveData;
 import com.joffrey.iracing.irsdkjava.laptiming.model.LapTimingData.YamlData;
@@ -34,7 +35,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
 import lombok.extern.java.Log;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.ConnectableFlux;
 import reactor.core.publisher.Flux;
@@ -45,19 +45,19 @@ import reactor.core.scheduler.Schedulers;
 @Service
 public class LapTimingService {
 
-    @Value("${irsdkjava.config.flux.interval.lap-timing}")
-    public int millis;
-
-    private final SdkStarter sdkStarter;
-    private final YamlService yamlService;
+    private final FluxProperties fluxProperties;
+    private final SdkStarter     sdkStarter;
+    private final YamlService    yamlService;
 
     private final ConnectableFlux<List<LapTimingData>> listLapTimingDataFlux;
 
-    public LapTimingService(SdkStarter sdkStarter, YamlService yamlService) {
+    public LapTimingService(FluxProperties fluxProperties, SdkStarter sdkStarter, YamlService yamlService) {
+        this.fluxProperties = fluxProperties;
         this.sdkStarter = sdkStarter;
         this.yamlService = yamlService;
-        this.listLapTimingDataFlux = Flux.interval(Duration.ofMillis(millis)).filter(aLong -> sdkStarter.isRunning())
-                                         .flatMap(aLong -> loadLapTimingDataList()).publish();
+        this.listLapTimingDataFlux = Flux.interval(Duration.ofMillis(fluxProperties.getLapTimingIntervalInMs()))
+                                         .filter(aLong -> sdkStarter.isRunning()).flatMap(aLong -> loadLapTimingDataList())
+                                         .publish();
     }
 
     /**

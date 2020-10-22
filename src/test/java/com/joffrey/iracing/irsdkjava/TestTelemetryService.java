@@ -26,6 +26,7 @@ package com.joffrey.iracing.irsdkjava;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 
+import com.joffrey.iracing.irsdkjava.config.FluxProperties;
 import com.joffrey.iracing.irsdkjava.model.Header;
 import com.joffrey.iracing.irsdkjava.model.SdkStarter;
 import com.joffrey.iracing.irsdkjava.telemetry.TelemetryService;
@@ -51,7 +52,7 @@ class TestTelemetryService {
 
     @BeforeEach
     void init() {
-        telemetryService = new TelemetryService(sdkStarter);
+        telemetryService = new TelemetryService(new FluxProperties(), sdkStarter);
         Mockito.when(sdkStarter.isRunning()).thenReturn(true);
     }
 

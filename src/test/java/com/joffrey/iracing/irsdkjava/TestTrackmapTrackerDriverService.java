@@ -28,6 +28,7 @@ import static com.joffrey.iracing.irsdkjava.YamlHelperTest.loadYamlObject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 
+import com.joffrey.iracing.irsdkjava.config.FluxProperties;
 import com.joffrey.iracing.irsdkjava.model.Header;
 import com.joffrey.iracing.irsdkjava.model.SdkStarter;
 import com.joffrey.iracing.irsdkjava.trackmaptracker.TrackmapTrackerService;
@@ -64,7 +65,7 @@ class TestTrackmapTrackerDriverService {
 
     @BeforeEach
     void init() {
-        trackmapTrackerService = new TrackmapTrackerService(sdkStarter, yamlService);
+        trackmapTrackerService = new TrackmapTrackerService(new FluxProperties(), sdkStarter, yamlService);
         byteBufferYamlFile = createByteBufferYamlFile("trackmaptracker/trackmaptracker.yml");
         YamlFile yamlFile = loadYamlObject(byteBufferYamlFile);
 
