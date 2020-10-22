@@ -34,18 +34,13 @@ Run via command line:
 $ mvn install
 ```
 
-##### In your app
+##### In your MainApplication
+The java Sdk use spring autoconfiguration, you just need to import IRacingLibrary object in your project 
+
 ```java
-@SpringBootApplication
-@Import(IRacingLibraryConfiguration.class)
-public class WebAppApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(WebAppApplication.class, args);
-    }
-
-}
-```
+@Autowired
+private IRacingLibrary iRacingLibrary;
+``` 
 
 
 ##### Dependencies  
@@ -67,6 +62,19 @@ Available data Flux can be find under [IRacingLibrary.java](src/main/java/com/jo
 ```
 - broadcastMsg used to send a message to the sim (Change camera, control some settings,...)
 ```
+
+# Flux configuration
+
+In your spring project you can modify the settings of the different Flux Api
+If you need to change these values you can do as the following:
+```properties
+irsdkjava.config.flux.interval.camera=1000
+irsdkjava.config.flux.interval.lap-timing=1000
+irsdkjava.config.flux.interval.race-info=1000
+irsdkjava.config.flux.interval.telemetry=500
+irsdkjava.config.flux.interval.trackmap-tracker=100
+irsdkjava.config.flux.interval.yaml=100
+```  
 
 ## Contributing / Reporting issues
 It can be interresting to add more API with more/less content, facilitate the broadcastMsg API  

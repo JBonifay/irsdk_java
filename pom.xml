@@ -97,12 +97,6 @@
       <version>2.11.1</version>
     </dependency>
 
-    <dependency>
-      <artifactId>commons-lang3</artifactId>
-      <groupId>org.apache.commons</groupId>
-      <version>3.11</version>
-    </dependency>
-
     <!-- Test -->
     <dependency>
       <artifactId>spring-boot-starter-test</artifactId>

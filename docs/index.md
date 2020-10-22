@@ -48,18 +48,13 @@ Run via command line:
 $ mvn install
 ```
 
-### In your main class
+### In your MainApplication
+The java Sdk use spring autoconfiguration, you just need to import IRacingLibrary object in your project 
+
 ```java
-@SpringBootApplication
-@Import(IRacingLibraryConfiguration.class)
-public class WebAppApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(WebAppApplication.class, args);
-    }
-
-}
-```
+@Autowired
+private IRacingLibrary iRacingLibrary;
+``` 
 
 
 ### Dependencies  
@@ -145,7 +140,7 @@ Parameters can be found in [BroadcastMsg](https://github.com/JBonifay/irsdk_java
 
 Method is working as following:
 |                               |       First parameter     |       Second parameter      |     Third parameter     |
-|------------------------------ |--------------------------	|-----------------------	  |------------------------ |
+|-------------------------------|---------------------------|-----------------------------|-------------------------|
 | CamSwitchPos                  | CarPosition         	    | Group      	              | Camera       	        |
 | CamSwitchNum                  | Driver#           	    | Group      	              | Camera       	        |
 | CamSetState                   | irsdk_CameraState 	    | unused     	              | unused       	        |
@@ -179,6 +174,18 @@ iRacingLibrary.broadcastMsg(BroadcastMsg.irsdk_BroadcastPitCommand, irsdk_PitCom
 iRacingLibrary.broadcastMsg(BroadcastMsg.irsdk_BroadcastTelemCommand, irsdk_TelemCommand_Start, 0, 0);
 ```
 
+#### Flux configuration
+     
+In your spring project you can modify the settings of the different Flux Api
+If you need to change these values you can do as the following:
+```properties
+irsdkjava.config.flux.interval.camera=1000
+irsdkjava.config.flux.interval.lap-timing=1000
+irsdkjava.config.flux.interval.race-info=1000
+irsdkjava.config.flux.interval.telemetry=500
+irsdkjava.config.flux.interval.trackmap-tracker=100
+irsdkjava.config.flux.interval.yaml=100
+```  
 
 ## Contributing / Reporting issues
 It can be interresting to add more API with more/less content, facilitate the broadcastMsg API  
