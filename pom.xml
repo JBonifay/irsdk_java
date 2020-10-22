@@ -34,10 +34,10 @@
   </parent>
 
   <description>Unofficial Irsdk Java</description>
-  <groupId>com.joffrey</groupId>
-  <artifactId>irsdk_java</artifactId>
+  <groupId>com.joffrey.iracing</groupId>
+  <artifactId>irsdkjava-spring-boot-starter</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  <name>irsdk_java</name>
+  <name>iRacing Java SDK</name>
 
   <licenses>
     <license>
@@ -61,7 +61,7 @@
 
   <dependencies>
 
-    <!--  Spring boot starter  -->
+    <!--  Spring boot -->
     <dependency>
       <artifactId>spring-boot-starter</artifactId>
       <groupId>org.springframework.boot</groupId>
@@ -70,7 +70,12 @@
     <dependency>
       <artifactId>spring-boot-starter-webflux</artifactId>
       <groupId>org.springframework.boot</groupId>
-      <version>2.3.4.RELEASE</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+      <optional>true</optional>
     </dependency>
 
     <!-- Utils -->
