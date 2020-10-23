@@ -23,9 +23,9 @@ Just follow the instructions and you'll be ready
 Add this to pom.xml:
 ```xml
 <dependency>
-  <groupId>com.joffrey</groupId>
-  <artifactId>irsdk_java</artifactId>
-  <version>{version}</version>
+  <groupId>com.joffrey.iracing</groupId>
+  <artifactId>irsdkjava-spring-boot-starter</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
 
